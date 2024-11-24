@@ -1,0 +1,23 @@
+version: '3'
+
+tasks:
+  hello:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  gazelle:
+    cmds:
+      - bazelisk run //:gazelle 
+
+  update-repos:
+    cmds:
+      - bazelisk run //:gazelle-update-repos
+  
+  run-hello-world:
+    cmds:
+      - bazelisk run //hello-world:hello-world
+
+  run-third-party-library:
+    cmds:
+      - bazelisk run //third-party-library:third-party-library
