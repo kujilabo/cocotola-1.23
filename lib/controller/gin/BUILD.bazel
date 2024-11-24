@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gin",
+    srcs = ["server.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/lib/controller/gin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+        "//redstart/lib/log",
+    ],
+)

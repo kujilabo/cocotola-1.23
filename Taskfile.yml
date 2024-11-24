@@ -13,6 +13,10 @@ tasks:
   mod-tidy:
     cmds:
       - bazelisk run @rules_go//go -- mod tidy
+  update-mod:
+    cmds:
+      - pushd ./cocotola-synthesizer/ && GOPROXY=direct go get -u ./... && popd
+      - pushd ./lib/ && GOPROXY=direct go get -u ./... && popd
 
   update-repos:
     cmds:
@@ -29,3 +33,4 @@ tasks:
   run-synthesizer:
     cmds:
       - bazelisk run //cocotola-synthesizer:cocotola-synthesizer
+

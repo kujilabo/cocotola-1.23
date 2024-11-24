@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "helper",
+    srcs = [
+        "path_helper.go",
+        "query_helper.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/lib/controller/helper",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_gin_gonic_gin//:gin"],
+)
