@@ -1,0 +1,9 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "errors",
+    srcs = ["errors.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/errors",
+    visibility = ["//visibility:public"],
+    deps = ["@org_golang_x_xerrors//:go_default_library"],
+)

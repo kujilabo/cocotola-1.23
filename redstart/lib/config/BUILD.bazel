@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "config",
+    srcs = [
+        "config_cors.go",
+        "config_swagger.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/config",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_gin_contrib_cors//:go_default_library"],
+)

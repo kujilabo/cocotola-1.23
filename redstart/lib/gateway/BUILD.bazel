@@ -1,0 +1,30 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gateway",
+    srcs = [
+        "db_dialect.go",
+        "db_mysql.go",
+        "db_postgres.go",
+        "db_sqlite.go",
+        "password_helper.go",
+        "signal_watch.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_go_sql_driver_mysql//:go_default_library",
+        "@com_github_golang_migrate_migrate_v4//database:go_default_library",
+        "@com_github_golang_migrate_migrate_v4//database/mysql:go_default_library",
+        "@com_github_golang_migrate_migrate_v4//database/postgres:go_default_library",
+        "@com_github_golang_migrate_migrate_v4//database/sqlite3:go_default_library",
+        "@com_github_golang_migrate_migrate_v4//source/file:go_default_library",
+        "@com_github_golang_migrate_migrate_v4//source/iofs:go_default_library",
+        "@com_github_orandin_slog_gorm//:go_default_library",
+        "@io_gorm_driver_mysql//:go_default_library",
+        "@io_gorm_driver_postgres//:go_default_library",
+        "@io_gorm_driver_sqlite//:go_default_library",
+        "@io_gorm_gorm//:go_default_library",
+        "@org_golang_x_crypto//bcrypt:go_default_library",
+    ],
+)
