@@ -1,0 +1,63 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "gateway",
+    srcs = [
+        "app_user_repository.go",
+        "authorization_manager.go",
+        "init.go",
+        "model_entity.go",
+        "organization_repository.go",
+        "pair_of_user_and_group_repository.go",
+        "rbac_repository.go",
+        "repository_factory.go",
+        "transaction_manager.go",
+        "user_group_repository.go",
+        "wrapped_db.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/user/gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+        "//redstart/lib/gateway",
+        "//redstart/user/domain",
+        "//redstart/user/service",
+        "@com_github_casbin_casbin_v2//:casbin",
+        "@com_github_casbin_casbin_v2//model",
+        "@com_github_casbin_gorm_adapter_v3//:gorm-adapter",
+        "@com_github_pkg_errors//:errors",
+        "@io_gorm_gorm//:gorm",
+        "@io_opentelemetry_go_otel//:otel",
+        "@org_golang_x_crypto//bcrypt",
+    ],
+)
+
+go_test(
+    name = "gateway_test",
+    srcs = [
+        "app_user_repository_test.go",
+        "authorization_test.go",
+        "export_test.go",
+        "gateway_test.go",
+        "init_test.go",
+        "organization_repository_test.go",
+        "pair_of_user_and_group_repository_test.go",
+        "rbac_repository_test.go",
+    ],
+    embed = [":gateway"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/gateway",
+        "//redstart/sqls",
+        "//redstart/testlib/gateway",
+        "//redstart/user/domain",
+        "//redstart/user/service",
+        "@com_github_casbin_casbin_v2//:casbin",
+        "@com_github_casbin_casbin_v2//model",
+        "@com_github_casbin_gorm_adapter_v3//:gorm-adapter",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@io_gorm_gorm//:gorm",
+    ],
+)

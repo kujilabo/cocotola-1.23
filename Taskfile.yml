@@ -25,3 +25,7 @@ tasks:
   run-third-party-library:
     cmds:
       - bazelisk run //third-party-library:third-party-library
+
+  run-synthesizer:
+    cmds:
+      - bazelisk run //cocotola-synthesizer:cocotola-synthesizer

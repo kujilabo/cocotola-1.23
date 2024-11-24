@@ -5,4 +5,5 @@ go_library(
     srcs = ["config.go"],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config",
     visibility = ["//visibility:public"],
+    deps = ["//redstart/lib/config"],
 )

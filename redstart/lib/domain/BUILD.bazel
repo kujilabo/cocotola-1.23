@@ -2,8 +2,14 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "domain",
-    srcs = ["init.go"],
+    srcs = [
+        "base_model.go",
+        "init.go",
+    ],
     importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/domain",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_go_playground_validator_v10//:go_default_library"],
+    deps = [
+        "//redstart/lib/errors",
+        "@com_github_go_playground_validator_v10//:validator",
+    ],
 )

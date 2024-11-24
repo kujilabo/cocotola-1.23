@@ -4,9 +4,18 @@ go_library(
     name = "config",
     srcs = [
         "config_cors.go",
+        "config_db.go",
+        "config_log.go",
         "config_swagger.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/config",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_gin_contrib_cors//:go_default_library"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+        "//redstart/lib/gateway",
+        "//redstart/lib/log",
+        "@com_github_gin_contrib_cors//:cors",
+        "@io_gorm_gorm//:gorm",
+    ],
 )

@@ -1,0 +1,33 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "domain",
+    srcs = [
+        "app_user_model.go",
+        "init.go",
+        "organization_model.go",
+        "owner_model.go",
+        "rbac.go",
+        "system_admin_model.go",
+        "system_owner_model.go",
+        "user_group_model.go",
+        "user_role.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/user/domain",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+    ],
+)
+
+go_test(
+    name = "domain_test",
+    srcs = ["system_owner_model_test.go"],
+    embed = [":domain"],
+    deps = [
+        "//redstart/lib/domain",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

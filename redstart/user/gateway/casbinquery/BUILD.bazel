@@ -1,0 +1,9 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "casbinquery",
+    srcs = ["casbin_query.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/user/gateway/casbinquery",
+    visibility = ["//visibility:public"],
+    deps = ["@io_gorm_gorm//:gorm"],
+)
