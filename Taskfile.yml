@@ -10,6 +10,10 @@ tasks:
     cmds:
       - bazelisk run //:gazelle 
 
+  mod-tidy:
+    cmds:
+      - bazelisk run @rules_go//go -- mod tidy
+
   update-repos:
     cmds:
       - bazelisk run //:gazelle-update-repos
