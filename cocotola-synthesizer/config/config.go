@@ -8,10 +8,10 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
-	// libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 )
 
 type AppConfig struct {
@@ -47,7 +47,7 @@ type Config struct {
 	Shutdown     *ShutdownConfig            `yaml:"shutdown" validate:"required"`
 	Log          *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
 	Swagger      *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
-	// Debug        *libconfig.DebugConfig     `yaml:"debug"`
+	Debug        *libconfig.DebugConfig     `yaml:"debug"`
 }
 
 //go:embed local.yml
