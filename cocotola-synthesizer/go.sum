@@ -163,6 +163,8 @@ github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241124143107-a1ef5177cc84 h1:Tmv1
 github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241124143107-a1ef5177cc84/go.mod h1:RuXu5hF3hjgGFhC/1Fzo6WeMCfBbtidRzPNRbTfO8zg=
 github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124140517-49ffcce84105 h1:qWCmbunstkzi2uAV9rkCaPea+avzQjdMwaVXzhJ2P4c=
 github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124140517-49ffcce84105/go.mod h1:6DbpycEI9r51FfwQnpDOqUcEAXQEW9m6Jagnfu+so1k=
+github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124143107-a1ef5177cc84 h1:CmsBy5+WDp3gJLbS6iwwVsZvxU4DhNWMq8EVFARhqEo=
+github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124143107-a1ef5177cc84/go.mod h1:6DbpycEI9r51FfwQnpDOqUcEAXQEW9m6Jagnfu+so1k=
 github.com/kujilabo/redstart v0.0.12 h1:XyNPqeIfUlmKZjfhqVrXAhRA3h9m6MpU++I73Y9Gptw=
 github.com/kujilabo/redstart v0.0.12/go.mod h1:txieZR1M4mr9OEXqi1yMhQ2YlFGaBRYxopwzHdKCnDQ=
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=

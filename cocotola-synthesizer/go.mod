@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241124143107-a1ef5177cc84
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124140517-49ffcce84105
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124143107-a1ef5177cc84
 	gopkg.in/yaml.v2 v2.4.0
 )
 
