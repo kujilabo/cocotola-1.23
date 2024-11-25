@@ -154,32 +154,32 @@ def go_dependencies():
     go_repository(
         name = "com_github_azure_azure_sdk_for_go_sdk_azcore",
         importpath = "github.com/Azure/azure-sdk-for-go/sdk/azcore",
-        sum = "h1:/iHxaJhsFr0+xVFfbMr5vxz848jyiWuIEDhYq3y5odY=",
-        version = "v1.7.1",
+        sum = "h1:lGlwhPtrX6EVml1hO0ivjkUxsSyl4dsiw9qcA1k/3IQ=",
+        version = "v1.9.1",
     )
     go_repository(
         name = "com_github_azure_azure_sdk_for_go_sdk_azidentity",
         importpath = "github.com/Azure/azure-sdk-for-go/sdk/azidentity",
-        sum = "h1:vcYCAze6p19qBW7MhZybIsqD8sMV8js0NyQM8JDnVtg=",
-        version = "v1.3.0",
+        sum = "h1:sO0/P7g68FrryJzljemN+6GTssUXdANk6aJ7T1ZxnsQ=",
+        version = "v1.5.1",
     )
     go_repository(
         name = "com_github_azure_azure_sdk_for_go_sdk_internal",
         importpath = "github.com/Azure/azure-sdk-for-go/sdk/internal",
-        sum = "h1:sXr+ck84g/ZlZUOZiNELInmMgOsuGwdjjVkEIde0OtY=",
-        version = "v1.3.0",
+        sum = "h1:6oNBlSdi1QqM1PNW7FPA6xOGA5UNsXnkaYZz9vdPGhA=",
+        version = "v1.5.1",
     )
     go_repository(
         name = "com_github_azure_azure_sdk_for_go_sdk_security_keyvault_azkeys",
         importpath = "github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys",
-        sum = "h1:yfJe15aSwEQ6Oo6J+gdfdulPNoZ3TEhmbhLIoxZcA+U=",
-        version = "v1.0.0",
+        sum = "h1:MyVTgWR8qd/Jw1Le0NZebGBUCLbtak3bJ3z1OlqZBpw=",
+        version = "v1.0.1",
     )
     go_repository(
         name = "com_github_azure_azure_sdk_for_go_sdk_security_keyvault_internal",
         importpath = "github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/internal",
-        sum = "h1:T028gtTPiYt/RMUfs8nVsAL7FDQrfLlrm/NnRG/zcC4=",
-        version = "v0.8.0",
+        sum = "h1:D3occbWoio4EBLkbkevetNMAVX197GkzbUMtqjGWn80=",
+        version = "v1.0.0",
     )
     go_repository(
         name = "com_github_azure_azure_sdk_for_go_sdk_storage_azblob",
@@ -226,8 +226,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_azuread_microsoft_authentication_library_for_go",
         importpath = "github.com/AzureAD/microsoft-authentication-library-for-go",
-        sum = "h1:HCc0+LpPfpCKs6LGGLAhwBARt9632unrVcI6i8s/8os=",
-        version = "v1.1.0",
+        sum = "h1:DzHpqpoJVaCgOUdVHxE8QB52S6NiVdDQvGlny1qvPqA=",
+        version = "v1.2.1",
     )
     go_repository(
         name = "com_github_bazelbuild_rules_go",
@@ -242,6 +242,12 @@ def go_dependencies():
         version = "v1.0.1",
     )
     go_repository(
+        name = "com_github_bmatcuk_doublestar_v4",
+        importpath = "github.com/bmatcuk/doublestar/v4",
+        sum = "h1:fdDeAqgT47acgwd9bd9HxJRDmc9UAmPpc+2m0CXv75Q=",
+        version = "v4.7.1",
+    )
+    go_repository(
         name = "com_github_burntsushi_toml",
         importpath = "github.com/BurntSushi/toml",
         sum = "h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=",
@@ -250,8 +256,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_bytedance_sonic",
         importpath = "github.com/bytedance/sonic",
-        sum = "h1:9Csb3c9ZJhfUWeMtpCDCq6BUoH5ogfDFLUgQ/jG+R0k=",
-        version = "v1.12.4",
+        sum = "h1:hoZxY8uW+mT+OpkcUWw4k0fDINtOcVavEsGfzwzFU/w=",
+        version = "v1.12.5",
     )
     go_repository(
         name = "com_github_bytedance_sonic_loader",
@@ -262,20 +268,20 @@ def go_dependencies():
     go_repository(
         name = "com_github_casbin_casbin_v2",
         importpath = "github.com/casbin/casbin/v2",
-        sum = "h1:vNwJXK7a+TJZElZ5saP+SFJvweZNtJ3MlVP6P4IuRqE=",
-        version = "v2.81.0",
+        sum = "h1:y8qZRXcgv5omd3k/7kpaP03Hov82sXzCC5FAfm17lkw=",
+        version = "v2.101.0",
     )
     go_repository(
         name = "com_github_casbin_gorm_adapter_v3",
         importpath = "github.com/casbin/gorm-adapter/v3",
-        sum = "h1:VpGKTlL56xIkhNUOC07bnzwjA/xqfVOAbkt6sniVxMo=",
-        version = "v3.20.0",
+        sum = "h1:Au+IOILBIE9clox5BJhI2nA3p9t7Ep1ePlupdGbGfus=",
+        version = "v3.32.0",
     )
     go_repository(
         name = "com_github_casbin_govaluate",
         importpath = "github.com/casbin/govaluate",
-        sum = "h1:J1rFKIBhiC5xr0APd5HP6rDL+xt+BRoyq1pa4o2i/5c=",
-        version = "v1.1.1",
+        sum = "h1:wXCXFmqyY+1RwiKfYo3jMKyrtZmOL3kHwaqDyCPOYak=",
+        version = "v1.2.0",
     )
     go_repository(
         name = "com_github_cenkalti_backoff_v4",
@@ -496,8 +502,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_glebarez_sqlite",
         importpath = "github.com/glebarez/sqlite",
-        sum = "h1:u4gt8y7OND/cCei/NMHmfbLxF6xP2wgKcT/BJf2pYkc=",
-        version = "v1.10.0",
+        sum = "h1:wSG0irqzP6VurnMEpFGer5Li19RpIRi2qvQz++w0GMw=",
+        version = "v1.11.0",
     )
     go_repository(
         name = "com_github_go_kit_log",
@@ -604,14 +610,14 @@ def go_dependencies():
     go_repository(
         name = "com_github_golang_jwt_jwt_v4",
         importpath = "github.com/golang-jwt/jwt/v4",
-        sum = "h1:7cYmW1XlMY7h7ii7UhUyChSgS5wUJEnm9uZVTGqOWzg=",
-        version = "v4.5.0",
+        sum = "h1:rcc4lwaZgFMCZ5jxF9ABolDcIHdBytAFgqFPbSJQAYs=",
+        version = "v4.4.2",
     )
     go_repository(
         name = "com_github_golang_jwt_jwt_v5",
         importpath = "github.com/golang-jwt/jwt/v5",
-        sum = "h1:1n1XNM9hk7O9mnQoNBGolZvzebBQ7p93ULHRc28XJUE=",
-        version = "v5.0.0",
+        sum = "h1:d/ix8ftRUorsN+5eMIlF4T6J8CAt9rch3My2winC1Jw=",
+        version = "v5.2.0",
     )
     go_repository(
         name = "com_github_golang_migrate_migrate_v4",
@@ -700,8 +706,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_google_pprof",
         importpath = "github.com/google/pprof",
-        sum = "h1:Xim43kblpZXfIBQsbuBVKCudVG457BR2GZFIz3uw3hQ=",
-        version = "v0.0.0-20221118152302-e6195bd50e26",
+        sum = "h1:gbpYu9NMq8jhDVbvlGkMFWCjLFlqqEZjEmObmhUy6Vo=",
+        version = "v0.0.0-20240409012703-83162a5b38cd",
     )
     go_repository(
         name = "com_github_google_s2a_go",
@@ -823,6 +829,13 @@ def go_dependencies():
         sum = "h1:2gKiV6YVmrJ1i2CKKa9obLvRieoRGviZFL26PcT/Co8=",
         version = "v1.0.3",
     )
+    go_repository(
+        name = "com_github_hashicorp_golang_lru_v2",
+        importpath = "github.com/hashicorp/golang-lru/v2",
+        sum = "h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=",
+        version = "v2.0.7",
+    )
+
     go_repository(
         name = "com_github_iancoleman_strcase",
         importpath = "github.com/iancoleman/strcase",
@@ -1114,8 +1127,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_microsoft_go_mssqldb",
         importpath = "github.com/microsoft/go-mssqldb",
-        sum = "h1:mM3gYdVwEPFrlg/Dvr2DNVEgYFG7L42l+dGc67NNNpc=",
-        version = "v1.6.0",
+        sum = "h1:CHkFJiObW7ItKTJfHo1QX7QBBD1iV+mn1eOyRP3b/PA=",
+        version = "v1.7.2",
     )
     go_repository(
         name = "com_github_microsoft_go_winio",
@@ -1214,6 +1227,12 @@ def go_dependencies():
         version = "v0.0.0-20190310045651-3c02a58cfed8",
     )
     go_repository(
+        name = "com_github_ncruces_go_strftime",
+        importpath = "github.com/ncruces/go-strftime",
+        sum = "h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdhx/f4=",
+        version = "v0.1.9",
+    )
+    go_repository(
         name = "com_github_neo4j_neo4j_go_driver",
         importpath = "github.com/neo4j/neo4j-go-driver",
         sum = "h1:fhFP5RliM2HW/8XdcO5QngSfFli9GcRIpMXvypTQt6E=",
@@ -1264,8 +1283,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_pkg_browser",
         importpath = "github.com/pkg/browser",
-        sum = "h1:KoWmjvw+nsYOo29YJK9vDA65RGE3NrOnUtO7a+RF9HU=",
-        version = "v0.0.0-20210911075715-681adbf594b8",
+        sum = "h1:+mdjkGKdHQG3305AYmdv1U2eRNDiU2ErMBj1gwrq8eQ=",
+        version = "v0.0.0-20240102092130-5ac0b6a4141c",
     )
     go_repository(
         name = "com_github_pkg_diff",
@@ -2266,8 +2285,8 @@ def go_dependencies():
     go_repository(
         name = "io_gorm_driver_sqlserver",
         importpath = "gorm.io/driver/sqlserver",
-        sum = "h1:+o4RQ8w1ohPbADhFqDxeeZnSWjwOcBnxBckjTbcP4wk=",
-        version = "v1.5.2",
+        sum = "h1:xA+Y1KDNspv79q43bPyjDMUgHoYHLhXYmdFcYPobg8g=",
+        version = "v1.5.4",
     )
     go_repository(
         name = "io_gorm_gorm",
@@ -2278,8 +2297,8 @@ def go_dependencies():
     go_repository(
         name = "io_gorm_plugin_dbresolver",
         importpath = "gorm.io/plugin/dbresolver",
-        sum = "h1:XVHLxh775eP0CqVh3vcfJtYqja3uFl5Wr3cKlY8jgDY=",
-        version = "v1.5.0",
+        sum = "h1:wFwINGZZmttuu9h7XpvbDHd8Lf9bb8GNzp/NpAMV2wU=",
+        version = "v1.5.3",
     )
     go_repository(
         name = "io_opencensus_go",
@@ -2434,8 +2453,8 @@ def go_dependencies():
     go_repository(
         name = "org_golang_x_exp",
         importpath = "golang.org/x/exp",
-        sum = "h1:pVgRXcIictcr+lBQIFeiwuwtDIs4eL21OuM9nyAADmo=",
-        version = "v0.0.0-20230315142452-642cacee5cc0",
+        sum = "h1:XdNn9LlyWAhLVp6P/i8QYBW+hlyhrhei9uErw2B5GJo=",
+        version = "v0.0.0-20241108190413-2d47ceb2692f",
     )
     go_repository(
         name = "org_golang_x_lint",
@@ -2446,8 +2465,8 @@ def go_dependencies():
     go_repository(
         name = "org_golang_x_mod",
         importpath = "golang.org/x/mod",
-        sum = "h1:vvrHzRwRfVKSiLrG+d4FMl/Qi4ukBCE6kZlTUkDYRT0=",
-        version = "v0.21.0",
+        sum = "h1:D4nJWe9zXqHOmWqj4VMOJhvzj7bEZg4wEYa759z1pH4=",
+        version = "v0.22.0",
     )
     go_repository(
         name = "org_golang_x_net",
@@ -2500,8 +2519,8 @@ def go_dependencies():
     go_repository(
         name = "org_golang_x_tools",
         importpath = "golang.org/x/tools",
-        sum = "h1:J1shsA93PJUEVaUSaay7UXAyE8aimq3GW0pjlolpa24=",
-        version = "v0.24.0",
+        sum = "h1:qEKojBykQkQ4EynWy4S8Weg69NumxKdn40Fce3uc/8o=",
+        version = "v0.27.0",
     )
     go_repository(
         name = "org_golang_x_xerrors",
@@ -2522,10 +2541,22 @@ def go_dependencies():
         version = "v3.41.0",
     )
     go_repository(
+        name = "org_modernc_cc_v4",
+        importpath = "modernc.org/cc/v4",
+        sum = "h1:WqJoPL3x4cUufQVHkXpXX7ThFJ1C4ik80i2eXEXbhD8=",
+        version = "v4.23.1",
+    )
+    go_repository(
         name = "org_modernc_ccgo_v3",
         importpath = "modernc.org/ccgo/v3",
         sum = "h1:KbDR3ZAVU+wiLyMESPtbtE/Add4elztFyfsWoNTgxS0=",
         version = "v3.16.15",
+    )
+    go_repository(
+        name = "org_modernc_ccgo_v4",
+        importpath = "modernc.org/ccgo/v4",
+        sum = "h1:C7AW89Zw3kygesTQWBzApwIn9ldM+cb/plrTIKq41Os=",
+        version = "v4.22.3",
     )
     go_repository(
         name = "org_modernc_db",
@@ -2542,8 +2573,20 @@ def go_dependencies():
     go_repository(
         name = "org_modernc_fileutil",
         importpath = "modernc.org/fileutil",
-        sum = "h1:Z1AFLZwl6BO8A5NldQg/xTSjGLetp+1Ubvl4alfGx8w=",
-        version = "v1.0.0",
+        sum = "h1:gQ5SIzK3H9kdfai/5x41oQiKValumqNTDXMvKo62HvE=",
+        version = "v1.3.0",
+    )
+    go_repository(
+        name = "org_modernc_gc_v2",
+        importpath = "modernc.org/gc/v2",
+        sum = "h1:bJ9ChznK1L1mUtAQtxi0wi5AtAs5jQuw4PrPHO5pb6M=",
+        version = "v2.5.0",
+    )
+    go_repository(
+        name = "org_modernc_gc_v3",
+        importpath = "modernc.org/gc/v3",
+        sum = "h1:5D53IMaUuA5InSeMu9eJtlQXS2NxAhyWQvkKEgXZhHI=",
+        version = "v3.0.0-20240107210532-573471604cb6",
     )
     go_repository(
         name = "org_modernc_golex",
@@ -2566,8 +2609,8 @@ def go_dependencies():
     go_repository(
         name = "org_modernc_libc",
         importpath = "modernc.org/libc",
-        sum = "h1:ZhRylEBcj3GyQbPVC8JxIg7SdrT4JOxIDJoUon0NfF8=",
-        version = "v1.40.1",
+        sum = "h1:dkO4DlowfClcJYsvf/RiK6fUwvzCQTmB34bJLt0CAGQ=",
+        version = "v1.61.2",
     )
     go_repository(
         name = "org_modernc_lldb",
@@ -2584,8 +2627,8 @@ def go_dependencies():
     go_repository(
         name = "org_modernc_memory",
         importpath = "modernc.org/memory",
-        sum = "h1:Klh90S215mmH8c9gO98QxQFsY+W451E8AnzjoE2ee1E=",
-        version = "v1.7.2",
+        sum = "h1:IqGTL6eFMaDZZhEWwcREgeMXYwmW83LYW8cROZYkg+E=",
+        version = "v1.8.0",
     )
     go_repository(
         name = "org_modernc_opt",
@@ -2602,14 +2645,14 @@ def go_dependencies():
     go_repository(
         name = "org_modernc_sortutil",
         importpath = "modernc.org/sortutil",
-        sum = "h1:oP3U4uM+NT/qBQcbg/K2iqAX0Nx7B1b6YZtq3Gk/PjM=",
-        version = "v1.1.0",
+        sum = "h1:jQiD3PfS2REGJNzNCMMaLSp/wdMNieTbKX920Cqdgqc=",
+        version = "v1.2.0",
     )
     go_repository(
         name = "org_modernc_sqlite",
         importpath = "modernc.org/sqlite",
-        sum = "h1:Zx+LyDDmXczNnEQdvPuEfcFVA2ZPyaD7UCZDjef3BHQ=",
-        version = "v1.28.0",
+        sum = "h1:u3Yi6M0N8t9yKRDwhXcyp1eS5/ErhPTBggxWFuR6Hfk=",
+        version = "v1.34.1",
     )
     go_repository(
         name = "org_modernc_strutil",

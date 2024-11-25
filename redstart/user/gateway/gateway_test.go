@@ -1,3 +1,5 @@
+//go:build medium
+
 package gateway_test
 
 import (
@@ -28,10 +30,6 @@ type testService struct {
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-var (
-	loc = time.UTC
-)
 
 func RandString(n int) string {
 	b := make([]rune, n)

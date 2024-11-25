@@ -1,3 +1,5 @@
+//go:build medium
+
 package gateway_test
 
 import (

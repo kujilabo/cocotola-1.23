@@ -23,8 +23,24 @@ go_library(
 
 go_test(
     name = "domain_test",
-    srcs = ["system_owner_model_test.go"],
+    srcs = [
+        "organization_model_s_test.go",
+        "system_owner_model_test.go",
+    ],
     embed = [":domain"],
+    deps = [
+        "//redstart/lib/domain",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)
+
+go_test(
+    name = "domain_s_test",
+    size = "small",
+    srcs = ["organization_model_s_test.go"],
+    embed = [":domain"],
+    gotags = ["small"],
     deps = [
         "//redstart/lib/domain",
         "@com_github_stretchr_testify//assert",

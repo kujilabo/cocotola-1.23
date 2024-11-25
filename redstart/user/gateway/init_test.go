@@ -1,9 +1,12 @@
+//go:build medium
+
 package gateway_test
 
 import (
 	"context"
 	"os"
 	"strconv"
+	"time"
 
 	"gorm.io/gorm"
 
@@ -13,6 +16,9 @@ import (
 	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
 )
 
+var (
+	loc = time.UTC
+)
 var (
 	invalidOrgID     *domain.OrganizationID
 	invalidAppUserID *domain.AppUserID
