@@ -1395,6 +1395,13 @@ def go_dependencies():
         version = "v1.10.0",
     )
     go_repository(
+        name = "com_github_tcolgate_mp3",
+        importpath = "github.com/tcolgate/mp3",
+        sum = "h1:XQdibLKagjdevRB6vAjVY4qbSr8rQ610YzTkWcxzxSI=",
+        version = "v0.0.0-20170426193717-e79c5a46d300",
+    )
+
+    go_repository(
         name = "com_github_tidwall_gjson",
         importpath = "github.com/tidwall/gjson",
         sum = "h1:uo0p8EbA09J7RQaflQ1aBRffTR7xedD2bcIVSYxLnkM=",

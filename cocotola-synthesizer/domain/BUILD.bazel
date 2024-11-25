@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "domain",
+    srcs = ["audio.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/domain",
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+    ],
+)

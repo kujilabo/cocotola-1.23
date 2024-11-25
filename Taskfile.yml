@@ -22,9 +22,14 @@ tasks:
     cmds:
       - pushd ./redstart/ && GOPROXY=direct go get -u ./... && popd
 
+  update-mod-synthesizer:
+    cmds:
+      - pushd ./cocotola-synthesizer/ && GOPROXY=direct go get -u ./... && popd
+
   update-mod:
     - task: update-mod-lib
     - task: update-mod-redstart
+    - task: update-mod-synthesizer
 
       # - pushd ./cocotola-synthesizer/ && GOPROXY=direct go get -u ./... && popd
 
