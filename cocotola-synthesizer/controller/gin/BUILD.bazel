@@ -1,0 +1,51 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "gin",
+    srcs = [
+        "app_router.go",
+        "init.go",
+        "synthesizer_handler.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-synthesizer/domain",
+        "//lib/api",
+        "//lib/config",
+        "//lib/controller/gin/middleware",
+        "//lib/domain",
+        "//lib/log",
+        "//redstart/lib/log",
+        "@com_github_gin_contrib_cors//:cors",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_samber_slog_gin//:slog-gin",
+        "@io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin//:otelgin",
+    ],
+)
+
+# keep
+go_test(
+    name = "gin_test",
+    size = "small",
+    srcs = [
+        "helper_test.go",
+        "synthesizer_handler_s_test.go",
+    ],
+    gotags = ["small"],
+    deps = [
+        ":gin",
+        "//cocotola-synthesizer/config",
+        "//cocotola-synthesizer/controller/gin/mocks",
+        "//cocotola-synthesizer/domain",
+        "//lib/config",
+        "//lib/domain",
+        "@com_github_gin_contrib_cors//:cors",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_ohler55_ojg//jp",
+        "@com_github_ohler55_ojg//oj",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+    ],
+)

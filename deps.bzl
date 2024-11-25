@@ -1239,6 +1239,12 @@ def go_dependencies():
         version = "v1.8.1-0.20200803113522-b626aa943eba",
     )
     go_repository(
+        name = "com_github_ohler55_ojg",
+        importpath = "github.com/ohler55/ojg",
+        sum = "h1:sDwc4u4zex65Uz5Nm7O1QwDKTT+YRcpeZQTy1pffRkw=",
+        version = "v1.25.0",
+    )
+    go_repository(
         name = "com_github_onsi_ginkgo",
         importpath = "github.com/onsi/ginkgo",
         sum = "h1:29JGrr5oVBm5ulCWet69zQkzWipVXIol6ygQUe/EzNc=",
@@ -1357,6 +1363,12 @@ def go_dependencies():
         importpath = "github.com/rqlite/gorqlite",
         sum = "h1:V7x0hCAgL8lNGezuex1RW1sh7VXXCqfw8nXZti66iFg=",
         version = "v0.0.0-20230708021416-2acd02b70b79",
+    )
+    go_repository(
+        name = "com_github_samber_slog_gin",
+        importpath = "github.com/samber/slog-gin",
+        sum = "h1:clWpgtdL/3KM1eGkUMUHTLNM1fG4nA3bHC1Pt7v0z44=",
+        version = "v1.13.6",
     )
     go_repository(
         name = "com_github_shopspring_decimal",
@@ -2320,6 +2332,12 @@ def go_dependencies():
         version = "v1.29.0",
     )
     go_repository(
+        name = "io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin",
+        importpath = "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+        sum = "h1:1wEousrQOXTAhk16quIMIo1gSaUp1J3PEVlsiEAtmeU=",
+        version = "v0.57.0",
+    )
+    go_repository(
         name = "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
         importpath = "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
         sum = "h1:qtFISDHKolvIxzSs0gIaiPUPR0Cucb0F2coHC7ZLdps=",
@@ -2330,6 +2348,12 @@ def go_dependencies():
         importpath = "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
         sum = "h1:DheMAlT6POBP+gh8RUH19EOTnQIor5QE0uSRPtzCpSw=",
         version = "v0.57.0",
+    )
+    go_repository(
+        name = "io_opentelemetry_go_contrib_propagators_b3",
+        importpath = "go.opentelemetry.io/contrib/propagators/b3",
+        sum = "h1:MazJBz2Zf6HTN/nK/s3Ru1qme+VhWU5hm83QxEP+dvw=",
+        version = "v1.32.0",
     )
     go_repository(
         name = "io_opentelemetry_go_otel",

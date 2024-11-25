@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "usecase",
+    srcs = [
+        "init.go",
+        "synthesizer_usecase.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/usecase",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-synthesizer/domain",
+        "//cocotola-synthesizer/service",
+        "//lib/domain",
+        "//lib/log",
+        "//redstart/lib/errors",
+        "//redstart/lib/log",
+    ],
+)
