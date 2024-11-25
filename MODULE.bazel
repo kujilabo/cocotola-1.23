@@ -32,6 +32,7 @@ use_repo(
     "io_gorm_driver_postgres",
     "io_gorm_driver_sqlite",
     "io_gorm_gorm",
+    "org_golang_x_sync",
     "in_gopkg_yaml_v2",
     "com_github_samber_slog_gin",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",

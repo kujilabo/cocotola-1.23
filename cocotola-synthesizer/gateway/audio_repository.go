@@ -32,7 +32,7 @@ func (e *audioEntity) TableName() string {
 func (e *audioEntity) toAudioModel() (*domain.AudioModel, error) {
 	audioID, err := domain.NewAudioID(e.ID)
 	if err != nil {
-		return nil, rsliberrors.Errorf("domain.NewAppUserModel. err: %w", err)
+		return nil, rsliberrors.Errorf("domain.NewAudioID. err: %w", err)
 	}
 
 	lang5, err := libdomain.NewLang5(e.Lang5)
@@ -69,7 +69,7 @@ func (r *audioRepository) AddAudio(ctx context.Context, lang5 *libdomain.Lang5, 
 
 	audioID, err := domain.NewAudioID(entity.ID)
 	if err != nil {
-		return nil, rsliberrors.Errorf("domain.NewAppUserModel. err: %w", err)
+		return nil, rsliberrors.Errorf("domain.NewAudioID. err: %w", err)
 	}
 
 	return audioID, nil
@@ -135,7 +135,7 @@ func (r *audioRepository) FindAudioIDByText(ctx context.Context, lang5 *libdomai
 
 	audioID, err := domain.NewAudioID(entity.ID)
 	if err != nil {
-		return nil, rsliberrors.Errorf("domain.NewAppUserModel. err: %w", err)
+		return nil, rsliberrors.Errorf("domain.NewAudioID. err: %w", err)
 	}
 
 	return audioID, nil

@@ -34,15 +34,16 @@ type AudioModel struct {
 	Length  time.Duration
 }
 
-func NewAudioModel(audioID *AudioID, Lang5 *libdomain.Lang5, text, content string, length time.Duration) (*AudioModel, error) {
+func NewAudioModel(audioID *AudioID, lang5 *libdomain.Lang5, text, content string, length time.Duration) (*AudioModel, error) {
 	m := &AudioModel{
 		AudioID: audioID,
+		Lang5:   lang5,
 		Text:    text,
 		Content: content,
 		Length:  length,
 	}
 	if err := rslibdomain.Validator.Struct(m); err != nil {
-		return nil, rsliberrors.Errorf("libdomain.Validator.Struct. err: %w", err)
+		return nil, rsliberrors.Errorf("rslibdomain.Validator.Struct. err: %w", err)
 	}
 
 	return m, nil
