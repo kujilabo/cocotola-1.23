@@ -49,6 +49,9 @@ tasks:
     cmds:
       - bazelisk run //cocotola-synthesizer:cocotola-synthesizer
 
+  build-hello-world:
+    cmds:
+      - bazelisk run //hello-world:load
 
   test:
     cmds:
