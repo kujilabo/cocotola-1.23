@@ -6,6 +6,11 @@ tasks:
       - echo 'Hello World from Task!'
     silent: true
 
+  init:
+    cmds:
+      - go work init
+      - go work use -r .
+
   gazelle:
     cmds:
       - bazelisk run //:gazelle 
