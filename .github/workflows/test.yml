@@ -1,6 +1,12 @@
 ---
-on: [pull_request]
 name: Test
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 jobs:
   test_go:
     strategy:
