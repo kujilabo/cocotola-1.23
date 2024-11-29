@@ -1,6 +1,4 @@
 ---
-path: ./
-output_path: .
 report-formats: json
 ignore_on_exit: results
 no-progress: true

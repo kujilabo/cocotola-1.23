@@ -15,3 +15,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: ./
           config_path: .github/kics.yml
+          output_path: kick_results/
