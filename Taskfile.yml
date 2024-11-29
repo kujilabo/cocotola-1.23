@@ -10,7 +10,7 @@ tasks:
     cmds:
       - go work init
       - go work use -r .
-  
+
   setup:
     cmds:
       - pre-commit install
