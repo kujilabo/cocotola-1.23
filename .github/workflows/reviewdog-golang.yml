@@ -52,7 +52,6 @@ jobs:
             -E gocyclo
             -E gofmt
             -E goimports
-            -E gomnd
             -E gosec
             -E noctx
             -E testpackage
