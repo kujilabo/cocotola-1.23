@@ -15,6 +15,6 @@ jobs:
       - name: Create Release
         run: |
           TAG=gh release list | cut -f 1 | calver --next
-          gh release create ${TAG} --generate-notes --target main
+          gh release create "${TAG}" --generate-notes --target main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
