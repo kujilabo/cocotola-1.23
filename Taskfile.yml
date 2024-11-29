@@ -10,6 +10,14 @@ tasks:
     cmds:
       - go work init
       - go work use -r .
+  
+  setup:
+    cmds:
+      - pre-commit install
+
+  pre-commit:
+    cmds:
+      - pre-commit run --all-files
 
   gazelle:
     cmds:

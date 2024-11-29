@@ -1,4 +1,4 @@
-// go:build large
+//go:build large
 
 package gateway_test
 
