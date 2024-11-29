@@ -27,7 +27,7 @@ jobs:
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         uses: reviewdog/action-golangci-lint@v2
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           golangci_lint_flags: --config=../.github/.golangci.yml --timeout=10m
           tool_name: golangci-lint-default
@@ -39,7 +39,7 @@ jobs:
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         uses: reviewdog/action-golangci-lint@v2
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           golangci_lint_flags: >
             --config=../.github/.golangci.yml --disable-all
