@@ -1,0 +1,16 @@
+---
+path: .
+output_path: .
+report-formats: json 
+ignore_on_exit: results
+no-progress: true
+no-color: true
+minimal-ui: true
+enable_comments: true
+#exclude-severities:
+#  - "low"
+#  - "info"
+#exclude-queries:
+#  # S3 Bucket Without Enabled MFA Delete
+#  # https://docs.kics.io/latest/queries/terraform-queries/aws/c5b31ab9-0f26-4a49-b8aa-4cc064392f4d/
+#  - c5b31ab9-0f26-4a49-b8aa-4cc064392f4d
