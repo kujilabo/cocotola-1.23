@@ -1,6 +1,5 @@
 ---
 report-formats: json
-ignore_on_exit: results
 no-progress: true
 no-color: true
 minimal-ui: true
