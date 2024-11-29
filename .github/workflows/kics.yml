@@ -14,10 +14,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: ./
-          # config_path: .github/kics.yml
+          config_path: .github/kics.yml
           output_path: kick_results/
-          report-formats: json
-          no-progress: true
-          no-color: true
-          minimal-ui: true
-          enable_comments: true
