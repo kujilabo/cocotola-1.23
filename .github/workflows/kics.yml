@@ -13,4 +13,5 @@ jobs:
         uses: checkmarx/kics-github-action@v2.1.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./
           config_path: ../.github/kics.yml
