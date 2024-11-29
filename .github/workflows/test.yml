@@ -22,7 +22,7 @@ jobs:
           mysql version: "5.7"
           mysql database: "testdb"
           mysql user: "user"
-          # kics-scan ignore
+          # kics-scan ignore-line
           mysql password: "password"
 
       - uses: actions/setup-go@v5
