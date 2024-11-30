@@ -15,6 +15,7 @@ import (
 )
 
 func outputCasbinRule(t *testing.T, db *gorm.DB) {
+	t.Helper()
 	type Result struct {
 		ID    int
 		Ptype string
@@ -42,6 +43,7 @@ func Test_AddPairOfUserAndGroup(t *testing.T) {
 	t.Parallel()
 	for i := 0; i < 1; i++ {
 		fn := func(t *testing.T, ctx context.Context, ts testService) {
+			t.Helper()
 			orgID, _, owner := setupOrganization(ctx, t, ts)
 			defer teardownOrganization(t, ts, orgID)
 

@@ -17,8 +17,8 @@ import (
 func OpenSQLite(filePath string, logger *slog.Logger) (*gorm.DB, error) {
 	return gorm.Open(gorm_sqlite.Open(filePath), &gorm.Config{
 		Logger: slog_gorm.New(
-			slog_gorm.WithLogger(logger), // Optional, use slog.Default() by default
-			slog_gorm.WithTraceAll(),     // trace all messages
+			slog_gorm.WithHandler(logger.Handler()),
+			slog_gorm.WithTraceAll(), // trace all messages
 		),
 	})
 }

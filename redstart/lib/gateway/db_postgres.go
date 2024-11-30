@@ -23,8 +23,8 @@ func OpenPostgres(username, password, host string, port int, database string, lo
 		DSN: dsn,
 	}), &gorm.Config{
 		Logger: slog_gorm.New(
-			slog_gorm.WithLogger(logger), // Optional, use slog.Default() by default
-			slog_gorm.WithTraceAll(),     // trace all messages
+			slog_gorm.WithHandler(logger.Handler()),
+			slog_gorm.WithTraceAll(), // trace all messages
 		),
 	})
 }

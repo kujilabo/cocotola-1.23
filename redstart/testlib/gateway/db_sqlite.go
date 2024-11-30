@@ -22,8 +22,8 @@ func openSQLiteForTest() (*gorm.DB, error) {
 	logger := slog.Default()
 	return gorm.Open(gormSQLite.Open(testDBFile), &gorm.Config{
 		Logger: slog_gorm.New(
-			slog_gorm.WithLogger(logger), // Optional, use slog.Default() by default
-			slog_gorm.WithTraceAll(),     // trace all messages
+			slog_gorm.WithHandler(logger.Handler()),
+			slog_gorm.WithTraceAll(), // trace all messages
 		),
 	})
 }

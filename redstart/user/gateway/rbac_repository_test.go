@@ -70,6 +70,7 @@ func TestA(t *testing.T) {
 	t.Parallel()
 
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
 		defer teardownCasbin(t, ts)
 		rbacRepo := gateway.RBACRepository{
 			DB:   ts.db,
@@ -120,6 +121,7 @@ func TestA(t *testing.T) {
 }
 
 func teardownCasbin(t *testing.T, ts testService) {
+	t.Helper()
 	// delete all organizations
 	// ts.db.Exec("delete from space where organization_id = ?", orgID.Int())
 	ts.db.Exec("delete from casbin_rule")

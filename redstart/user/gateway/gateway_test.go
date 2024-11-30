@@ -44,6 +44,7 @@ func RandString(n int) string {
 }
 
 func testDB(t *testing.T, fn func(t *testing.T, ctx context.Context, ts testService)) {
+	t.Helper()
 	ctx := context.Background()
 	for dialect, db := range testlibgateway.ListDB() {
 		dialect := dialect
@@ -66,6 +67,7 @@ func testDB(t *testing.T, fn func(t *testing.T, ctx context.Context, ts testServ
 func testOrganization(t *testing.T, fn func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner)) {
 	t.Helper()
 	testDB(t, func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
 		orgID, sysOwner, owner := setupOrganization(ctx, t, ts)
 		defer teardownOrganization(t, ts, orgID)
 
@@ -74,6 +76,7 @@ func testOrganization(t *testing.T, fn func(t *testing.T, ctx context.Context, t
 }
 
 func setupOrganization(ctx context.Context, t *testing.T, ts testService) (*domain.OrganizationID, *service.SystemOwner, *service.Owner) {
+	t.Helper()
 	orgName := RandString(orgNameLength)
 	sysAd, err := service.NewSystemAdmin(ctx, ts.rf)
 	require.NoError(t, err)
@@ -150,6 +153,7 @@ func setupOrganization(ctx context.Context, t *testing.T, ts testService) (*doma
 }
 
 func teardownOrganization(t *testing.T, ts testService, orgID *domain.OrganizationID) {
+	t.Helper()
 	// delete all organizations
 	// ts.db.Exec("delete from space where organization_id = ?", orgID.Int())
 	ts.db.Exec("delete from app_user where organization_id = ?", orgID.Int())
@@ -160,6 +164,7 @@ func teardownOrganization(t *testing.T, ts testService, orgID *domain.Organizati
 }
 
 func testAddAppUser(t *testing.T, ctx context.Context, ts testService, owner service.OwnerModelInterface, loginID, username, password string) *service.AppUser {
+	t.Helper()
 	appUserRepo := ts.rf.NewAppUserRepository(ctx)
 	userID1, err := appUserRepo.AddAppUser(ctx, owner, testNewAppUserAddParameter(t, loginID, username, password))
 	require.NoError(t, err)
@@ -171,6 +176,7 @@ func testAddAppUser(t *testing.T, ctx context.Context, ts testService, owner ser
 }
 
 func testAddUserGroup(t *testing.T, ctx context.Context, ts testService, owner service.OwnerModelInterface, key, name, description string) *service.UserGroup {
+	t.Helper()
 	userGorupRepo := ts.rf.NewUserGroupRepository(ctx)
 	groupID1, err := userGorupRepo.AddUserGroup(ctx, owner, testNewUserGroupAddParameter(t, key, name, description))
 	require.NoError(t, err)
@@ -248,18 +254,21 @@ func testNewUserGroups(userGroupModels []*domain.UserGroupModel) []*testUserGrou
 }
 
 func testNewAppUserAddParameter(t *testing.T, loginID, username, password string) *service.AppUserAddParameter {
+	t.Helper()
 	p, err := service.NewAppUserAddParameter(loginID, username, password, "", "", "", "")
 	require.NoError(t, err)
 	return p
 }
 
 func testNewUserGroupAddParameter(t *testing.T, key, name, description string) *service.UserGroupAddParameter {
+	t.Helper()
 	p, err := service.NewUserGroupAddParameter(key, name, description)
 	require.NoError(t, err)
 	return p
 }
 
 func getOrganization(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID) *service.Organization {
+	t.Helper()
 	orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
 
 	baseModel, err := libdomain.NewBaseModel(1, time.Now(), time.Now(), 1, 1)

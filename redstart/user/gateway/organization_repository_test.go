@@ -19,6 +19,7 @@ import (
 func Test_organizationRepository_GetOrganization(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
 		// require.Equal(t, ts.dialect.BoolDefaultValue(), "false")
 		orgID, _, _ := setupOrganization(ctx, t, ts)
 		defer teardownOrganization(t, ts, orgID)
@@ -53,6 +54,7 @@ func Test_organizationRepository_GetOrganization(t *testing.T) {
 func Test_organizationRepository_FindOrganizationByName(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
 		orgID, _, _ := setupOrganization(ctx, t, ts)
 		defer teardownOrganization(t, ts, orgID)
 		sysAdModel := domain.NewSystemAdminModel()
@@ -97,6 +99,7 @@ func Test_organizationRepository_FindOrganizationByName(t *testing.T) {
 func Test_organizationRepository_FindOrganizationByID(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
 		orgID, _, _ := setupOrganization(ctx, t, ts)
 		defer teardownOrganization(t, ts, orgID)
 		sysAdModel := domain.NewSystemAdminModel()
