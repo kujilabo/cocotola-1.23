@@ -15,7 +15,7 @@ jobs:
       - name: Create Release
         run: |
           gh release list
-          TAG=gh release list | cut -f 1 | calver --next
+          TAG=$(gh release list | cut -f 1 | calver --next)
           echo "${TAG}"
           gh release create "${TAG}" --generate-notes --target main
         env:
