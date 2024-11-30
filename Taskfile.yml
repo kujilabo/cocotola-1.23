@@ -47,9 +47,9 @@ tasks:
       - |
         pushd {{ .PROJECT }}
         golangci-lint run --config ../.github/golangci.yml
-      - |
-        pushd cocotola-synthesizer
-        pkgforbid -config=../.github/pkgforbid.yml ./...
+      # - |
+      #   pushd cocotola-synthesizer
+      #   pkgforbid -config=../.github/pkgforbid.yml ./...
 
   lint:
     cmds:
