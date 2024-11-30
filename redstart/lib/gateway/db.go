@@ -13,7 +13,7 @@ import (
 	// "github.com/mattn/go-sqlite3"
 	"gorm.io/gorm"
 
-	liberrors "github.com/kujilabo/redstart/lib/errors"
+	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 )
 
 const MYSQL_ER_DUP_ENTRY = 1062

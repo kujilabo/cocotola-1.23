@@ -26,7 +26,7 @@ func openPostgresForTest() (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", testPostgresHost, "user", "password", "postgres", testPostgresPort, "disable", time.UTC.String())
 	db, err := gorm.Open(gorm_postgres.Open(dsn), &gorm.Config{
 		Logger: slog_gorm.New(
-			slog_gorm.WithLogger(logger), // Optional, use slog.Default() by default
+			slog_gorm.WithHandler(logger.Handler()),
 			// slog_gorm.WithTraceAll(),     // trace all messages
 		),
 	})

@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "gateway",
@@ -24,16 +24,5 @@ go_library(
         "@com_github_tcolgate_mp3//:mp3",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
-    ],
-)
-
-go_test(
-    name = "gateway_test",
-    srcs = ["google_tts_client_test.go"],
-    deps = [
-        ":gateway",
-        "//lib/domain",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_tcolgate_mp3//:mp3",
     ],
 )

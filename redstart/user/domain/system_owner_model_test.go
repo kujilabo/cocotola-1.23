@@ -1,4 +1,4 @@
-package domain
+package domain_test
 
 import (
 	"log"
@@ -9,21 +9,23 @@ import (
 	"github.com/stretchr/testify/require"
 
 	libdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
+
+	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 )
 
 func TestNewSystemOwner(t *testing.T) {
 	t.Parallel()
 	model, err := libdomain.NewBaseModel(1, time.Now(), time.Now(), 1, 1)
 	require.NoError(t, err)
-	appUserID, err := NewAppUserID(1)
+	appUserID, err := domain.NewAppUserID(1)
 	require.NoError(t, err)
-	organizationID, err := NewOrganizationID(1)
+	organizationID, err := domain.NewOrganizationID(1)
 	require.NoError(t, err)
-	appUser, err := NewAppUserModel(model, appUserID, organizationID, "LOGIN_ID", "USERNAME", nil)
+	appUser, err := domain.NewAppUserModel(model, appUserID, organizationID, "LOGIN_ID", "USERNAME", nil)
 	assert.NoError(t, err)
-	ower, err := NewOwnerModel(appUser)
+	ower, err := domain.NewOwnerModel(appUser)
 	assert.NoError(t, err)
-	systemOwner, err := NewSystemOwnerModel(ower)
+	systemOwner, err := domain.NewSystemOwnerModel(ower)
 	assert.NoError(t, err)
 	log.Println(systemOwner)
 }

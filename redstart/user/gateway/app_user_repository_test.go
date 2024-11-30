@@ -8,15 +8,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
-	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
-	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
+
+	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
+	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
+	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
 )
 
 func outputOrganization(t *testing.T, db *gorm.DB) {
+	t.Helper()
 	var results []gateway.OrganizationEntity
 	if result := db.Find(&results); result.Error != nil {
 		assert.Fail(t, result.Error.Error())
@@ -33,6 +35,7 @@ func outputOrganization(t *testing.T, db *gorm.DB) {
 func Test_appUserRepository_FindSystemOwnerByOrganizationID_shouldReturnSystemOwner_whenExistingOrganizationIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		sysAdModel := domain.NewSystemAdminModel()
 		sysAd := testNewSystemAdmin(sysAdModel)
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
@@ -50,6 +53,7 @@ func Test_appUserRepository_FindSystemOwnerByOrganizationID_shouldReturnSystemOw
 func Test_appUserRepository_FindSystemOwnerByOrganizationID_shouldReturnError_whenInvalidOrganizationIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		sysAdModel := domain.NewSystemAdminModel()
 		sysAd := testNewSystemAdmin(sysAdModel)
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
@@ -66,6 +70,7 @@ func Test_appUserRepository_FindSystemOwnerByOrganizationID_shouldReturnError_wh
 func Test_appUserRepository_FindSystemOwnerByOrganizationName_shouldReturnSystemOwner_whenExistingNameIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		org := getOrganization(t, ctx, ts, orgID)
 		sysAdModel := domain.NewSystemAdminModel()
 		sysAd := testNewSystemAdmin(sysAdModel)
@@ -85,6 +90,7 @@ func Test_appUserRepository_FindSystemOwnerByOrganizationName_shouldReturnSystem
 func Test_appUserRepository_FindSystemOwnerByOrganizationName_shouldReturnError_whenInvalidNameIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		sysAdModel := domain.NewSystemAdminModel()
 		sysAd := testNewSystemAdmin(sysAdModel)
 
@@ -102,6 +108,7 @@ func Test_appUserRepository_FindSystemOwnerByOrganizationName_shouldReturnError_
 func Test_appUserRepository_FindAppUserByID_shouldReturnAppUser_whenExistingIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
 
 		// given
@@ -121,6 +128,7 @@ func Test_appUserRepository_FindAppUserByID_shouldReturnAppUser_whenExistingIDIs
 func Test_appUserRepository_FindAppUserByID_shouldReturnError_whenInvaildIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
 
 		_, err := appUserRepo.FindAppUserByID(ctx, owner, invalidAppUserID)
@@ -132,6 +140,7 @@ func Test_appUserRepository_FindAppUserByID_shouldReturnError_whenInvaildIDIsSpe
 func Test_appUserRepository_FindAppUserByLoginID_shouldReturnAppUser_whenExistingLoginIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
 
 		// given
@@ -151,6 +160,7 @@ func Test_appUserRepository_FindAppUserByLoginID_shouldReturnAppUser_whenExistin
 func Test_appUserRepository_FindAppUserByLoginID_shouldReturnError_whenInvalidLoginIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
 
 		// when
@@ -165,6 +175,7 @@ func Test_appUserRepository_FindAppUserByLoginID_shouldReturnError_whenInvalidLo
 func Test_appUserRepository_FindOwnerByLoginID_shouldReturnOwner_whenExistingOwnerLoginIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		require.Equal(t, "OWNER_ID", owner.LoginID())
 		require.Equal(t, "OWNER_NAME", owner.Username())
 
@@ -184,6 +195,7 @@ func Test_appUserRepository_FindOwnerByLoginID_shouldReturnOwner_whenExistingOwn
 func Test_appUserRepository_FindOwnerByLoginID_shouldReturnError_whenNotOwnerLoginIDIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		require.Equal(t, "OWNER_ID", owner.LoginID())
 		require.Equal(t, "OWNER_NAME", owner.Username())
 
@@ -204,6 +216,7 @@ func Test_appUserRepository_FindOwnerByLoginID_shouldReturnError_whenNotOwnerLog
 func Test_appUserRepository_VerifyPassword_shouldReturnTrue_whenCorrectPasswordIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		sysAdModel := domain.NewSystemAdminModel()
 		sysAd := testNewSystemAdmin(sysAdModel)
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
@@ -224,6 +237,7 @@ func Test_appUserRepository_VerifyPassword_shouldReturnTrue_whenCorrectPasswordI
 func Test_appUserRepository_VerifyPassword_shouldReturnFalse_whenWrongPasswordIsSpecified(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService, orgID *domain.OrganizationID, sysOwner *service.SystemOwner, owner *service.Owner) {
+		t.Helper()
 		sysAdModel := domain.NewSystemAdminModel()
 		sysAd := testNewSystemAdmin(sysAdModel)
 		appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)

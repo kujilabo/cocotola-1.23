@@ -1,0 +1,19 @@
+---
+with-expecter: true
+
+mockname: "{{.InterfaceName}}"
+outpkg: mocks
+filename: "{{.MockName}}.go"
+packages:
+  github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin:
+    config:
+      dir: controller/gin/mocks
+    interfaces:
+      AuthenticationUsecaseInterface:
+      GoogleUserUsecaseInterface:
+  github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway:
+    config:
+      dir: gateway/mocks
+    interfaces:
+      HTTPClient:
+issue-845-fix: True

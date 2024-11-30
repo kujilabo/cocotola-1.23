@@ -15,6 +15,7 @@ import (
 func Test_pairOfUserAndGroupRepository_FindUserGroupsByUserID(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
 		orgID, _, owner := setupOrganization(ctx, t, ts)
 		defer teardownOrganization(t, ts, orgID)
 
@@ -62,6 +63,7 @@ func Test_pairOfUserAndGroupRepository_FindUserGroupsByUserID(t *testing.T) {
 func Test_pairOfUserAndGroupRepository_RemovePairOfUserAndGroup(t *testing.T) {
 	t.Parallel()
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
 		orgID, _, owner := setupOrganization(ctx, t, ts)
 		defer teardownOrganization(t, ts, orgID)
 
