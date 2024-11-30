@@ -56,6 +56,8 @@ github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124143107-a1ef5177cc84 h1
 github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241124143107-a1ef5177cc84/go.mod h1:6DbpycEI9r51FfwQnpDOqUcEAXQEW9m6Jagnfu+so1k=
 github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241125144238-6b1fc5d1ff8e h1:SCAMDH22XJQyaJhdl/TfKtgMlCVxFOnXODl6lmqFADI=
 github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241125144238-6b1fc5d1ff8e/go.mod h1:5FzKyNlWRpzh5qIWhzZ2azD8WW0R5wV+u+pkpk1qbxk=
+github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241130092054-235af2f5664e h1:QWcOl15N/RNgLb/bhEMEoYpmJCSkAV0AK8cTt1LlQ5o=
+github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241130092054-235af2f5664e/go.mod h1:5FzKyNlWRpzh5qIWhzZ2azD8WW0R5wV+u+pkpk1qbxk=
 github.com/leodido/go-urn v1.4.0 h1:WT9HwE9SGECu3lg4d/dIA+jxlljEa1/ffXKmRjqdmIQ=
 github.com/leodido/go-urn v1.4.0/go.mod h1:bvxc+MVxLKB4z00jd1z+Dvzr47oO32F/QSNjSBOlFxI=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=

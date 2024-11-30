@@ -26,7 +26,7 @@ go_library(
 
 # keep
 go_test(
-    name = "gin_test",
+    name = "gin_s_test",
     size = "small",
     srcs = [
         "helper_test.go",

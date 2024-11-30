@@ -1,0 +1,24 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "usecase",
+    srcs = [
+        "authentication_usecase.go",
+        "google_user_usecase.go",
+        "init.go",
+        "password_usecase.go",
+        "rbac_usecase.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-auth/usecase",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-auth/domain",
+        "//cocotola-auth/service",
+        "//lib/log",
+        "//redstart/lib/errors",
+        "//redstart/lib/log",
+        "//redstart/user/domain",
+        "//redstart/user/service",
+        "@com_github_golang_jwt_jwt//:jwt",
+    ],
+)

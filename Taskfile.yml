@@ -26,25 +26,61 @@ tasks:
   mod-tidy:
     cmds:
       - bazelisk run @rules_go//go -- mod tidy
-
-  update-mod-lib:
-    cmds:
-      - pushd ./lib/ && GOPROXY=direct go get -u ./... && popd
   
-  update-mod-redstart:
+  gen-code-project:
     cmds:
-      - pushd ./redstart/ && GOPROXY=direct go get -u ./... && popd
+      - |
+        pushd {{ .PROJECT }}
+        mockery
 
-  update-mod-synthesizer:
+  gen-code:
     cmds:
-      - pushd ./cocotola-synthesizer/ && GOPROXY=direct go get -u ./... && popd
+      - for:
+          - cocotola-auth
+          - cocotola-synthesizer
+        task: gen-code-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
+
+  lint-project:
+    cmds:
+      - |
+        pushd {{ .PROJECT }}
+        golangci-lint run --config ../.github/golangci.yml
+      - |
+        pushd {{ .PROJECT }}
+        golangci-lint run --disable-all --config ../.github/golangci.yml -E bodyclose -E errorlint -E exhaustive -E forbidigo -E forcetypeassert -E gocognit -E gocyclo -E gofmt -E goimports -E gosec -E noctx -E testpackage -E thelper -E unconvert -E whitespace
+      - |
+        pushd cocotola-synthesizer
+        pkgforbid -config=../.github/pkgforbid.yml ./...
+
+  lint:
+    cmds:
+      - for:
+          - redstart
+          - lib
+          - cocotola-synthesizer
+          - cocotola-auth
+        task: lint-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
+
+  update-mod-project:
+    cmds:
+      - |
+        pushd {{ .PROJECT }}
+        GOPROXY=direct go get -u ./...
 
   update-mod:
-    - task: update-mod-lib
-    - task: update-mod-redstart
-    - task: update-mod-synthesizer
-
-      # - pushd ./cocotola-synthesizer/ && GOPROXY=direct go get -u ./... && popd
+    cmds:
+      - for:
+          - redstart
+          - lib
+          - cocotola-synthesizer
+          - cocotola-auth
+        task: update-mod-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
 
   update-repos:
     cmds:
@@ -58,6 +94,10 @@ tasks:
     cmds:
       - bazelisk run //third-party-library:third-party-library
 
+  run-auth:
+    cmds:
+      - bazelisk run //cocotola-auth:cocotola-auth
+
   run-synthesizer:
     cmds:
       - bazelisk run //cocotola-synthesizer:cocotola-synthesizer
@@ -65,6 +105,14 @@ tasks:
   build-hello-world:
     cmds:
       - bazelisk run //hello-world:load
+
+  build-auth:
+    cmds:
+      - bazelisk run //cocotola-auth:load
+
+  build-synthesizer:
+    cmds:
+      - bazelisk run //cocotola-synthesizer:load
 
   test:
     cmds:

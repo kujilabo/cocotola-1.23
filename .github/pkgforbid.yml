@@ -1,12 +1,12 @@
 ---
 packageConfigs:
-  "github.com/kujilabo/cocotola-1.23/cocotola-core/src/domain":
+  "github.com/kujilabo/cocotola-1.23/cocotola-core/domain":
     forbiddenPackages:
       - net/http
       - database/sql
       - gorm.io/gorm
       - github.com/foo/bar/repository
-  "github.com/kujilabo/cocotola-1.21/cocotola-core/src/service":
+  "github.com/kujilabo/cocotola-1.23/cocotola-core/service":
     forbiddenPackages:
       - github.com/foo/bar/repository
       - "net/http"

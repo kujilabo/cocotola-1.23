@@ -604,8 +604,14 @@ def go_dependencies():
     go_repository(
         name = "com_github_golang_groupcache",
         importpath = "github.com/golang/groupcache",
-        sum = "h1:oI5xCqsCo564l8iNU+DwB5epxmsaqB+rhGL0m5jtYqE=",
-        version = "v0.0.0-20210331224755-41bb18bfe9da",
+        sum = "h1:f+oWsMOmNPc8JmEHVZIycC7hBoQxHH9pNKQORJNozsQ=",
+        version = "v0.0.0-20241129210726-2c02b8208cf8",
+    )
+    go_repository(
+        name = "com_github_golang_jwt_jwt",
+        importpath = "github.com/golang-jwt/jwt",
+        sum = "h1:IfV12K8xAKAnZqdXVzCZ+TOjboZ2keLg81eXfW3O+oY=",
+        version = "v3.2.2+incompatible",
     )
     go_repository(
         name = "com_github_golang_jwt_jwt_v4",
@@ -2580,14 +2586,14 @@ def go_dependencies():
     go_repository(
         name = "org_modernc_ccgo_v3",
         importpath = "modernc.org/ccgo/v3",
-        sum = "h1:KbDR3ZAVU+wiLyMESPtbtE/Add4elztFyfsWoNTgxS0=",
-        version = "v3.16.15",
+        sum = "h1:o3OmOqx4/OFnl4Vm3G8Bgmqxnvxnh0nbxeT5p/dWChA=",
+        version = "v3.17.0",
     )
     go_repository(
         name = "org_modernc_ccgo_v4",
         importpath = "modernc.org/ccgo/v4",
-        sum = "h1:C7AW89Zw3kygesTQWBzApwIn9ldM+cb/plrTIKq41Os=",
-        version = "v4.22.3",
+        sum = "h1:axUpVd/3FOjzCOhoJ1qpN7LzegJTqmDk0g12L5Sq4B4=",
+        version = "v4.23.0",
     )
     go_repository(
         name = "org_modernc_db",
@@ -2640,8 +2646,8 @@ def go_dependencies():
     go_repository(
         name = "org_modernc_libc",
         importpath = "modernc.org/libc",
-        sum = "h1:dkO4DlowfClcJYsvf/RiK6fUwvzCQTmB34bJLt0CAGQ=",
-        version = "v1.61.2",
+        sum = "h1:D1gpZODpSnRpSnXxEsPjplrKDZIbtgWvslE5BOsPv5Q=",
+        version = "v1.61.3",
     )
     go_repository(
         name = "org_modernc_lldb",

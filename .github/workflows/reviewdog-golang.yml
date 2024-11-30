@@ -6,6 +6,7 @@ jobs:
     strategy:
       matrix:
         workdir:
+          - cocotola-auth
           - cocotola-synthesizer
           - lib
           - redstart
