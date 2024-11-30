@@ -1,4 +1,28 @@
 ---
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - bodyclose
+    - errorlint
+    - exhaustive
+    - forbidigo
+    - forcetypeassert
+    - gocognit
+    - gocyclo
+    - gofmt
+    - goimports
+    - gosec
+    - noctx
+    - testpackage
+    - thelper
+    - unconvert
+    - whitespace
+
 linters-settings:
   gocyclo:
     min-complexity: 15

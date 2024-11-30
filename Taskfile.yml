@@ -48,9 +48,6 @@ tasks:
         pushd {{ .PROJECT }}
         golangci-lint run --config ../.github/golangci.yml
       - |
-        pushd {{ .PROJECT }}
-        golangci-lint run --disable-all --config ../.github/golangci.yml -E bodyclose -E errorlint -E exhaustive -E forbidigo -E forcetypeassert -E gocognit -E gocyclo -E gofmt -E goimports -E gosec -E noctx -E testpackage -E thelper -E unconvert -E whitespace
-      - |
         pushd cocotola-synthesizer
         pkgforbid -config=../.github/pkgforbid.yml ./...
 
