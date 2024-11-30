@@ -21,5 +21,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
-          yamllint_flags: "-c .github/.yamllint.yml ."
+          yamllint_flags: "-c .github/yamllint.yml ."
           fail_on_error: true
