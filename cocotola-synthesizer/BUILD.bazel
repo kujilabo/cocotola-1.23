@@ -1,4 +1,6 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load", "oci_push")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 go_library(
     name = "cocotola-synthesizer_lib",
@@ -33,3 +35,29 @@ go_binary(
     embed = [":cocotola-synthesizer_lib"],
     visibility = ["//visibility:public"],
 )
+
+pkg_tar(
+    name = "pkg",
+    srcs = [":cocotola-synthesizer"],
+)
+
+oci_image(
+    name = "image",
+    base = "@distroless_static_debian12_linux_amd64",
+    entrypoint = ["/cocotola-synthesizer"],
+    tars = [":pkg"],
+)
+
+oci_load(
+    name = "load",
+    image = ":image",
+    repo_tags = ["cocotola-synthesizer:latest"],
+)
+
+oci_push(
+    name = "push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = "asia-northeast1-docker.pkg.dev/cocotola-001/cocotola-synthesizer/cocotola-synthesizer",
+)
+
