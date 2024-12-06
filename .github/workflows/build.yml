@@ -5,6 +5,7 @@ on:
     tags:
       - 24.*
       - 25.*
+      - "*"
 jobs:
   build:
     strategy:
