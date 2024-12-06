@@ -3,9 +3,8 @@ name: Build
 on:
   push:
     tags:
-      - release/*
-    # branches:
-    #   - main
+      - 24.*
+      - 25.*
 jobs:
   build:
     strategy:
