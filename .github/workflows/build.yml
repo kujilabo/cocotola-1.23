@@ -4,8 +4,8 @@ on:
   push:
     tags:
       - release/*
-    branches:
-      - main
+    # branches:
+    #   - main
 jobs:
   build:
     strategy:
@@ -26,6 +26,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
 
       - run: gcloud info
+      - run: gcloud auth configure-docker us-east1-docker.pkg.dev
 
       - uses: actions/checkout@v4
 
