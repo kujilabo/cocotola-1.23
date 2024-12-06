@@ -17,7 +17,6 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          token_format: "access_token"
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT }}
 
@@ -52,3 +51,5 @@ jobs:
 
       - name: Build
         run: task build
+
+      - run: task push

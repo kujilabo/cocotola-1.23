@@ -124,7 +124,7 @@ tasks:
     cmds:
       - for:
           - cocotola-synthesizer
-          - cocotola-auth
+          # - cocotola-auth
         task: push-project
         vars:
           PROJECT: "{{ .ITEM }}"
