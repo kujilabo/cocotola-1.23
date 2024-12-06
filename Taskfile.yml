@@ -46,7 +46,7 @@ tasks:
     cmds:
       - |
         pushd {{ .PROJECT }}
-        golangci-lint run --config ../.github/golangci.yml
+        golangci-lint run --config ../.github/golangci.yml --timeout=5m
       # - |
       #   pushd cocotola-synthesizer
       #   pkgforbid -config=../.github/pkgforbid.yml ./...
@@ -103,13 +103,33 @@ tasks:
     cmds:
       - bazelisk run //hello-world:load
 
-  build-auth:
+  build-project:
     cmds:
-      - bazelisk run //cocotola-auth:load
+      - bazelisk run //{{ .PROJECT }}:load
 
-  build-synthesizer:
+  build:
     cmds:
-      - bazelisk run //cocotola-synthesizer:load
+      - for:
+          - cocotola-synthesizer
+          - cocotola-auth
+        task: build-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
+
+  push-project:
+    cmds:
+      - bazelisk run //{{ .PROJECT }}:push -- --tag {{ .TAG }}
+
+  push:
+    cmds:
+      - for:
+          - cocotola-synthesizer
+          # - cocotola-auth
+        task: push-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
+          TAG:
+            sh: gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name'
 
   test:
     cmds:
