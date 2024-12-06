@@ -1,9 +1,9 @@
 ---
-name: Build
+name: PR Test
 on:
-  push:
-    tags:
-      - release/*
+  pull_request:
+    branches:
+      - main
 jobs:
   build:
     strategy:
@@ -31,24 +31,3 @@ jobs:
           registry: us-east1-docker.pkg.dev
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
-
-      - uses: actions/checkout@v4
-
-      - uses: bazelbuild/setup-bazelisk@v2
-
-      - name: Mount bazel cache
-        id: bazel_cache
-        uses: actions/cache@v4
-        with:
-          path: "~/.cache/bazel"
-          key: bazel
-
-      - name: Check cache
-        run: ${{ steps.bazel_cache.outputs.cache-hit }}
-
-      - run: bazel info
-      
-      - uses: arduino/setup-task@v2
-
-      - name: Build
-        run: task build
