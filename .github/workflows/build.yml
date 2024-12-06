@@ -28,8 +28,12 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
+      - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
+
       - run: gcloud info
       - uses: actions/checkout@v4
+
+      - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
       - uses: bazelbuild/setup-bazelisk@v2
 
@@ -46,6 +50,8 @@ jobs:
       - run: bazel info
 
       - uses: arduino/setup-task@v2
+
+      - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
       - name: Build
         run: task build
