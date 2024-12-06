@@ -46,7 +46,7 @@ tasks:
     cmds:
       - |
         pushd {{ .PROJECT }}
-        golangci-lint run --config ../.github/golangci.yml
+        golangci-lint run --config ../.github/golangci.yml --timeout=5m
       # - |
       #   pushd cocotola-synthesizer
       #   pkgforbid -config=../.github/pkgforbid.yml ./...
