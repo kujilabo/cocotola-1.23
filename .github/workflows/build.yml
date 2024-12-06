@@ -20,6 +20,7 @@ jobs:
       # kics-scan ignore-line
       id-token: "write"
     steps:
+      - uses: actions/checkout@v4
       - id: auth
         uses: google-github-actions/auth@v2
         with:
@@ -31,7 +32,6 @@ jobs:
       - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
       - run: gcloud info
-      - uses: actions/checkout@v4
 
       - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
