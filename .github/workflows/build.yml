@@ -3,9 +3,11 @@ name: Build
 on:
   push:
     tags:
-      - 24.*
-      - 25.*
+      - "24.*"
+      - "25.*"
       - "*"
+      - "**"
+      - "*.*.*"
 jobs:
   build:
     strategy:
