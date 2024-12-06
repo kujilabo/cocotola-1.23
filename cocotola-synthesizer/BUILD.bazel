@@ -58,6 +58,6 @@ oci_push(
     name = "push",
     image = ":image",
     remote_tags = ["latest"],
-    repository = "asia-northeast1-docker.pkg.dev/cocotola-001/cocotola-synthesizer/cocotola-synthesizer",
+    repository = "us-east1-docker.pkg.dev/cocotola-1-23-develop-24-11-02/cocotola-synthesizer/cocotola-synthesizer",
 )
 
