@@ -29,8 +29,6 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
 
       - run: gcloud info
-      - run: gcloud auth configure-docker us-east1-docker.pkg.dev
-
       - uses: actions/checkout@v4
 
       - uses: bazelbuild/setup-bazelisk@v2
@@ -51,6 +49,8 @@ jobs:
 
       - name: Build
         run: task build
+
+      - run: gcloud auth configure-docker us-east1-docker.pkg.dev
 
       - run: task push
         env:
