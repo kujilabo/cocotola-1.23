@@ -35,6 +35,8 @@ jobs:
 
       - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
+      - run: gcloud artifacts repositories describe --location us-east1 cocotola-synthesizer
+
       - uses: bazelbuild/setup-bazelisk@v2
 
       - name: Mount bazel cache
@@ -56,7 +58,7 @@ jobs:
       - name: Build
         run: task build
 
-      - run: gcloud auth configure-docker us-east1-docker.pkg.dev
+      - run: gcloud auth configure-docker us-east1-docker.pkg.dev --quiet
 
       - run: task push
         env:
