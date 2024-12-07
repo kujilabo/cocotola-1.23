@@ -14,10 +14,10 @@ jobs:
     permissions:
       contents: "read"
       # kics-scan ignore-line
-      id-token: "write"
+      # id-token: "write"
     steps:
       - uses: actions/checkout@v4
-      
+
       - id: auth
         uses: google-github-actions/auth@v2
         with:
@@ -26,13 +26,13 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
-      - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
+      # - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
-      - run: gcloud info
+      # - run: gcloud info
 
-      - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
+      # - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
-      - run: echo ${{ github.ref_name}}
+      # - run: echo ${{ github.ref_name}}
 
       - run: gcloud artifacts repositories describe --location us-east1 cocotola-synthesizer
 
@@ -46,16 +46,15 @@ jobs:
           key: bazel
 
       - name: Check cache
-        run: ${{ steps.bazel_cache.outputs.cache-hit }}
+        run: echo "cache=${{ steps.bazel_cache.outputs.cache-hit }}"
 
       - run: bazel info
 
       - uses: arduino/setup-task@v2
 
-      - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
+      # - run: ls -la ${GOOGLE_GHA_CREDS_PATH}
 
-      - name: Build
-        run: task build
+      - run: task build
 
       - run: gcloud auth configure-docker us-east1-docker.pkg.dev --quiet
 
