@@ -141,4 +141,3 @@ tasks:
       - |
         OUTPUT_PATH=$(bazel info output_path)
         cp "${OUTPUT_PATH}/_coverage/_coverage_report.dat" ./coverage.lcov
-  
