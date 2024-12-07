@@ -138,3 +138,7 @@ tasks:
   test:
     cmds:
       - bazelisk test //... --test_output=errors --test_timeout=60 --test_size_filters=small
+      - bazelisk coverage //... --combined_report=lcov
+      - |
+        OUTPUT_PATH=$(bazel info output_path)
+        cp "${OUTPUT_PATH}/_coverage/_coverage_report.dat" ./coverage.lcov
