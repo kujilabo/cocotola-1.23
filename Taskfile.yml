@@ -119,6 +119,8 @@ tasks:
   push-project:
     cmds:
       - bazelisk run //{{ .PROJECT }}:push -- --tag {{ .TAG }}
+    requires:
+      vars: [PROJECT, TAG]
 
   push:
     cmds:
@@ -128,8 +130,10 @@ tasks:
         task: push-project
         vars:
           PROJECT: "{{ .ITEM }}"
-          TAG:
-            sh: gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name'
+    requires:
+      vars: [TAG]
+          # TAG:
+          #   sh: gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name'
 
   test:
     cmds:
