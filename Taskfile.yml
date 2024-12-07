@@ -132,13 +132,12 @@ tasks:
           PROJECT: "{{ .ITEM }}"
     requires:
       vars: [TAG]
-          # TAG:
-          #   sh: gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name'
 
   test:
     cmds:
-      - bazelisk test //... --test_output=errors --test_timeout=60 --test_size_filters=small
-      - bazelisk coverage //... --combined_report=lcov
+      - rm -f ./coverage.lcov
+      - bazelisk test //... --collect_code_coverage=true --test_output=errors --test_timeout=60 --test_size_filters=small
+      - bazelisk coverage //... --combined_report=lcov --test_size_filters=small
       - |
         OUTPUT_PATH=$(bazel info output_path)
         cp "${OUTPUT_PATH}/_coverage/_coverage_report.dat" ./coverage.lcov

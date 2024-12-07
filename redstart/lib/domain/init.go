@@ -13,4 +13,5 @@ var (
 
 	ErrInvalidArgument  = errors.New("invalid argument")
 	ErrPermissionDenied = errors.New("permission denied")
+	ErrInvalidField     = errors.New("invalid field")
 )
