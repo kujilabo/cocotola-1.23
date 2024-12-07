@@ -60,4 +60,3 @@ oci_push(
     remote_tags = ["latest"],
     repository = "us-east1-docker.pkg.dev/cocotola-1-23-develop-24-11-02/cocotola-synthesizer/cocotola-synthesizer",
 )
-

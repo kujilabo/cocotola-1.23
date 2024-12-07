@@ -27,7 +27,7 @@ func (v *AudioID) IsAudioID() bool {
 }
 
 type AudioModel struct {
-	AudioID *AudioID
+	AudioID *AudioID `validate:"required"`
 	Lang5   *libdomain.Lang5
 	Text    string `validate:"required"`
 	Content string `validate:"required"`
@@ -43,7 +43,7 @@ func NewAudioModel(audioID *AudioID, lang5 *libdomain.Lang5, text, content strin
 		Length:  length,
 	}
 	if err := rslibdomain.Validator.Struct(m); err != nil {
-		return nil, rsliberrors.Errorf("rslibdomain.Validator.Struct. err: %w", err)
+		return nil, rsliberrors.Errorf("%s. err: %w", err.Error(), rslibdomain.ErrInvalidField)
 	}
 
 	return m, nil

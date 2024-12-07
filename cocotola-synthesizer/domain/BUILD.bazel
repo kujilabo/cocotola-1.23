@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "domain",
@@ -9,5 +9,20 @@ go_library(
         "//lib/domain",
         "//redstart/lib/domain",
         "//redstart/lib/errors",
+    ],
+)
+
+# keep
+go_test(
+    name = "domain_s_test",
+    size = "small",
+    srcs = ["audio_test.go"],
+    gotags = ["small"],
+    deps = [
+        ":domain",
+        "//lib/domain",
+        "//redstart/lib/domain",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
     ],
 )

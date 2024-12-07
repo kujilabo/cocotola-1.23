@@ -137,6 +137,7 @@ tasks:
 
   test:
     cmds:
+      - rm -f ./coverage.lcov
       - bazelisk test //... --test_output=errors --test_timeout=60 --test_size_filters=small
       - bazelisk coverage //... --combined_report=lcov
       - |
