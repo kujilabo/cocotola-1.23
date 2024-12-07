@@ -27,10 +27,10 @@ func (v *AudioID) IsAudioID() bool {
 }
 
 type AudioModel struct {
-	AudioID *AudioID `validate:"required"`
-	Lang5   *libdomain.Lang5
-	Text    string `validate:"required"`
-	Content string `validate:"required"`
+	AudioID *AudioID         `validate:"required"`
+	Lang5   *libdomain.Lang5 `validate:"required"`
+	Text    string           `validate:"required"`
+	Content string           `validate:"required"`
 	Length  time.Duration
 }
 
