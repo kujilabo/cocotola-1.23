@@ -13,9 +13,11 @@ jobs:
           private-key: ${{ secrets.APPS_PRIVATE_KEY }}
 
       - uses: actions/checkout@v4
+
       - uses: actions/setup-go@v5
         with:
           go-version: "stable"
+
       - run: go install github.com/k1LoW/calver/cmd/calver@latest
 
       - name: Create Release

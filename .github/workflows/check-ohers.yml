@@ -1,6 +1,6 @@
 ---
+name: Check Others
 on: [pull_request]
-name: Reviewdog Others
 jobs:
   others:
     name: others
