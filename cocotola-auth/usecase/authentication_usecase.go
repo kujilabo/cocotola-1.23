@@ -8,13 +8,9 @@ import (
 
 	"github.com/golang-jwt/jwt"
 
-	// rsuserdomain "github.com/kujilabo/redstart/user/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
-	// "github.com/kujilabo/cocotola-1.21/cocotola-auth/domain"
-	// liblog "github.com/kujilabo/cocotola-1.21/lib/log"
-	// rsliblog "github.com/kujilabo/redstart/lib/log"
 )
 
 type AppUserClaims struct {

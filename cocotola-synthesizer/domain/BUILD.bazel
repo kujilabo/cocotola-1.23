@@ -16,7 +16,7 @@ go_library(
 go_test(
     name = "domain_s_test",
     size = "small",
-    srcs = ["audio_test.go"],
+    srcs = ["audio_s_test.go"],
     gotags = ["small"],
     deps = [
         ":domain",

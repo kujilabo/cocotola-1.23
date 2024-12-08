@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "service",
+    srcs = [
+        "cocotola_auth_client.go",
+        "repository_factory.go",
+        "service.go",
+        "transaction_manager.go",
+        "workbook_repository.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core/service",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-core/domain",
+        "//lib/api",
+        "//redstart/user/domain",
+    ],
+)

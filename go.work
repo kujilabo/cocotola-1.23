@@ -3,6 +3,7 @@ go 1.23.3
 use (
 	.
 	./cocotola-auth
+	./cocotola-core
 	./cocotola-synthesizer
 	./hello-world
 	./lib

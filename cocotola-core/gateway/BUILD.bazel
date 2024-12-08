@@ -1,0 +1,24 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gateway",
+    srcs = [
+        "cocotola_auth_client.go",
+        "init.go",
+        "repository_factory.go",
+        "transaction_manager.go",
+        "workbook_repository.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core/gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-core/domain",
+        "//cocotola-core/service",
+        "//lib/api",
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+        "//redstart/lib/gateway",
+        "@io_gorm_gorm//:gorm",
+        "@io_opentelemetry_go_otel//:otel",
+    ],
+)

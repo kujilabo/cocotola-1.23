@@ -38,6 +38,10 @@ linters-settings:
     forbid:
       - ^fmt\.Print.*$
 
+  gosec:
+    excludes:
+      - G115
+
 run:
   go: "1.23"
   build-tags:
