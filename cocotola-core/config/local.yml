@@ -1,0 +1,55 @@
+---
+app:
+  name: golang-structure
+  httpPort: 8000
+  metricsPort: 8001
+db:
+  # driverName: sqlite3
+  # sqlite3:
+  #   file: app.db
+  driverName: postgres
+  migration: true
+  mysql:
+    username: user
+    password: password
+    host: 127.0.0.1
+    port: 3306
+    database: development
+  postgres:
+    username: user
+    password: password
+    host: 127.0.0.1
+    port: 5432
+    database: postgres
+authApi:
+  endpoint: http://localhost:8010
+  authType: static
+  username: username
+  password: password
+synthesizerApi:
+  authType: static
+  username: username
+  password: password
+trace:
+  # exporter: jaeger
+  exporter: otlp
+  otlp:
+    endpoint: localhost:4318
+    insecure: true
+cors:
+  allowOrigins:
+    - "*"
+shutdown:
+  timeSec1: 1
+  timeSec2: 1
+log:
+  level:
+    default: debug
+    cocotola-core: debug
+swagger:
+  enabled: true
+  host: localhost:8080
+  schema: http
+debug:
+  gin: true
+  # wait: true

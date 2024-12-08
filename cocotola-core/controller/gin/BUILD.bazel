@@ -1,0 +1,66 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "gin",
+    srcs = [
+        "app_router.go",
+        "init.go",
+        "workbook_handler.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-core/controller/gin/helper",
+        "//cocotola-core/domain",
+        "//cocotola-core/service",
+        "//lib/api",
+        "//lib/config",
+        "//lib/controller/gin/middleware",
+        "//lib/log",
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+        "//redstart/lib/log",
+        "@com_github_gin_contrib_cors//:cors",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_samber_slog_gin//:slog-gin",
+        "@io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin//:otelgin",
+    ],
+)
+
+go_test(
+    name = "gin_test",
+    srcs = ["helper_test.go"],
+    deps = [
+        "@com_github_ohler55_ojg//jp",
+        "@com_github_ohler55_ojg//oj",
+        "@com_github_stretchr_testify//require",
+    ],
+)
+
+# keep
+go_test(
+    name = "gin_s_test",
+    size = "small",
+    srcs = [
+        "helper_test.go",
+        "workbook_handler_s_test.go",
+    ],
+    gotags = ["small"],
+    deps = [
+        ":gin",
+        "//cocotola-core/config",
+        "//cocotola-core/controller/gin/middleware",
+        "//cocotola-core/controller/gin/mocks",
+        "//cocotola-core/service",
+        "//cocotola-core/service/mocks",
+        "//lib/api",
+        "//lib/config",
+        "@com_github_gin_contrib_cors//:cors",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_ohler55_ojg//jp",
+        "@com_github_ohler55_ojg//oj",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+    ],
+)

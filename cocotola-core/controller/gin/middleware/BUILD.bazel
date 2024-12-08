@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "middleware",
+    srcs = [
+        "auth_middleware.go",
+        "init.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin/middleware",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-core/service",
+        "//lib/log",
+        "//redstart/lib/log",
+        "@com_github_gin_gonic_gin//:gin",
+        "@io_opentelemetry_go_otel//:otel",
+    ],
+)

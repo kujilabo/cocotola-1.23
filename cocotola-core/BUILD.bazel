@@ -1,0 +1,34 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "cocotola-core_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//cocotola-core/config",
+        "//cocotola-core/gateway",
+        "//cocotola-core/initialize",
+        "//cocotola-core/service",
+        "//cocotola-core/sqls",
+        "//lib/controller/gin",
+        "//lib/domain",
+        "//lib/log",
+        "//redstart/lib/config",
+        "//redstart/lib/errors",
+        "//redstart/lib/gateway",
+        "//redstart/lib/log",
+        "@com_github_gin_gonic_gin//:gin",
+        "@io_gorm_gorm//:gorm",
+        "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//propagation",
+        "@io_opentelemetry_go_otel_sdk//trace",
+        "@org_golang_x_sync//errgroup",
+    ],
+)
+
+go_binary(
+    name = "cocotola-core",
+    embed = [":cocotola-core_lib"],
+    visibility = ["//visibility:public"],
+)

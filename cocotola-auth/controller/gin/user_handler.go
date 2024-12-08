@@ -3,7 +3,7 @@ package handler
 // import (
 // 	"context"
 
-// 	rsuserdomain "github.com/kujilabo/redstart/user/domain"
+// 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 // )
 
 // type UserUsecaseInterface interface {

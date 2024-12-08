@@ -23,7 +23,6 @@ import (
 	handler "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin"
 	handlermock "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin/mocks"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain"
-	// servicemock "github.com/kujilabo/cocotola-1.21/cocotola-synthesizer/service/mocks"
 )
 
 var (

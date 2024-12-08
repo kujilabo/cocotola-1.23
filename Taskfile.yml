@@ -32,11 +32,14 @@ tasks:
       - |
         pushd {{ .PROJECT }}
         mockery
+    requires:
+      vars: [PROJECT]
 
   gen-code:
     cmds:
       - for:
           - cocotola-auth
+          - cocotola-core
           - cocotola-synthesizer
         task: gen-code-project
         vars:
@@ -50,14 +53,17 @@ tasks:
       # - |
       #   pushd cocotola-synthesizer
       #   pkgforbid -config=../.github/pkgforbid.yml ./...
+    requires:
+      vars: [PROJECT]
 
   lint:
     cmds:
       - for:
           - redstart
           - lib
-          - cocotola-synthesizer
           - cocotola-auth
+          - cocotola-core
+          - cocotola-synthesizer
         task: lint-project
         vars:
           PROJECT: "{{ .ITEM }}"
@@ -67,14 +73,17 @@ tasks:
       - |
         pushd {{ .PROJECT }}
         GOPROXY=direct go get -u ./...
+    requires:
+      vars: [PROJECT]
 
   update-mod:
     cmds:
       - for:
           - redstart
           - lib
-          - cocotola-synthesizer
           - cocotola-auth
+          - cocotola-core
+          - cocotola-synthesizer
         task: update-mod-project
         vars:
           PROJECT: "{{ .ITEM }}"
@@ -95,6 +104,10 @@ tasks:
     cmds:
       - bazelisk run //cocotola-auth:cocotola-auth
 
+  run-core:
+    cmds:
+      - bazelisk run //cocotola-core:cocotola-core
+
   run-synthesizer:
     cmds:
       - bazelisk run //cocotola-synthesizer:cocotola-synthesizer
@@ -106,12 +119,15 @@ tasks:
   build-project:
     cmds:
       - bazelisk run //{{ .PROJECT }}:load
+    requires:
+      vars: [PROJECT]
 
   build:
     cmds:
       - for:
-          - cocotola-synthesizer
           - cocotola-auth
+          - cocotola-core
+          - cocotola-synthesizer
         task: build-project
         vars:
           PROJECT: "{{ .ITEM }}"
@@ -141,3 +157,11 @@ tasks:
       - |
         OUTPUT_PATH=$(bazel info output_path)
         cp "${OUTPUT_PATH}/_coverage/_coverage_report.dat" ./coverage.lcov
+
+  db-reset-core:
+    cmds:
+      - migrate -database 'postgres://user:password@127.0.0.1:5432/postgres?sslmode=disable' -source file://src/sqls/postgres/ drop
+      - migrate -database 'postgres://user:password@127.0.0.1:5432/postgres?sslmode=disable' -source file://src/sqls/postgres/ up
+
+      - migrate -database 'mysql://user:password@tcp(127.0.0.1:3306)/development' -source file://src/sqls/mysql/ drop
+      - migrate -database 'mysql://user:password@tcp(127.0.0.1:3306)/development' -source file://src/sqls/mysql/ up
