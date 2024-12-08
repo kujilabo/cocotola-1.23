@@ -60,3 +60,29 @@ func TestNewLang2(t *testing.T) {
 		})
 	}
 }
+
+func TestLang5_ToLang2(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name  string
+		lang5 *domain.Lang5
+		lang2 *domain.Lang2
+	}{
+		{
+			name:  domain.Lang5ENUS.String(),
+			lang5: domain.Lang5ENUS,
+			lang2: domain.Lang2EN,
+		},
+		{
+			name:  domain.Lang5JAJP.String(),
+			lang5: domain.Lang5JAJP,
+			lang2: domain.Lang2JA,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tt.lang5.ToLang2(), tt.lang2)
+		})
+	}
+}
