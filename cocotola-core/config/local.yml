@@ -4,9 +4,9 @@ app:
   httpPort: 8000
   metricsPort: 8001
 db:
-#   driverName: sqlite3
-#   sqlite3:
-#     file: app.db
+  # driverName: sqlite3
+  # sqlite3:
+  #   file: app.db
   driverName: postgres
   migration: true
   mysql:
