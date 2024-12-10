@@ -6,8 +6,7 @@ import (
 )
 
 const Lang2Len = 2
-
-// const Lang3Len = 3
+const Lang3Len = 3
 const Lang5Len = 5
 
 type Lang2 struct {
@@ -25,6 +24,24 @@ func NewLang2(lang string) (*Lang2, error) {
 }
 
 func (l *Lang2) String() string {
+	return l.value
+}
+
+type Lang3 struct {
+	value string
+}
+
+func NewLang3(lang string) (*Lang3, error) {
+	if len(lang) != Lang3Len {
+		return nil, rsliberrors.Errorf("invalid parameter. Lang3: %s, err: %w", lang, rslibdomain.ErrInvalidArgument)
+	}
+
+	return &Lang3{
+		value: lang,
+	}, nil
+}
+
+func (l *Lang3) String() string {
 	return l.value
 }
 
@@ -57,19 +74,6 @@ func (l *Lang2) String() string {
 // 		return Lang5Unknown
 // 	}
 // }
-
-// type Lang3 interface {
-// 	String() string
-// }
-
-// type lang3 struct {
-// 	value string
-// }
-
-// func NewLang3(lang string) (Lang3, error) {
-// 	if len(lang) != Lang3Len {
-// 		return nil, liberrors.Errorf("invalid parameter. Lang3: %s", lang)
-// 	}
 
 // 	return &lang3{
 // 		value: lang,

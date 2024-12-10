@@ -26,3 +26,13 @@ go_test(
         "@com_github_stretchr_testify//assert",
     ],
 )
+
+go_test(
+    name = "domain_test",
+    srcs = ["lang_s_test.go"],
+    deps = [
+        ":domain",
+        "//redstart/lib/domain",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

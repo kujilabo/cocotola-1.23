@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "service",
@@ -16,4 +16,10 @@ go_library(
         "//lib/api",
         "//redstart/user/domain",
     ],
+)
+
+go_test(
+    name = "service_test",
+    srcs = ["service_s_test.go"],
+    deps = [":service"],
 )
