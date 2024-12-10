@@ -5,6 +5,7 @@ on:
     tags:
       - "*"
   workflow_dispatch:
+# permissions: read-all
 jobs:
   build:
     strategy:
@@ -45,7 +46,7 @@ jobs:
         id: bazel_cache
         uses: actions/cache@v4
         with:
-          path: "~/.cache/bazel"
+          path: ~/.cache/bazel
           key: bazel
 
       - name: Check cache

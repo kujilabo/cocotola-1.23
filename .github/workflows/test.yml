@@ -1,5 +1,6 @@
 ---
 name: Test
+# permissions: read-all
 on:
   pull_request:
     branches:
@@ -20,10 +21,10 @@ jobs:
         with:
           host port: 3307
           mysql version: "5.7"
-          mysql database: "testdb"
-          mysql user: "user"
+          mysql database: testdb
+          mysql user: user
           # kics-scan ignore-line
-          mysql password: "password"
+          mysql password: password
 
       - uses: actions/setup-go@v5
         with:
@@ -37,7 +38,7 @@ jobs:
         id: bazel_cache
         uses: actions/cache@v4
         with:
-          path: "~/.cache/bazel"
+          path: ~/.cache/bazel
           key: bazel
 
       - name: Check cache

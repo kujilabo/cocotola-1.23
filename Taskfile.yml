@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 tasks:
   hello:
@@ -91,7 +91,7 @@ tasks:
   update-repos:
     cmds:
       - bazelisk run //:gazelle-update-repos
-  
+
   run-hello-world:
     cmds:
       - bazelisk run //hello-world:hello-world

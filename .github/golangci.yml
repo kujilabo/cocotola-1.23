@@ -29,7 +29,7 @@ linters-settings:
 
   staticcheck:
     # https://staticcheck.io/docs/options#checks
-    checks: ["all"]
+    checks: [all]
 
   gocognit:
     min-complexity: 20
