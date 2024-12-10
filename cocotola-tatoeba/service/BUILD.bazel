@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "service",
+    srcs = [
+        "repository_factory.go",
+        "tatoeba_link_repository.go",
+        "tatoeba_sentence_repository.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/domain",
+        "//redstart/lib/domain",
+    ],
+)

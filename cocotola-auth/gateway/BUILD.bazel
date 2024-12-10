@@ -32,9 +32,20 @@ go_library(
 
 go_test(
     name = "gateway_test",
-    srcs = ["helper_test.go"],
+    srcs = [
+        "auth_token_manager_s_test.go",
+        "google_auth_client_s_test.go",
+        "helper_test.go",
+    ],
     deps = [
+        ":gateway",
+        "//cocotola-auth/domain",
+        "//cocotola-auth/gateway/mocks",
+        "//cocotola-auth/service",
         "//redstart/user/domain",
+        "@com_github_golang_jwt_jwt//:jwt",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
         "@com_github_stretchr_testify//require",
     ],
 )

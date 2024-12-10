@@ -21,7 +21,7 @@ tasks:
 
   gazelle:
     cmds:
-      - bazelisk run //:gazelle 
+      - bazelisk run //:gazelle -- -build_tags=small,medium,large
 
   mod-tidy:
     cmds:

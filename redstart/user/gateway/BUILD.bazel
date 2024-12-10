@@ -35,6 +35,29 @@ go_library(
 
 go_test(
     name = "gateway_test",
-    srcs = ["export_test.go"],
+    srcs = [
+        "app_user_repository_test.go",
+        "authorization_test.go",
+        "export_test.go",
+        "gateway_test.go",
+        "init_test.go",
+        "organization_repository_test.go",
+        "pair_of_user_and_group_repository_test.go",
+        "rbac_repository_test.go",
+    ],
     embed = [":gateway"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/gateway",
+        "//redstart/sqls",
+        "//redstart/testlib/gateway",
+        "//redstart/user/domain",
+        "//redstart/user/service",
+        "@com_github_casbin_casbin_v2//:casbin",
+        "@com_github_casbin_casbin_v2//model",
+        "@com_github_casbin_gorm_adapter_v3//:gorm-adapter",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@io_gorm_gorm//:gorm",
+    ],
 )

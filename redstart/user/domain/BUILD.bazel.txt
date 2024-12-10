@@ -2,25 +2,30 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "domain",
-    srcs = ["audio.go"],
-    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain",
+    srcs = [
+        "app_user_model.go",
+        "init.go",
+        "organization_model.go",
+        "owner_model.go",
+        "rbac.go",
+        "system_admin_model.go",
+        "system_owner_model.go",
+        "user_group_model.go",
+        "user_role.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/user/domain",
     visibility = ["//visibility:public"],
     deps = [
-        "//lib/domain",
         "//redstart/lib/domain",
         "//redstart/lib/errors",
     ],
 )
 
-# keep
 go_test(
-    name = "domain_s_test",
-    size = "small",
-    srcs = ["audio_s_test.go"],
-    gotags = ["small"],
+    name = "domain_test",
+    srcs = ["system_owner_model_test.go"],
     deps = [
         ":domain",
-        "//lib/domain",
         "//redstart/lib/domain",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
@@ -28,11 +33,12 @@ go_test(
 )
 
 go_test(
-    name = "domain_test",
-    srcs = ["audio_s_test.go"],
+    name = "domain_s_test",
+    size = "small",
+    srcs = ["organization_model_s_test.go"],
+    embed = [":domain"],
+    gotags = ["small"],
     deps = [
-        ":domain",
-        "//lib/domain",
         "//redstart/lib/domain",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",

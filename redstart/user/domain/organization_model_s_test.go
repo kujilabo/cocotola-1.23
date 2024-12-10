@@ -1,3 +1,5 @@
+//go:build small
+
 package domain_test
 
 import "testing"
