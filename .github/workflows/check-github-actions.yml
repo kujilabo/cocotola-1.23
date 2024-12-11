@@ -1,10 +1,11 @@
 ---
 name: Check GitHub Actions
-on: 
+on:
   pull_request:
     paths:
-      - ".github/**/*.yml"
-      - ".github/**/*.yaml"
+      - .github/**/*.yml
+      - .github/**/*.yaml
+# permissions: read-all
 jobs:
   actions-lint:
     runs-on: ubuntu-latest

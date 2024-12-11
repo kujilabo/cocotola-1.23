@@ -1,9 +1,8 @@
 ---
 name: Test KICS action PR comment
-
 on:
   pull_request:
-
+# permissions: read-all
 jobs:
   test:
     runs-on: ubuntu-latest
