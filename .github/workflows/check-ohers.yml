@@ -6,6 +6,7 @@ jobs:
   others:
     name: others
     permissions:
+      checks: write
       contents: read
       pull-requests: write
     runs-on: ubuntu-latest
@@ -34,7 +35,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
-          fail_on_error: true
+          fail_level: any
 
       - name: markdownlint
         uses: reviewdog/action-markdownlint@v0
@@ -42,7 +43,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
-          fail_on_error: true
+          fail_level: any
 
       - name: detect-secrets
         uses: reviewdog/action-detect-secrets@master
@@ -50,4 +51,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
-          fail_on_error: true
+          fail_level: any
