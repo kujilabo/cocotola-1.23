@@ -1,10 +1,14 @@
 ---
 name: Check Others
 on: [pull_request]
-# permissions: read-all
+permissions: read-all
 jobs:
   others:
     name: others
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,3 +28,27 @@ jobs:
           reporter: github-pr-review
           yamllint_flags: -c .github/yamllint.yml .
           fail_on_error: true
+
+      - name: gitleaks
+        uses: reviewdog/action-gitleaks@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+          fail_level: any
+
+      - name: markdownlint
+        uses: reviewdog/action-markdownlint@v0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+          fail_level: any
+
+      - name: detect-secrets
+        uses: reviewdog/action-detect-secrets@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: warning
+          fail_level: any

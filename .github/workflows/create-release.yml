@@ -2,9 +2,13 @@
 name: Create Release
 on:
   workflow_dispatch:
-# permissions: read-all
+permissions: read-all
 jobs:
   create-release:
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/create-github-app-token@v1

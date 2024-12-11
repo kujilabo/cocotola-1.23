@@ -5,9 +5,13 @@ on:
     paths:
       - .github/**/*.yml
       - .github/**/*.yaml
-# permissions: read-all
+permissions: read-all
 jobs:
   actions-lint:
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
