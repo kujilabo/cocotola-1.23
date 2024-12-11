@@ -17,3 +17,7 @@ go install github.com/pecolynx/pkgforbid/cmd/pkgforbid@latest
 ```
 pip install pre-commit
 ```
+
+```
+task gitleaks
+```
