@@ -5,6 +5,7 @@ use (
 	./cocotola-auth
 	./cocotola-core
 	./cocotola-synthesizer
+	./cocotola-tatoeba
 	./hello-world
 	./lib
 	./redstart

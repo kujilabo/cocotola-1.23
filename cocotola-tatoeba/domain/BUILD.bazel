@@ -1,0 +1,9 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "domain",
+    srcs = ["english.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/domain",
+    visibility = ["//visibility:public"],
+    deps = ["//redstart/lib/errors"],
+)

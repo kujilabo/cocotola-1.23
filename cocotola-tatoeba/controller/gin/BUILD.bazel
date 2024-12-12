@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gin",
+    srcs = [
+        "admin_handler.go",
+        "init.go",
+        "user_handler.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-tatoeba/controller/gin/helper",
+        "//cocotola-tatoeba/service",
+        "//cocotola-tatoeba/usecase",
+        "//redstart/lib/errors",
+        "@com_github_gin_gonic_gin//:gin",
+    ],
+)
