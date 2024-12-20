@@ -7,7 +7,7 @@ app:
 internalAuth:
   type: static
   username: username
-  password: password
+  password: password  # pragma: allowlist secret
 db:
   # driverName: mysql
   # mysql:
