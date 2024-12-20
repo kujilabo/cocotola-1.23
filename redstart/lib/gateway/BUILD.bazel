@@ -12,6 +12,7 @@ go_library(
         "metrics_server.go",
         "password_helper.go",
         "signal_watch.go",
+        "transaction_manager.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway",
     visibility = ["//visibility:public"],

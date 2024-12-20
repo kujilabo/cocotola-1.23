@@ -8,13 +8,11 @@ go_library(
     deps = [
         "//cocotola-tatoeba/config",
         "//cocotola-tatoeba/controller/gin",
-        "//cocotola-tatoeba/gateway",
         "//cocotola-tatoeba/service",
         "//cocotola-tatoeba/usecase",
         "//lib/config",
         "//redstart/lib/config",
         "//redstart/user/service",
         "@com_github_gin_gonic_gin//:gin",
-        "@io_gorm_gorm//:gorm",
     ],
 )
