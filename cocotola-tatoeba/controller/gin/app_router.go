@@ -30,18 +30,20 @@ func NewInitTestRouterFunc() InitRouterGroupFunc {
 	}
 }
 
-func InitRouter(ctx context.Context, parentRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, corsConfig cors.Config, debugConfig *libconfig.DebugConfig, appName string) error {
+func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *libconfig.DebugConfig) {
 	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
-	parentRouterGroup.Use(cors.New(corsConfig))
-	parentRouterGroup.Use(sloggin.New(logger))
+	rootRouterGroup.Use(cors.New(corsConfig))
+	rootRouterGroup.Use(sloggin.New(logger))
 
 	if debugConfig.Wait {
-		parentRouterGroup.Use(libmiddleware.NewWaitMiddleware())
+		rootRouterGroup.Use(libmiddleware.NewWaitMiddleware())
 	}
+}
 
-	v1 := parentRouterGroup.Group("v1")
+func InitAPIRouterGroup(ctx context.Context, apiRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, appName string) error {
+	v1 := apiRouterGroup.Group("v1")
 	{
 		v1.Use(otelgin.Middleware(appName))
 		v1.Use(libmiddleware.NewTraceLogMiddleware(appName))

@@ -29,7 +29,7 @@ func InitTransactionManager(db *gorm.DB, rff gateway.RepositoryFactoryFunc) serv
 	return appTransactionManager
 }
 
-func InitAppServer(ctx context.Context, parentRouterGroup gin.IRouter, internalAuthConfig config.InternalAuthConfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager, rsrf rsuserservice.RepositoryFactory) error {
+func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, internalAuthConfig config.InternalAuthConfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager, rsrf rsuserservice.RepositoryFactory) error {
 	// cors
 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
 
@@ -51,7 +51,9 @@ func InitAppServer(ctx context.Context, parentRouterGroup gin.IRouter, internalA
 		controller.NewInitTestRouterFunc(),
 	}
 
-	if err := controller.InitRouter(ctx, parentRouterGroup, authMiddleware, publicRouterGroupFunc, privateRouterGroupFunc, ginCorsConfig, debugConfig, appName); err != nil {
+	controller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
+
+	if err := controller.InitAPIRouterGroup(ctx, rootRouterGroup, authMiddleware, publicRouterGroupFunc, privateRouterGroupFunc, appName); err != nil {
 		return err
 	}
 
