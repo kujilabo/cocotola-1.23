@@ -31,7 +31,7 @@ use_repo(
     "com_github_samber_slog_gin",
     "com_github_stretchr_testify",
     "com_github_tcolgate_mp3",
-    "in_gopkg_yaml_v2",
+    "in_gopkg_yaml_v3",
     "io_gorm_driver_mysql",
     "io_gorm_driver_postgres",
     "io_gorm_driver_sqlite",
