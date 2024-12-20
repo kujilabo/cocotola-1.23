@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
@@ -12,22 +11,9 @@ import (
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/config"
 	controller "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin"
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
 )
-
-// const readHeaderTimeout = time.Duration(30) * time.Second
-// const authClientTimeout = time.Duration(5) * time.Second
-
-func InitTransactionManager(db *gorm.DB, rff gateway.RepositoryFactoryFunc) service.TransactionManager {
-	appTransactionManager, err := gateway.NewTransactionManager(db, rff)
-	if err != nil {
-		panic(err)
-	}
-
-	return appTransactionManager
-}
 
 func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, internalAuthConfig config.InternalAuthConfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager, rsrf rsuserservice.RepositoryFactory) error {
 	// cors
