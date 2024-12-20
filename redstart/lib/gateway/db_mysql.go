@@ -26,8 +26,8 @@ func OpenMySQL(username, password, host string, port int, database string, logge
 		Net:                  "tcp",
 		ParseTime:            true,
 		MultiStatements:      true,
-		Params:               map[string]string{"charset": "utf8"},
-		Collation:            "utf8mb4_unicode_ci",
+		Params:               map[string]string{"charset": "utf8mb4"},
+		Collation:            "utf8mb4_bin",
 		AllowNativePasswords: true,
 		Loc:                  time.UTC,
 	}

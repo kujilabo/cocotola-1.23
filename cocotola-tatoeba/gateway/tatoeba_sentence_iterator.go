@@ -22,7 +22,7 @@ const (
 	textLimitLength = 100
 )
 
-type tatoebaSentenceAddParameterReader struct {
+type TatoebaSentenceAddParameterReader struct {
 	// reader *csv.Reader
 	reader *bufio.Reader
 	num    int
@@ -42,7 +42,7 @@ type tatoebaSentenceAddParameterReader struct {
 // 	return n + len(s2) - len(s1), nil
 // }
 
-func NewTatoebaSentenceAddParameterReader(reader io.Reader) service.TatoebaSentenceAddParameterIterator {
+func NewTatoebaSentenceAddParameterReader(reader io.Reader) *TatoebaSentenceAddParameterReader {
 	bufReader := bufio.NewReaderSize(reader, bufSize)
 	// wrappedReader:=
 
@@ -50,14 +50,14 @@ func NewTatoebaSentenceAddParameterReader(reader io.Reader) service.TatoebaSente
 	// csvReader.Comma = '\t'
 	// csvReader.LazyQuotes = true
 
-	return &tatoebaSentenceAddParameterReader{
+	return &TatoebaSentenceAddParameterReader{
 		// reader: csvReader,
 		reader: bufReader,
 		num:    1,
 	}
 }
 
-func (r *tatoebaSentenceAddParameterReader) Next(ctx context.Context) (service.TatoebaSentenceAddParameter, error) {
+func (r *TatoebaSentenceAddParameterReader) Next(ctx context.Context) (*service.TatoebaSentenceAddParameter, error) {
 	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
@@ -75,12 +75,12 @@ func (r *tatoebaSentenceAddParameterReader) Next(ctx context.Context) (service.T
 	// 	return nil, err
 	// }
 
-	if err != nil {
-		// skip
-		logger.InfoContext(ctx, fmt.Sprintf("skip rowNumber: %d, line: %v", r.num, line))
-		r.num++
-		return nil, nil
-	}
+	// if err != nil {
+	// 	// skip
+	// 	logger.InfoContext(ctx, fmt.Sprintf("skip rowNumber: %d, line: %v", r.num, line))
+	// 	r.num++
+	// 	return nil, nil
+	// }
 
 	sentenceNumber, err := strconv.Atoi(line[0])
 	if err != nil {
@@ -131,6 +131,6 @@ func (r *tatoebaSentenceAddParameterReader) Next(ctx context.Context) (service.T
 	return param, nil
 }
 
-func (r *tatoebaSentenceAddParameterReader) isValidDatetime(value string) bool {
+func (r *TatoebaSentenceAddParameterReader) isValidDatetime(value string) bool {
 	return value != "\\N" && value != "0000-00-00 00:00:00"
 }

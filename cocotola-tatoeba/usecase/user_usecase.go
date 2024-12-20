@@ -14,18 +14,18 @@ type UserUsecase interface {
 }
 
 type userUsecase struct {
-	transaction service.Transaction
+	txManager service.TransactionManager
 }
 
-func NewUserUsecase(transaction service.Transaction) UserUsecase {
+func NewUserUsecase(txManager service.TransactionManager) UserUsecase {
 	return &userUsecase{
-		transaction: transaction,
+		txManager: txManager,
 	}
 }
 
 func (u *userUsecase) FindSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
 	var result service.TatoebaSentencePairSearchResult
-	if err := u.transaction.Do(ctx, func(rf service.RepositoryFactory) error {
+	if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
 		repo := rf.NewTatoebaSentenceRepository(ctx)
 
 		tmpResult, err := repo.FindTatoebaSentencePairs(ctx, param)
@@ -42,7 +42,7 @@ func (u *userUsecase) FindSentencePairs(ctx context.Context, param service.Tatoe
 
 func (u *userUsecase) FindSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error) {
 	var result service.TatoebaSentence
-	if err := u.transaction.Do(ctx, func(rf service.RepositoryFactory) error {
+	if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
 		repo := rf.NewTatoebaSentenceRepository(ctx)
 
 		tmpResult, err := repo.FindTatoebaSentenceBySentenceNumber(ctx, sentenceNumber)

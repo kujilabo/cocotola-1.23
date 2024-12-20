@@ -24,7 +24,7 @@ import (
 	rsusergateway "github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
 	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
 
-	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
 	liblog "github.com/kujilabo/cocotola-1.23/lib/log"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
@@ -119,7 +119,7 @@ func initApp(ctx context.Context, env string) (*config.Config, rslibgateway.Dial
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// init db
-	dialect, db, sqlDB, err := rslibconfig.InitDB(cfg.DB, rssqls.SQL)
+	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, rssqls.SQL)
 	if err != nil {
 		panic(err)
 	}

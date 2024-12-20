@@ -7,6 +7,25 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba",
     visibility = ["//visibility:private"],
+    deps = [
+        "//cocotola-tatoeba/config",
+        "//cocotola-tatoeba/gateway",
+        "//cocotola-tatoeba/initialize",
+        "//cocotola-tatoeba/service",
+        "//cocotola-tatoeba/sqls",
+        "//lib/controller",
+        "//lib/log",
+        "//redstart/lib/config",
+        "//redstart/lib/errors",
+        "//redstart/lib/gateway",
+        "//redstart/lib/log",
+        "//redstart/user/gateway",
+        "@com_github_gin_gonic_gin//:gin",
+        "@io_gorm_gorm//:gorm",
+        "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//propagation",
+        "@org_golang_x_sync//errgroup",
+    ],
 )
 
 go_binary(

@@ -13,7 +13,7 @@ go_library(
         "//cocotola-synthesizer/initialize",
         "//cocotola-synthesizer/service",
         "//cocotola-synthesizer/sqls",
-        "//lib/controller/gin",
+        "//lib/controller",
         "//lib/log",
         "//redstart/lib/config",
         "//redstart/lib/errors",

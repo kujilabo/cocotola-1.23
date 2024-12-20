@@ -7,7 +7,7 @@ go_library(
         "tatoeba_itrerator.go",
         "tatoeba_link_repository.go",
         "tatoeba_sentence_repository.go",
-        "transaction.go",
+        "transaction_manager.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service",
     visibility = ["//visibility:public"],

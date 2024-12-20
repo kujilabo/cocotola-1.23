@@ -20,23 +20,34 @@ func NewWorkbookCommandUsecase(txManager, nonTxManager service.TransactionManage
 }
 
 func (u *WorkbookCommandUsecase) AddWorkbook(ctx context.Context, operator service.OperatorInterface, param *service.WorkbookAddParameter) (*domain.WorkbookID, error) {
-	var workbookID *domain.WorkbookID
+	// var workbookID *domain.WorkbookID
 
-	fn := func(workbookRepository service.WorkbookRepository) error {
-		tmpWorkbookID, err := workbookRepository.AddWorkbook(ctx, operator, param)
+	// fn := func(workbookRepository service.WorkbookRepository) error {
+	// 	tmpWorkbookID, err := workbookRepository.AddWorkbook(ctx, operator, param)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+
+	// 	workbookID = tmpWorkbookID
+	// 	return nil
+	// }
+
+	// if err := u.workbookFunction(ctx, operator, fn); err != nil {
+	// 	return nil, err
+	// }
+
+	// return workbookID, nil
+	return service.Do1(ctx, u.txManager, func(rf service.RepositoryFactory) (workbookID *domain.WorkbookID, err error) {
+		workbookRepo, err := rf.NewWorkbookRepository(ctx)
 		if err != nil {
-			return err
+			return
 		}
-
-		workbookID = tmpWorkbookID
-		return nil
-	}
-
-	if err := u.workbookFunction(ctx, operator, fn); err != nil {
-		return nil, err
-	}
-
-	return workbookID, nil
+		workbookID, err = workbookRepo.AddWorkbook(ctx, operator, param)
+		if err != nil {
+			return
+		}
+		return
+	})
 }
 
 func (u *WorkbookCommandUsecase) UpdateWorkbook(ctx context.Context, operator service.OperatorInterface, workbookID *domain.WorkbookID, version int, param *service.WorkbookUpdateParameter) error {

@@ -31,7 +31,6 @@ synthesizerApi:
   username: username
   password: password
 trace:
-  # exporter: jaeger
   exporter: otlp
   otlp:
     endpoint: localhost:4318

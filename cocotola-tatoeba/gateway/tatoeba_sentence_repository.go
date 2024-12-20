@@ -325,7 +325,7 @@ func (r *tatoebaSentenceRepository) ContainsSentenceBySentenceNumber(ctx context
 	return true, nil
 }
 
-func (r *tatoebaSentenceRepository) Add(ctx context.Context, param service.TatoebaSentenceAddParameter) error {
+func (r *tatoebaSentenceRepository) Add(ctx context.Context, param service.TatoebaSentenceAddParameterInterface) error {
 	entity := tatoebaSentenceEntity{
 		SentenceNumber: param.GetSentenceNumber(),
 		Lang3:          param.GetLang3().String(),

@@ -35,6 +35,7 @@ type AuthAPIonfig struct {
 	Username string `yaml:"username" validate:"required"`
 	Password string `yaml:"password" validate:"required"`
 }
+
 type Config struct {
 	App      *AppConfig                 `yaml:"app" validate:"required"`
 	DB       *rslibconfig.DBConfig      `yaml:"db" validate:"required"`

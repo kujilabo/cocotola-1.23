@@ -1,0 +1,9 @@
+---
+tatoebaApi:
+  endpoint: http://localhost:8280
+  username: username
+  password: password
+datasource:
+  tatoeba:
+    dir: ${HOME}/pecolynx/cocotola-data/datasource/tatoeba
+    engSentences: eng_sentences_detailed_lite.tsv

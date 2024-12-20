@@ -2,7 +2,7 @@ package gateway
 
 import (
 	"database/sql"
-	"embed"
+	"io/fs"
 	"log/slog"
 
 	"github.com/golang-migrate/migrate/v4/database"
@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func OpenSQLite(filePath string, logger *slog.Logger) (*gorm.DB, error) {
+func OpenSQLite3(filePath string, logger *slog.Logger) (*gorm.DB, error) {
 	return gorm.Open(gorm_sqlite.Open(filePath), &gorm.Config{
 		Logger: slog_gorm.New(
 			slog_gorm.WithHandler(logger.Handler()),
@@ -23,7 +23,7 @@ func OpenSQLite(filePath string, logger *slog.Logger) (*gorm.DB, error) {
 	})
 }
 
-func MigrateSQLiteDB(db *gorm.DB, sqlFS embed.FS) error {
+func MigrateSQLite3DB(db *gorm.DB, sqlFS fs.FS) error {
 	driverName := "sqlite3"
 	sourceDriver, err := iofs.New(sqlFS, driverName)
 	if err != nil {

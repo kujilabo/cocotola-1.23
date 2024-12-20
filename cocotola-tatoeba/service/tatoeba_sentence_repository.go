@@ -87,7 +87,7 @@ func (m *tatoebaSentencePair) GetDst() TatoebaSentence {
 	return m.Dst
 }
 
-type TatoebaSentenceAddParameter interface {
+type TatoebaSentenceAddParameterInterface interface {
 	GetSentenceNumber() int
 	GetLang3() *libdomain.Lang3
 	GetText() string
@@ -95,7 +95,7 @@ type TatoebaSentenceAddParameter interface {
 	GetUpdatedAt() time.Time
 }
 
-type tatoebaSentenceAddParameter struct {
+type TatoebaSentenceAddParameter struct {
 	SentenceNumber int `validate:"required"`
 	Lang3          *libdomain.Lang3
 	Text           string `validate:"required"`
@@ -103,8 +103,8 @@ type tatoebaSentenceAddParameter struct {
 	UpdatedAt      time.Time
 }
 
-func NewTatoebaSentenceAddParameter(sentenceNumber int, lang3 *libdomain.Lang3, text, author string, updatedAt time.Time) (TatoebaSentenceAddParameter, error) {
-	m := &tatoebaSentenceAddParameter{
+func NewTatoebaSentenceAddParameter(sentenceNumber int, lang3 *libdomain.Lang3, text, author string, updatedAt time.Time) (*TatoebaSentenceAddParameter, error) {
+	m := &TatoebaSentenceAddParameter{
 		SentenceNumber: sentenceNumber,
 		Lang3:          lang3,
 		Text:           text,
@@ -115,23 +115,23 @@ func NewTatoebaSentenceAddParameter(sentenceNumber int, lang3 *libdomain.Lang3, 
 	return m, rslibdomain.Validator.Struct(m)
 }
 
-func (p *tatoebaSentenceAddParameter) GetSentenceNumber() int {
+func (p *TatoebaSentenceAddParameter) GetSentenceNumber() int {
 	return p.SentenceNumber
 }
 
-func (p *tatoebaSentenceAddParameter) GetLang3() *libdomain.Lang3 {
+func (p *TatoebaSentenceAddParameter) GetLang3() *libdomain.Lang3 {
 	return p.Lang3
 }
 
-func (p *tatoebaSentenceAddParameter) GetText() string {
+func (p *TatoebaSentenceAddParameter) GetText() string {
 	return p.Text
 }
 
-func (p *tatoebaSentenceAddParameter) GetAuthor() string {
+func (p *TatoebaSentenceAddParameter) GetAuthor() string {
 	return p.Author
 }
 
-func (p *tatoebaSentenceAddParameter) GetUpdatedAt() time.Time {
+func (p *TatoebaSentenceAddParameter) GetUpdatedAt() time.Time {
 	return p.UpdatedAt
 }
 
@@ -206,7 +206,7 @@ type TatoebaSentenceRepository interface {
 
 	FindTatoebaSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (TatoebaSentence, error)
 
-	Add(ctx context.Context, param TatoebaSentenceAddParameter) error
+	Add(ctx context.Context, param TatoebaSentenceAddParameterInterface) error
 
 	ContainsSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (bool, error)
 }

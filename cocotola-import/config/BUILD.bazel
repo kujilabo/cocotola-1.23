@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "config",
+    srcs = ["config.go"],
+    embedsrcs = [
+        "local.yml",
+        "production.yml",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/config",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+        "@in_gopkg_yaml_v2//:yaml_v2",
+    ],
+)

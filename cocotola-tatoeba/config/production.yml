@@ -21,7 +21,7 @@ trace:
   exporter: gcp
 cors:
   allowOrigins:
-    - "https://www.cocotola.com"
+    - https://www.cocotola.com
 shutdown:
   timeSec1: 10
   timeSec2: 10

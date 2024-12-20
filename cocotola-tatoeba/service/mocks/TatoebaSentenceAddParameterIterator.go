@@ -23,23 +23,23 @@ func (_m *TatoebaSentenceAddParameterIterator) EXPECT() *TatoebaSentenceAddParam
 }
 
 // Next provides a mock function with given fields: ctx
-func (_m *TatoebaSentenceAddParameterIterator) Next(ctx context.Context) (service.TatoebaSentenceAddParameter, error) {
+func (_m *TatoebaSentenceAddParameterIterator) Next(ctx context.Context) (*service.TatoebaSentenceAddParameter, error) {
 	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Next")
 	}
 
-	var r0 service.TatoebaSentenceAddParameter
+	var r0 *service.TatoebaSentenceAddParameter
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) (service.TatoebaSentenceAddParameter, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) (*service.TatoebaSentenceAddParameter, error)); ok {
 		return rf(ctx)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) service.TatoebaSentenceAddParameter); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) *service.TatoebaSentenceAddParameter); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(service.TatoebaSentenceAddParameter)
+			r0 = ret.Get(0).(*service.TatoebaSentenceAddParameter)
 		}
 	}
 
@@ -70,12 +70,12 @@ func (_c *TatoebaSentenceAddParameterIterator_Next_Call) Run(run func(ctx contex
 	return _c
 }
 
-func (_c *TatoebaSentenceAddParameterIterator_Next_Call) Return(_a0 service.TatoebaSentenceAddParameter, _a1 error) *TatoebaSentenceAddParameterIterator_Next_Call {
+func (_c *TatoebaSentenceAddParameterIterator_Next_Call) Return(_a0 *service.TatoebaSentenceAddParameter, _a1 error) *TatoebaSentenceAddParameterIterator_Next_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *TatoebaSentenceAddParameterIterator_Next_Call) RunAndReturn(run func(context.Context) (service.TatoebaSentenceAddParameter, error)) *TatoebaSentenceAddParameterIterator_Next_Call {
+func (_c *TatoebaSentenceAddParameterIterator_Next_Call) RunAndReturn(run func(context.Context) (*service.TatoebaSentenceAddParameter, error)) *TatoebaSentenceAddParameterIterator_Next_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -40,10 +40,10 @@ func AppServerProcess(ctx context.Context, loggerKey rslibdomain.ContextKey, rou
 		defer shutdownCancel()
 		if err := httpServer.Shutdown(shutdownCtx); err != nil {
 			logger.InfoContext(ctx, fmt.Sprintf("Server forced to shutdown. err: %v", err))
-			return rsliberrors.Errorf(". err: %w", err)
+			return rsliberrors.Errorf("httpServer.Shutdown. err: %w", err)
 		}
 		return nil
 	case err := <-errCh:
-		return rsliberrors.Errorf(". err: %w", err)
+		return rsliberrors.Errorf("httpServer.ListenAndServe. err: %w", err)
 	}
 }

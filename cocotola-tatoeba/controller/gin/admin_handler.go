@@ -13,6 +13,7 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
+	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
 )
@@ -133,6 +134,25 @@ func (h *adminHandler) ImportLinks(c *gin.Context) {
 }
 
 func (h *adminHandler) errorHandle(ctx context.Context, logger *slog.Logger, c *gin.Context, err error) bool {
-	logger.ErrorContext(ctx, fmt.Sprintf("adminHandler. err: %v", err))
+	logger.ErrorContext(ctx, fmt.Sprintf("adminHandler. err: %+v", err))
 	return false
+}
+
+func NewInitAdminRouterFunc(adminUsecase usecase.AdminUsecase) InitRouterGroupFunc {
+	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
+		admin := parentRouterGroup.Group("admin")
+		newSentenceReader := func(reader io.Reader) service.TatoebaSentenceAddParameterIterator {
+			return gateway.NewTatoebaSentenceAddParameterReader(reader)
+		}
+		newLinkReader := func(reader io.Reader) service.TatoebaLinkAddParameterIterator {
+			return gateway.NewTatoebaLinkAddParameterReader(reader)
+		}
+		adminHandler := NewAdminHandler(adminUsecase, newSentenceReader, newLinkReader)
+		for _, m := range middleware {
+			admin.Use(m)
+		}
+		admin.POST("sentence/import", adminHandler.ImportSentences)
+		admin.POST("link/import", adminHandler.ImportLinks)
+		return nil
+	}
 }

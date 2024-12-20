@@ -23,7 +23,7 @@ func (_m *TatoebaSentenceRepository) EXPECT() *TatoebaSentenceRepository_Expecte
 }
 
 // Add provides a mock function with given fields: ctx, param
-func (_m *TatoebaSentenceRepository) Add(ctx context.Context, param service.TatoebaSentenceAddParameter) error {
+func (_m *TatoebaSentenceRepository) Add(ctx context.Context, param service.TatoebaSentenceAddParameterInterface) error {
 	ret := _m.Called(ctx, param)
 
 	if len(ret) == 0 {
@@ -31,7 +31,7 @@ func (_m *TatoebaSentenceRepository) Add(ctx context.Context, param service.Tato
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, service.TatoebaSentenceAddParameter) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, service.TatoebaSentenceAddParameterInterface) error); ok {
 		r0 = rf(ctx, param)
 	} else {
 		r0 = ret.Error(0)
@@ -47,14 +47,14 @@ type TatoebaSentenceRepository_Add_Call struct {
 
 // Add is a helper method to define mock.On call
 //   - ctx context.Context
-//   - param service.TatoebaSentenceAddParameter
+//   - param service.TatoebaSentenceAddParameterInterface
 func (_e *TatoebaSentenceRepository_Expecter) Add(ctx interface{}, param interface{}) *TatoebaSentenceRepository_Add_Call {
 	return &TatoebaSentenceRepository_Add_Call{Call: _e.mock.On("Add", ctx, param)}
 }
 
-func (_c *TatoebaSentenceRepository_Add_Call) Run(run func(ctx context.Context, param service.TatoebaSentenceAddParameter)) *TatoebaSentenceRepository_Add_Call {
+func (_c *TatoebaSentenceRepository_Add_Call) Run(run func(ctx context.Context, param service.TatoebaSentenceAddParameterInterface)) *TatoebaSentenceRepository_Add_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(service.TatoebaSentenceAddParameter))
+		run(args[0].(context.Context), args[1].(service.TatoebaSentenceAddParameterInterface))
 	})
 	return _c
 }
@@ -64,7 +64,7 @@ func (_c *TatoebaSentenceRepository_Add_Call) Return(_a0 error) *TatoebaSentence
 	return _c
 }
 
-func (_c *TatoebaSentenceRepository_Add_Call) RunAndReturn(run func(context.Context, service.TatoebaSentenceAddParameter) error) *TatoebaSentenceRepository_Add_Call {
+func (_c *TatoebaSentenceRepository_Add_Call) RunAndReturn(run func(context.Context, service.TatoebaSentenceAddParameterInterface) error) *TatoebaSentenceRepository_Add_Call {
 	_c.Call.Return(run)
 	return _c
 }

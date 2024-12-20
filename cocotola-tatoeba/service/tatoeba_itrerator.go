@@ -7,5 +7,5 @@ type TatoebaLinkAddParameterIterator interface {
 }
 
 type TatoebaSentenceAddParameterIterator interface {
-	Next(ctx context.Context) (TatoebaSentenceAddParameter, error)
+	Next(ctx context.Context) (*TatoebaSentenceAddParameter, error)
 }
