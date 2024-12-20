@@ -78,6 +78,7 @@ tasks:
       - |
         pushd {{ .PROJECT }}
         GOPROXY=direct go get -u ./...
+        go mod tidy
     requires:
       vars: [PROJECT]
 

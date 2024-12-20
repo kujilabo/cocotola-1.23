@@ -4,7 +4,7 @@ import (
 	"embed"
 	"os"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"

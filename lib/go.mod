@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241211155628-94a6933ae9a1
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241220141247-052f06d47274
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/otel v1.33.0
 	go.opentelemetry.io/otel/trace v1.33.0
@@ -26,7 +26,6 @@ require (
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
-	github.com/kr/pretty v0.3.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

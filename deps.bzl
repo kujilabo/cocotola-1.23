@@ -832,8 +832,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_grpc_ecosystem_grpc_gateway_v2",
         importpath = "github.com/grpc-ecosystem/grpc-gateway/v2",
-        sum = "h1:TmHmbvxPmaegwhDubVz0lICL0J5Ka2vwTzhoePEXsGE=",
-        version = "v2.24.0",
+        sum = "h1:VNqngBF40hVlDloBruUehVYC3ArSgIyScOAyMRqBxRg=",
+        version = "v2.25.1",
     )
     go_repository(
         name = "com_github_gsterjov_go_libsecret",

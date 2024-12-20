@@ -12,6 +12,6 @@ go_library(
     deps = [
         "//redstart/lib/domain",
         "//redstart/lib/errors",
-        "@in_gopkg_yaml_v2//:yaml_v2",
+        "@in_gopkg_yaml_v3//:yaml_v3",
     ],
 )
