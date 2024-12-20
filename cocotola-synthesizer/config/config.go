@@ -28,11 +28,6 @@ type InternalAuthConfig struct {
 	Password string `yaml:"password" validate:"required"`
 }
 
-type ShutdownConfig struct {
-	TimeSec1 int `yaml:"timeSec1" validate:"gte=1"`
-	TimeSec2 int `yaml:"timeSec2" validate:"gte=1"`
-}
-
 type GoogleTextToSpeechConfig struct {
 	APIKey        string `yaml:"apiKey" validate:"required"`
 	APITimeoutSec int    `yaml:"apiTimeoutSec" validate:"gte=5"`
@@ -45,7 +40,7 @@ type Config struct {
 	TTS          *GoogleTextToSpeechConfig  `yaml:"googleTextToSpeech" validate:"required"`
 	Trace        *rslibconfig.TraceConfig   `yaml:"trace" validate:"required"`
 	CORS         *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
-	Shutdown     *ShutdownConfig            `yaml:"shutdown" validate:"required"`
+	Shutdown     *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`
 	Log          *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
 	Swagger      *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
 	Debug        *libconfig.DebugConfig     `yaml:"debug"`

@@ -4,8 +4,10 @@ go_library(
     name = "service",
     srcs = [
         "repository_factory.go",
+        "tatoeba_itrerator.go",
         "tatoeba_link_repository.go",
         "tatoeba_sentence_repository.go",
+        "transaction_manager.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service",
     visibility = ["//visibility:public"],

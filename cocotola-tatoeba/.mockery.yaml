@@ -1,0 +1,22 @@
+---
+with-expecter: true
+
+mockname: "{{.InterfaceName}}"
+outpkg: mocks
+filename: "{{.MockName}}.go"
+packages:
+  github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service:
+    config:
+      dir: service/mocks
+    interfaces:
+      TatoebaLinkAddParameter:
+      TatoebaLinkRepository:
+      TatoebaSentence:
+      TatoebaSentencePair:
+      TatoebaSentenceAddParameter:
+      TatoebaSentenceSearchCondition:
+      TatoebaSentencePairSearchResult:
+      TatoebaSentenceRepository:
+      TatoebaLinkAddParameterIterator:
+      TatoebaSentenceAddParameterIterator:
+issue-845-fix: True

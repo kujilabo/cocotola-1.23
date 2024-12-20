@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "usecase",
+    srcs = [
+        "admin_usecase.go",
+        "init.go",
+        "user_usecase.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-tatoeba/service",
+        "//lib/log",
+        "//redstart/lib/errors",
+        "//redstart/lib/log",
+        "@io_opentelemetry_go_otel//:otel",
+    ],
+)

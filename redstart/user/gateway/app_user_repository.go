@@ -9,6 +9,7 @@ import (
 
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+
 	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
 )

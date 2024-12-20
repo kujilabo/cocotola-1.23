@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"database/sql"
 	"io/fs"
 	"log/slog"
@@ -79,7 +80,7 @@ func (f *mergedFS) ReadDir(name string) ([]fs.DirEntry, error) {
 	return f.entries, nil
 }
 
-func InitDB(cfg *DBConfig, sqlFSs ...fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+func InitDB(ctx context.Context, cfg *DBConfig, sqlFSs ...fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
@@ -89,71 +90,84 @@ func InitDB(cfg *DBConfig, sqlFSs ...fs.FS) (libgateway.DialectRDBMS, *gorm.DB, 
 	}
 
 	switch cfg.DriverName {
-	// case "sqlite3":
-	// 	db, err := libgateway.OpenSQLite("./"+cfg.SQLite3.File, logger)
-	// 	if err != nil {
-	// 		return nil, nil, liberrors.Errorf("OpenSQLite. err: %w", err)
-	// 	}
-
-	// 	sqlDB, err := db.DB()
-	// 	if err != nil {
-	// 		return nil, nil, err
-	// 	}
-
-	// 	if err := sqlDB.Ping(); err != nil {
-	// 		return nil, nil, err
-	// 	}
-
-	// 	if cfg.Migration {
-	// 		if err := libgateway.MigrateSQLiteDB(db, sqlFS); err != nil {
-	// 			return nil, nil, err
-	// 		}
-	// 	}
-
-	// 	return db, sqlDB, nil
+	case "sqlite3":
+		return initSqlite3(ctx, cfg, mergedFS, logger)
 	case "mysql":
-		db, err := libgateway.OpenMySQL(cfg.MySQL.Username, cfg.MySQL.Password, cfg.MySQL.Host, cfg.MySQL.Port, cfg.MySQL.Database, logger)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-
-		sqlDB, err := db.DB()
-		if err != nil {
-			return nil, nil, nil, err
-		}
-
-		if err := sqlDB.Ping(); err != nil {
-			return nil, nil, nil, err
-		}
-
-		if err := libgateway.MigrateMySQLDB(db, mergedFS); err != nil {
-			return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
-		}
-
-		dialect := libgateway.DialectMySQL{}
-		return &dialect, db, sqlDB, nil
+		return initMySQL(ctx, cfg, mergedFS, logger)
 	case "postgres":
-		db, err := libgateway.OpenPostgres(cfg.Postgres.Username, cfg.Postgres.Password, cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.Database, logger)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-
-		sqlDB, err := db.DB()
-		if err != nil {
-			return nil, nil, nil, err
-		}
-
-		if err := sqlDB.Ping(); err != nil {
-			return nil, nil, nil, err
-		}
-
-		if err := libgateway.MigratePostgresDB(db, mergedFS); err != nil {
-			return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
-		}
-
-		dialect := libgateway.DialectPostgres{}
-		return &dialect, db, sqlDB, nil
+		return initPostgres(ctx, cfg, mergedFS, logger)
 	default:
 		return nil, nil, nil, libdomain.ErrInvalidArgument
 	}
+}
+
+func initSqlite3(ctx context.Context, cfg *DBConfig, fs fs.FS, logger *slog.Logger) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+	db, err := libgateway.OpenSQLite3("./"+cfg.SQLite3.File, logger)
+	if err != nil {
+		return nil, nil, nil, liberrors.Errorf("OpenSQLite. err: %w", err)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	if err := sqlDB.Ping(); err != nil {
+		return nil, nil, nil, err
+	}
+
+	if cfg.Migration {
+		if err := libgateway.MigrateSQLite3DB(db, fs); err != nil {
+			return nil, nil, nil, err
+		}
+	}
+
+	dialect := libgateway.DialectMySQL{}
+	return &dialect, db, sqlDB, nil
+}
+
+func initMySQL(ctx context.Context, cfg *DBConfig, fs fs.FS, logger *slog.Logger) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+	db, err := libgateway.OpenMySQL(cfg.MySQL.Username, cfg.MySQL.Password, cfg.MySQL.Host, cfg.MySQL.Port, cfg.MySQL.Database, logger)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	if err := sqlDB.Ping(); err != nil {
+		return nil, nil, nil, err
+	}
+
+	if err := libgateway.MigrateMySQLDB(db, fs); err != nil {
+		return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
+	}
+
+	dialect := libgateway.DialectMySQL{}
+	return &dialect, db, sqlDB, nil
+}
+
+func initPostgres(ctx context.Context, cfg *DBConfig, fs fs.FS, logger *slog.Logger) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+	db, err := libgateway.OpenPostgres(cfg.Postgres.Username, cfg.Postgres.Password, cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.Database, logger)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	if err := sqlDB.Ping(); err != nil {
+		return nil, nil, nil, err
+	}
+
+	if err := libgateway.MigratePostgresDB(db, fs); err != nil {
+		return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
+	}
+
+	dialect := libgateway.DialectPostgres{}
+	return &dialect, db, sqlDB, nil
 }

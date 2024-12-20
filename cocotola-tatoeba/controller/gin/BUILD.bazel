@@ -1,0 +1,28 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gin",
+    srcs = [
+        "admin_handler.go",
+        "app_router.go",
+        "init.go",
+        "user_handler.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-tatoeba/controller/gin/helper",
+        "//cocotola-tatoeba/gateway",
+        "//cocotola-tatoeba/service",
+        "//cocotola-tatoeba/usecase",
+        "//lib/config",
+        "//lib/controller/gin/middleware",
+        "//lib/log",
+        "//redstart/lib/errors",
+        "//redstart/lib/log",
+        "@com_github_gin_contrib_cors//:cors",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_samber_slog_gin//:slog-gin",
+        "@io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin//:otelgin",
+    ],
+)

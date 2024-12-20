@@ -1,0 +1,9 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "tatoeba",
+    srcs = ["tatoeba_eng.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/tatoeba",
+    visibility = ["//visibility:public"],
+    deps = ["//cocotola-import/config"],
+)

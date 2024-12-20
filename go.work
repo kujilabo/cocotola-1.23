@@ -4,7 +4,10 @@ use (
 	.
 	./cocotola-auth
 	./cocotola-core
+	./cocotola-import
 	./cocotola-synthesizer
+	./cocotola-tatoeba
+	./generics
 	./hello-world
 	./lib
 	./redstart

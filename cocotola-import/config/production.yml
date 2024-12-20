@@ -1,0 +1,4 @@
+---
+auth:
+  username: $AUTH_USERNAME
+  password: $AUTH_PASSWORD

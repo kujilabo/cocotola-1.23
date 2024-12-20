@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -24,7 +23,7 @@ import (
 	rsusergateway "github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
 	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
 
-	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
 	liblog "github.com/kujilabo/cocotola-1.23/lib/log"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
@@ -115,7 +114,7 @@ func initApp(ctx context.Context, env string) (*config.Config, rslibgateway.Dial
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// init db
-	dialect, db, sqlDB, err := rslibconfig.InitDB(cfg.DB, sqls.SQL)
+	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, sqls.SQL)
 	if err != nil {
 		panic(err)
 	}

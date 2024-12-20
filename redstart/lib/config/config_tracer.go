@@ -13,6 +13,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 
 	libdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
+	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 )
 
 type OTLPConfig struct {
@@ -48,14 +49,16 @@ func initTracerExporter(ctx context.Context, traceConfig *TraceConfig) (sdktrace
 			stdouttrace.WithWriter(io.Discard),
 		)
 	default:
-		return nil, libdomain.ErrInvalidArgument
+		return nil, liberrors.Errorf("invalid exporter: %s. err: %w", traceConfig.Exporter, libdomain.ErrInvalidArgument)
+		// return nil, errors.Wrap(libdomain.ErrInvalidArgument, "invalid exporter: "+traceConfig.Exporter)
 	}
 }
 
 func InitTracerProvider(ctx context.Context, appName string, traceConfig *TraceConfig) (*sdktrace.TracerProvider, error) {
 	exp, err := initTracerExporter(ctx, traceConfig)
 	if err != nil {
-		return nil, err
+		return nil, liberrors.Errorf("initTracerExporter. err: %w", err)
+		// return nil, errors.Wrap(err, "initTracerExporter")
 	}
 	tp := sdktrace.NewTracerProvider(
 		// Always be sure to batch in production.

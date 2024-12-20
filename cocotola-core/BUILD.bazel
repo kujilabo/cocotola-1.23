@@ -1,4 +1,6 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load", "oci_push")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 go_library(
     name = "cocotola-core_lib",
@@ -11,7 +13,7 @@ go_library(
         "//cocotola-core/initialize",
         "//cocotola-core/service",
         "//cocotola-core/sqls",
-        "//lib/controller/gin",
+        "//lib/controller",
         "//lib/domain",
         "//lib/log",
         "//redstart/lib/config",
@@ -31,4 +33,29 @@ go_binary(
     name = "cocotola-core",
     embed = [":cocotola-core_lib"],
     visibility = ["//visibility:public"],
+)
+
+pkg_tar(
+    name = "pkg",
+    srcs = [":cocotola-core"],
+)
+
+oci_image(
+    name = "image",
+    base = "@distroless_static_debian12_linux_amd64",
+    entrypoint = ["/cocotola-core"],
+    tars = [":pkg"],
+)
+
+oci_load(
+    name = "load",
+    image = ":image",
+    repo_tags = ["cocotola-core:latest"],
+)
+
+oci_push(
+    name = "push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = "us-east1-docker.pkg.dev/cocotola-1-23-develop-24-11-02/cocotola-core/cocotola-core",
 )

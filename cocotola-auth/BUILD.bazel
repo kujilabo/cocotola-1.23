@@ -13,7 +13,7 @@ go_library(
         "//cocotola-auth/initialize",
         "//cocotola-auth/service",
         "//cocotola-auth/usecase",
-        "//lib/controller/gin",
+        "//lib/controller",
         "//lib/log",
         "//redstart/lib/config",
         "//redstart/lib/errors",
