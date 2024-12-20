@@ -9,10 +9,6 @@ internalAuth:
   username: username
   password: password
 db:
-  driverName: sqlite3
-  migration: true
-  sqlite3:
-    file: tatoeba.db
   # driverName: mysql
   # mysql:
   #   username: user
@@ -20,6 +16,10 @@ db:
   #   host: 127.0.0.1
   #   port: 3326
   #   database: development
+  driverName: sqlite3
+  migration: true
+  sqlite3:
+    file: tatoeba.db
 trace:
   exporter: otlp
   otlp:
