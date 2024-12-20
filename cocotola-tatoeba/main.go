@@ -105,13 +105,13 @@ func main() {
 	}
 
 	// init transaction manager
-	txManager, err := gateway.NewTransactionManager(db, rff)
+	txManager, err := rslibgateway.NewTransactionManagerT(db, rff)
 	if err != nil {
 		panic(err)
 	}
 
 	// init non transaction manager
-	nonTxManager, err := gateway.NewNoneTransactionManager(rf)
+	nonTxManager, err := rslibgateway.NewNonTransactionManagerT(rf)
 	if err != nil {
 		panic(err)
 	}
