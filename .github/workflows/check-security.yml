@@ -41,3 +41,8 @@ jobs:
           reporter: github-pr-review
           fail_on_error: true
           level: warning
+
+      - uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
