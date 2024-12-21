@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -25,21 +26,28 @@ type AdminUsecase interface {
 type adminUsecase struct {
 	txManager    service.TransactionManager
 	nonTxManager service.TransactionManager
+	logger       *slog.Logger
 }
 
 func NewAdminUsecase(txManager, nonTxManager service.TransactionManager) AdminUsecase {
+	adminHandlerLoggerName := "adminUsecase"
 	return &adminUsecase{
 		txManager:    txManager,
 		nonTxManager: nonTxManager,
+		logger:       slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName)),
 	}
 }
+
+// func (u *adminUsecase) logger() *slog.Logger {
+// 	adminHandlerLoggerName := "adminUsecase"
+// 	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName))
+// }
 
 func (u *adminUsecase) ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) error {
 	ctx, span := tracer.Start(ctx, "adminUsecase.ImportSentences")
 	defer span.End()
 
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 
 	var readCount = 0
 	var importCount = 0
@@ -69,16 +77,16 @@ func (u *adminUsecase) ImportSentences(ctx context.Context, iterator service.Tat
 		}
 	}
 
-	logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
-	logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skipCount))
-	logger.InfoContext(ctx, fmt.Sprintf("read count: %d", readCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skipCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("read count: %d", readCount))
 
 	return nil
 }
 
 func (u *adminUsecase) importSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator, repo service.TatoebaSentenceRepository) (bool, int, int, int, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
+	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
 	readCount := 0
 	skipCount := 0
@@ -101,7 +109,7 @@ func (u *adminUsecase) importSentences(ctx context.Context, iterator service.Tat
 
 		if err := repo.Add(ctx, param); err != nil {
 			if errors.Is(err, service.ErrTatoebaSentenceAlreadyExists) {
-				logger.WarnContext(ctx, fmt.Sprintf("failed to Add. read count: %d, err: %v", readCount, err))
+				u.logger.WarnContext(ctx, fmt.Sprintf("failed to Add. read count: %d, err: %v", readCount, err))
 				skipCount++
 				continue
 			}
@@ -113,7 +121,7 @@ func (u *adminUsecase) importSentences(ctx context.Context, iterator service.Tat
 		importCount++
 		if i >= commitSize {
 			if importCount%logSize == 0 {
-				logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
+				u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
 			}
 			return false, readCount, skipCount, importCount, nil
 		}
@@ -121,8 +129,8 @@ func (u *adminUsecase) importSentences(ctx context.Context, iterator service.Tat
 }
 
 func (u *adminUsecase) ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) error {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
+	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
 	var readCount = 0
 	var importCount = 0
@@ -183,16 +191,16 @@ func (u *adminUsecase) ImportLinks(ctx context.Context, iterator service.Tatoeba
 		}
 	}
 
-	logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
-	logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skipCount))
-	logger.InfoContext(ctx, fmt.Sprintf("read count: %d", readCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skipCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("read count: %d", readCount))
 
 	return nil
 }
 
 func (u *adminUsecase) importLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator, repo service.TatoebaLinkRepository) (bool, int, int, int, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
+	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
 	eof := false
 	readCount := 0
@@ -217,7 +225,7 @@ func (u *adminUsecase) importLinks(ctx context.Context, iterator service.Tatoeba
 
 		if err := repo.Add(ctx, param); err != nil {
 			if !errors.Is(err, service.ErrTatoebaSentenceNotFound) {
-				logger.WarnContext(ctx, fmt.Sprintf("failed to Add. read count: %d, err: %v", readCount, err))
+				u.logger.WarnContext(ctx, fmt.Sprintf("failed to Add. read count: %d, err: %v", readCount, err))
 			}
 			skipCount++
 			return eof, readCount, skipCount, importCount, nil
@@ -226,7 +234,7 @@ func (u *adminUsecase) importLinks(ctx context.Context, iterator service.Tatoeba
 		importCount++
 		if i >= commitSize {
 			if importCount%logSize == 0 {
-				logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
+				u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
 			}
 			return eof, readCount, skipCount, importCount, nil
 		}

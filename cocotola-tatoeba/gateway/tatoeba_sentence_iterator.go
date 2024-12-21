@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"strconv"
 	"strings"
 	"time"
@@ -26,6 +27,7 @@ type TatoebaSentenceAddParameterReader struct {
 	// reader *csv.Reader
 	reader *bufio.Reader
 	num    int
+	logger *slog.Logger
 }
 
 // type wrdomainedReader struct {
@@ -54,19 +56,20 @@ func NewTatoebaSentenceAddParameterReader(reader io.Reader) *TatoebaSentenceAddP
 		// reader: csvReader,
 		reader: bufReader,
 		num:    1,
+		logger: slog.Default().With(slog.String(rsliblog.LoggerNameKey, "TatoebaSentenceAddParameterReader")),
 	}
 }
 
 func (r *TatoebaSentenceAddParameterReader) Next(ctx context.Context) (*service.TatoebaSentenceAddParameter, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
+	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
 	b, _, err := r.reader.ReadLine()
 	if err != nil {
 		return nil, err
 	}
 	if len(b) == 0 {
-		logger.InfoContext(ctx, "zero")
+		r.logger.InfoContext(ctx, "zero")
 	}
 	line := strings.Split(string(b), "\t")
 	// var line []string
@@ -101,7 +104,7 @@ func (r *TatoebaSentenceAddParameterReader) Next(ctx context.Context) (*service.
 
 	if len(text) > textLimitLength {
 		// skip
-		logger.DebugContext(ctx, fmt.Sprintf("skip long text. rowNumber: %d, text: %s", r.num, text))
+		r.logger.DebugContext(ctx, fmt.Sprintf("skip long text. rowNumber: %d, text: %s", r.num, text))
 		r.num++
 		return nil, nil
 	}
