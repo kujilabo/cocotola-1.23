@@ -42,7 +42,12 @@ jobs:
           fail_on_error: true
           level: warning
 
-      - uses: aquasecurity/trivy-action@0.28.0
+      - name: Fail build on High/Criticial Vulnerabilities
+        uses: aquasecurity/trivy-action@master
         with:
-          scan-type: fs
+          scan-type: "fs"
+          format: table
           scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
