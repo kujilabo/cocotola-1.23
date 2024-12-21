@@ -5,5 +5,5 @@ no-color: true
 minimal-ui: true
 enable_comments: true
 exclude-severities:
-  - "low"
-  - "info"
+  - low
+  - info
