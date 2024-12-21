@@ -2,6 +2,8 @@
 name: Check GitHub Actions
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - .github/**/*.yml
       - .github/**/*.yaml

@@ -1,0 +1,34 @@
+---
+name: Check Security
+on:
+  pull_request:
+    branches:
+      - main
+permissions: read-all
+jobs:
+  terraform_check:
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: reviewdog/action-trivy@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          trivy_command: filesystem
+          trivy_target: .
+          reporter: github-pr-review
+          fail_on_error: true
+          level: warning
+
+      - uses: reviewdog/action-trivy@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          trivy_command: config
+          trivy_target: .
+          reporter: github-pr-review
+          fail_on_error: true
+          level: warning
