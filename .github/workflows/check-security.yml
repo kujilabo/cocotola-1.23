@@ -23,6 +23,7 @@ jobs:
           reporter: github-pr-review
           fail_on_error: true
           level: warning
+          trivy_flags: --debug
 
       - uses: reviewdog/action-trivy@v1
         with:
