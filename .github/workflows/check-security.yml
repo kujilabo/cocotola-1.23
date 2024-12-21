@@ -15,7 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: reviewdog/action-trivy@v1
+      - name: Run trivy with filesystem command
+        uses: reviewdog/action-trivy@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           trivy_command: filesystem
@@ -23,20 +24,12 @@ jobs:
           reporter: github-pr-review
           fail_on_error: true
           level: warning
-          trivy_flags: --debug
-          flags: -tee
+          # trivy_flags: --debug
+          # flags: -tee
           filter_mode: nofilter
 
-      - uses: reviewdog/action-trivy@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          trivy_command: filesystem
-          trivy_target: hello-world
-          reporter: github-pr-review
-          fail_on_error: true
-          level: warning
-
-      - uses: reviewdog/action-trivy@v1
+      - name: Run trivy with config command
+        uses: reviewdog/action-trivy@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           trivy_command: config
@@ -44,11 +37,14 @@ jobs:
           reporter: github-pr-review
           fail_on_error: true
           level: warning
+          # trivy_flags: --debug
+          # flags: -tee
+          filter_mode: nofilter
 
       - name: Fail build on High/Criticial Vulnerabilities
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: "fs"
+          scan-type: fs
           format: table
           scan-ref: .
           severity: HIGH,CRITICAL
