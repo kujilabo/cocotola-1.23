@@ -35,10 +35,10 @@ const (
 	SynthesizerMainLoggerContextKey       rslibdomain.ContextKey = "synthesizer_main"
 	SynthesizerServiceLoggerContextKey    rslibdomain.ContextKey = "synthesizer_service"
 	SynthesizerUsecaseLoggerContextKey    rslibdomain.ContextKey = "synthesizer_usecase"
-	TatoebaControllerLoggerContextKey     rslibdomain.ContextKey = "tatoeba_controller"
-	TatoebaGatewayLoggerContextKey        rslibdomain.ContextKey = "tatoeba_gateway"
-	TatoebaMainLoggerContextKey           rslibdomain.ContextKey = "tatoeba_main"
-	TatoebaUsecaseLoggerContextKey        rslibdomain.ContextKey = "tatoeba_usecas"
+	// TatoebaControllerLoggerContextKey     rslibdomain.ContextKey = "tatoeba_controller"
+	// TatoebaGatewayLoggerContextKey rslibdomain.ContextKey = "tatoeba_gateway"
+	TatoebaMainLoggerContextKey    rslibdomain.ContextKey = "tatoeba_main"
+	TatoebaUsecaseLoggerContextKey rslibdomain.ContextKey = "tatoeba_usecas"
 )
 
 var (

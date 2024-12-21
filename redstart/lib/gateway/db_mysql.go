@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"io/fs"
@@ -15,6 +16,8 @@ import (
 	slog_gorm "github.com/orandin/slog-gorm"
 	gorm_mysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
 func OpenMySQL(username, password, host string, port int, database string, logger *slog.Logger) (*gorm.DB, error) {
@@ -32,11 +35,14 @@ func OpenMySQL(username, password, host string, port int, database string, logge
 		Loc:                  time.UTC,
 	}
 	dsn := c.FormatDSN()
+	logger2 := slog_gorm.New(
+		slog_gorm.WithTraceAll(), // trace all messages
+		slog_gorm.WithContextFunc(liblog.LoggerNameKey, func(ctx context.Context) (slog.Value, bool) {
+			return slog.StringValue("gorm"), true
+		}),
+	)
 	return gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{
-		Logger: slog_gorm.New(
-			slog_gorm.WithHandler(logger.Handler()),
-			slog_gorm.WithTraceAll(), // trace all messages
-		),
+		Logger: logger2,
 	})
 }
 

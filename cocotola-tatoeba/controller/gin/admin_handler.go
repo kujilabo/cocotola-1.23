@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
@@ -18,23 +19,23 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
 )
 
-type AdminHandler interface {
-	ImportSentences(c *gin.Context)
-	ImportLinks(c *gin.Context)
-}
-
-type adminHandler struct {
+type AdminHandler struct {
 	adminUsecase                         usecase.AdminUsecase
 	newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator
 	newTatoebaLinkAddParameterReader     func(reader io.Reader) service.TatoebaLinkAddParameterIterator
 }
 
-func NewAdminHandler(adminUsecase usecase.AdminUsecase, newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator, newTatoebaLinkAddParameterReader func(reader io.Reader) service.TatoebaLinkAddParameterIterator) AdminHandler {
-	return &adminHandler{
+func NewAdminHandler(adminUsecase usecase.AdminUsecase, newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator, newTatoebaLinkAddParameterReader func(reader io.Reader) service.TatoebaLinkAddParameterIterator) *AdminHandler {
+	return &AdminHandler{
 		adminUsecase:                         adminUsecase,
 		newTatoebaSentenceAddParameterReader: newTatoebaSentenceAddParameterReader,
 		newTatoebaLinkAddParameterReader:     newTatoebaLinkAddParameterReader,
 	}
+}
+
+func (h *AdminHandler) logger() *slog.Logger {
+	adminHandlerLoggerName := "AdminHandler"
+	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName))
 }
 
 // ImportSentences godoc
@@ -48,20 +49,21 @@ func NewAdminHandler(adminUsecase usecase.AdminUsecase, newTatoebaSentenceAddPar
 // @Failure     500
 // @Router      /v1/admin/sentence/import [post]
 // @Security    BasicAuth
-func (h *adminHandler) ImportSentences(c *gin.Context) {
+func (h *AdminHandler) ImportSentences(c *gin.Context) {
 	// ctx := c.Request.Context()
 	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 
-	handlerhelper.HandleFunction(c, func(ctx context.Context, logger *slog.Logger) error {
+	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
+		h.logger().InfoContext(ctx, "ImportSentences")
 		file, err := c.FormFile("file")
 		if err != nil {
 			if errors.Is(err, http.ErrMissingFile) {
-				logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
 			if errors.Is(err, http.ErrNotMultipart) {
-				logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
@@ -96,20 +98,20 @@ func (h *adminHandler) ImportSentences(c *gin.Context) {
 // @Failure     500
 // @Router      /v1/admin/link/import [post]
 // @Security    BasicAuth
-func (h *adminHandler) ImportLinks(c *gin.Context) {
+func (h *AdminHandler) ImportLinks(c *gin.Context) {
 	// ctx := c.Request.Context()
 	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 
-	handlerhelper.HandleFunction(c, func(ctx context.Context, logger *slog.Logger) error {
+	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {
 			if errors.Is(err, http.ErrMissingFile) {
-				logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
 			if errors.Is(err, http.ErrNotMultipart) {
-				logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
@@ -133,8 +135,8 @@ func (h *adminHandler) ImportLinks(c *gin.Context) {
 	}, h.errorHandle)
 }
 
-func (h *adminHandler) errorHandle(ctx context.Context, logger *slog.Logger, c *gin.Context, err error) bool {
-	logger.ErrorContext(ctx, fmt.Sprintf("adminHandler. err: %+v", err))
+func (h *AdminHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
+	h.logger().ErrorContext(ctx, fmt.Sprintf("adminHandler. err: %+v", err))
 	return false
 }
 

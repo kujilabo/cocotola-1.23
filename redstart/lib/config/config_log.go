@@ -21,6 +21,8 @@ func InitLog(cfg *LogConfig) error {
 
 	liblog.DefaultLogLevel = defaultLogLevel
 	liblog.DefaultLogger = slog.New(liblog.LogHandlers[defaultLogLevel])
+	slog.SetDefault(liblog.DefaultLogger)
+	slog.Debug("DDDD")
 
 	for name, level := range cfg.Level {
 		logLevel := stringToLogLevel(level)
