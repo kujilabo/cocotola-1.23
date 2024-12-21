@@ -25,6 +25,7 @@ jobs:
           level: warning
           trivy_flags: --debug
           flags: -tee
+          filter_mode: nofilter
 
       - uses: reviewdog/action-trivy@v1
         with:
