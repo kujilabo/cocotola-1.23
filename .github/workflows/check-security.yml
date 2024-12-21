@@ -24,6 +24,7 @@ jobs:
           fail_on_error: true
           level: warning
           trivy_flags: --debug
+          flags: -tee
 
       - uses: reviewdog/action-trivy@v1
         with:
