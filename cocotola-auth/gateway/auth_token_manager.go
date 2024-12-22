@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -25,7 +25,7 @@ type AppUserClaims struct {
 	OrganizationName string `json:"organizationName"`
 	// Role             string `json:"role"`
 	TokenType string `json:"tokenType"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type organization struct {
@@ -111,9 +111,9 @@ func (m *AuthTokenManager) createJWT(ctx context.Context, appUser service.AppUse
 		OrganizationID:   organization.OrganizationID().Int(),
 		OrganizationName: organization.Name(),
 		TokenType:        tokenType,
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  now.Unix(),
-			ExpiresAt: now.Add(duration).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(now.Add(duration)),
 		},
 	}
 
@@ -163,7 +163,8 @@ func (m *AuthTokenManager) parseToken(ctx context.Context, tokenString string) (
 		return nil, fmt.Errorf("invalid claims")
 	}
 
-	if err := currentClaims.Valid(); err != nil {
+	v := jwt.NewValidator()
+	if err := v.Validate(currentClaims); err != nil {
 		return nil, err
 	}
 

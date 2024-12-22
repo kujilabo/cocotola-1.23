@@ -6,7 +6,7 @@ import (
 
 	"context"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -20,7 +20,7 @@ type AppUserClaims struct {
 	OrganizationID   int    `json:"organizationId"`
 	OrganizationName string `json:"organizationName"`
 	TokenType        string `json:"tokenType"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type Authentication struct {

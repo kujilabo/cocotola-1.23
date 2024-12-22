@@ -18,6 +18,6 @@ go_library(
         "//redstart/lib/log",
         "//redstart/user/domain",
         "//redstart/user/service",
-        "@com_github_golang_jwt_jwt//:jwt",
+        "@com_github_golang_jwt_jwt_v5//:jwt",
     ],
 )
