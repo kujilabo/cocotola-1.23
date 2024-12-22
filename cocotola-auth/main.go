@@ -108,8 +108,11 @@ func main() {
 	if !cfg.Debug.Gin {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	publicRouterGroupFuncs := initialize.InitPublicRouterGroupFunc(cfg.Auth, txManager, nonTxManager)
+	privateRouterGroupFuncs := initialize.InitPublicRouterGroupFunc(cfg.Auth, txManager, nonTxManager)
 	router := gin.New()
-	if err := initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Auth, cfg.Debug, cfg.App.Name, txManager, nonTxManager); err != nil {
+	if err := initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, publicRouterGroupFuncs, privateRouterGroupFuncs); err != nil {
 		panic(err)
 	}
 
