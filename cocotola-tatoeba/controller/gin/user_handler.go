@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
+	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
 )
@@ -28,6 +29,11 @@ func NewUserHandler(userUsecase usecase.UserUsecase) UserHandler {
 	}
 }
 
+func (h *userHandler) logger() *slog.Logger {
+	adminHandlerLoggerName := "userHandler"
+	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName))
+}
+
 // FindSentencePairs godoc
 // @Summary     find pair of sentences
 // @Description find pair of sentences
@@ -41,7 +47,7 @@ func NewUserHandler(userUsecase usecase.UserUsecase) UserHandler {
 // @Router      /v1/user/sentence_pair/find [post]
 // @Security    BasicAuth
 func (h *userHandler) FindSentencePairs(c *gin.Context) {
-	handlerhelper.HandleFunction(c, func(ctx context.Context, logger *slog.Logger) error {
+	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		// param := entity.TatoebaSentenceFindParameter{}
 		// if err := c.ShouldBindJSON(&param); err != nil {
 		// 	c.Status(http.StatusBadRequest)
@@ -79,7 +85,7 @@ func (h *userHandler) FindSentencePairs(c *gin.Context) {
 // @Router      /v1/user/sentence/{sentenceNumber} [get]
 // @Security    BasicAuth
 func (h *userHandler) FindSentenceBySentenceNumber(c *gin.Context) {
-	handlerhelper.HandleFunction(c, func(ctx context.Context, logger *slog.Logger) error {
+	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		// sentenceNumber, err := helper.GetIntFromPath(c, "sentenceNumber")
 		// if err != nil {
 		// 	return rslibdomain.ErrInvalidArgument
@@ -99,7 +105,7 @@ func (h *userHandler) FindSentenceBySentenceNumber(c *gin.Context) {
 	}, h.errorHandle)
 }
 
-func (h *userHandler) errorHandle(ctx context.Context, logger *slog.Logger, c *gin.Context, err error) bool {
-	logger.ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
+func (h *userHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
+	h.logger().ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
 	return false
 }

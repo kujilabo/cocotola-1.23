@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"math/rand"
 	"strings"
 	"time"
@@ -89,7 +90,8 @@ func (e *tatoebaSentenceEntity) TableName() string {
 }
 
 type tatoebaSentenceRepository struct {
-	db *gorm.DB
+	db     *gorm.DB
+	logger *slog.Logger
 }
 
 func newTatoebaSentenceRepository(db *gorm.DB) service.TatoebaSentenceRepository {
@@ -98,7 +100,8 @@ func newTatoebaSentenceRepository(db *gorm.DB) service.TatoebaSentenceRepository
 	}
 
 	return &tatoebaSentenceRepository{
-		db: db,
+		db:     db,
+		logger: slog.Default().With(slog.String(rsliblog.LoggerNameKey, "TatoebaSentenceAddParameterReader")),
 	}
 }
 
@@ -155,10 +158,10 @@ func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context
 	ctx, span := tracer.Start(ctx, "tatoebaSentenceRepository.FindTatoebaSentencePairs")
 	defer span.End()
 
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
+	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
-	logger.DebugContext(ctx, fmt.Sprintf("keyword: %s, random: %v", param.GetKeyword(), param.IsRandom()))
+	r.logger.DebugContext(ctx, fmt.Sprintf("keyword: %s, random: %v", param.GetKeyword(), param.IsRandom()))
 	if param.IsRandom() {
 		return r.findTatoebaSentencesByRandom(ctx, param)
 	}
@@ -166,10 +169,10 @@ func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context
 }
 
 func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
+	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
-	logger.DebugContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences")
+	r.logger.DebugContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences")
 	limit := param.GetPageSize()
 	offset := (param.GetPageNo() - 1) * param.GetPageSize()
 
@@ -236,10 +239,10 @@ func min(x, y int) int {
 }
 
 func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
+	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
-	logger.Debug("tatoebaSentenceRepository.FindTatoebaSentences")
+	r.logger.Debug("tatoebaSentenceRepository.FindTatoebaSentences")
 	limit := param.GetPageSize() * shuffleBufferRate
 	offset := (param.GetPageNo() - 1) * param.GetPageSize()
 
@@ -277,7 +280,7 @@ func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Con
 	// rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(entities), func(i, j int) { entities[i], entities[j] = entities[j], entities[i] })
 
-	logger.InfoContext(ctx, fmt.Sprintf("len(entities): %d", len(entities)))
+	r.logger.InfoContext(ctx, fmt.Sprintf("len(entities): %d", len(entities)))
 
 	length := min(param.GetPageSize(), len(entities))
 	results := make([]service.TatoebaSentencePair, length)
