@@ -39,8 +39,7 @@ func NewAdminHandler(adminUsecase AdminUsecase, newTatoebaSentenceAddParameterRe
 }
 
 func (h *AdminHandler) logger() *slog.Logger {
-	adminHandlerLoggerName := "AdminHandler"
-	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName))
+	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.AdminHandler"))
 }
 
 // ImportSentences godoc
@@ -55,9 +54,6 @@ func (h *AdminHandler) logger() *slog.Logger {
 // @Router      /v1/admin/sentence/import [post]
 // @Security    BasicAuth
 func (h *AdminHandler) ImportSentences(c *gin.Context) {
-	// ctx := c.Request.Context()
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		h.logger().InfoContext(ctx, "ImportSentences")
 		file, err := c.FormFile("file")
@@ -104,9 +100,6 @@ func (h *AdminHandler) ImportSentences(c *gin.Context) {
 // @Router      /v1/admin/link/import [post]
 // @Security    BasicAuth
 func (h *AdminHandler) ImportLinks(c *gin.Context) {
-	// ctx := c.Request.Context()
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {

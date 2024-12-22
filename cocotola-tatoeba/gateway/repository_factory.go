@@ -13,19 +13,19 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
-type repositoryFactory struct {
+type RepositoryFactory struct {
 	dialect    rslibgateway.DialectRDBMS
 	driverName string
 	db         *gorm.DB
 	location   *time.Location
 }
 
-func NewRepositoryFactory(ctx context.Context, dialect rslibgateway.DialectRDBMS, driverName string, db *gorm.DB, location *time.Location) (service.RepositoryFactory, error) {
+func NewRepositoryFactory(ctx context.Context, dialect rslibgateway.DialectRDBMS, driverName string, db *gorm.DB, location *time.Location) (*RepositoryFactory, error) {
 	if db == nil {
 		return nil, rsliberrors.Errorf("db is nil. err: %w", rslibdomain.ErrInvalidArgument)
 	}
 
-	return &repositoryFactory{
+	return &RepositoryFactory{
 		dialect:    dialect,
 		driverName: driverName,
 		db:         db,
@@ -33,11 +33,11 @@ func NewRepositoryFactory(ctx context.Context, dialect rslibgateway.DialectRDBMS
 	}, nil
 }
 
-func (f *repositoryFactory) NewTatoebaSentenceRepository(ctx context.Context) service.TatoebaSentenceRepository {
+func (f *RepositoryFactory) NewTatoebaSentenceRepository(ctx context.Context) service.TatoebaSentenceRepository {
 	return newTatoebaSentenceRepository(f.db)
 }
 
-func (f *repositoryFactory) NewTatoebaLinkRepository(ctx context.Context) service.TatoebaLinkRepository {
+func (f *RepositoryFactory) NewTatoebaLinkRepository(ctx context.Context) service.TatoebaLinkRepository {
 	return newTatoebaLinkRepository(f.db, f)
 }
 

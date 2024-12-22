@@ -17,18 +17,9 @@ func InitLog(cfg *LogConfig) error {
 		defaultLogLevel = stringToLogLevel(rootLevel)
 	}
 
-	// liblog.DefaultLogLevel = defaultLogLevel
-	// liblog.DefaultLogger = slog.New(liblog.LogHandlers[defaultLogLevel])
-
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: defaultLogLevel,
 	})))
-	slog.Debug("DDDD")
-
-	// for name, level := range cfg.Level {
-	// 	logLevel := stringToLogLevel(level)
-	// 	liblog.Loggers[libdomain.ContextKey(name)] = slog.New(liblog.LogHandlers[logLevel])
-	// }
 
 	return nil
 }

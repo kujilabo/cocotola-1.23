@@ -7,23 +7,17 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 )
 
-type UserUsecase interface {
-	FindSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error)
-
-	FindSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error)
-}
-
-type userUsecase struct {
+type UserUsecase struct {
 	txManager service.TransactionManager
 }
 
-func NewUserUsecase(txManager service.TransactionManager) UserUsecase {
-	return &userUsecase{
+func NewUserUsecase(txManager service.TransactionManager) *UserUsecase {
+	return &UserUsecase{
 		txManager: txManager,
 	}
 }
 
-func (u *userUsecase) FindSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
+func (u *UserUsecase) FindSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
 	var result service.TatoebaSentencePairSearchResult
 	if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
 		repo := rf.NewTatoebaSentenceRepository(ctx)
@@ -40,7 +34,7 @@ func (u *userUsecase) FindSentencePairs(ctx context.Context, param service.Tatoe
 	return result, nil
 }
 
-func (u *userUsecase) FindSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error) {
+func (u *UserUsecase) FindSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error) {
 	var result service.TatoebaSentence
 	if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
 		repo := rf.NewTatoebaSentenceRepository(ctx)

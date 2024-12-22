@@ -8,7 +8,6 @@ go_library(
         "init.go",
         "repository_factory.go",
         "state_repository.go",
-        "transaction_manager.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway",
     visibility = ["//visibility:public"],

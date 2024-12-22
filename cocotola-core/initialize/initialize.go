@@ -55,7 +55,7 @@ const authClientTimeout = time.Duration(5) * time.Second
 // 	return systemOwner, nil
 // }
 
-func InitAppServer(ctx context.Context, parentRouterGroup gin.IRouter, authAPIConfig config.AuthAPIonfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, db *gorm.DB, txManager, nonTxManager service.TransactionManager) error {
+func InitAppServer(ctx context.Context, parentRouterGroup gin.IRouter, authAPIConfig *config.AuthAPIonfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, db *gorm.DB, txManager, nonTxManager service.TransactionManager) error {
 	// cors
 	gincorsConfig := rslibconfig.InitCORS(corsConfig)
 	httpClient := http.Client{

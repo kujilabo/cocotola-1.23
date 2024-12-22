@@ -7,7 +7,6 @@ import (
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
-	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/config"
 	controller "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin"
@@ -15,7 +14,7 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
 )
 
-func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, internalAuthConfig config.InternalAuthConfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager, rsrf rsuserservice.RepositoryFactory) error {
+func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, internalAuthConfig config.InternalAuthConfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager) error {
 	// cors
 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
 

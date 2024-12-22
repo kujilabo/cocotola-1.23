@@ -42,8 +42,8 @@ func Test_GoogleAuthClient_NewGoogleAuthClient(t *testing.T) {
 }
 
 func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnTokenSet_whenReturnedStatusCodeIs200(t *testing.T) {
-	ctx := context.Background()
 	t.Parallel()
+	ctx := context.Background()
 
 	// given
 	httpClient := new(gatewaymock.HTTPClient)
@@ -63,8 +63,8 @@ func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnTokenSet_whenReturned
 }
 
 func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnAuthenticationError_whenReturnedStatusCodeIs400(t *testing.T) {
-	ctx := context.Background()
 	t.Parallel()
+	ctx := context.Background()
 
 	// given
 	httpClient := new(gatewaymock.HTTPClient)
@@ -83,8 +83,8 @@ func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnAuthenticationError_w
 }
 
 func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnAuthenticationError_whenReturnedStatusCodeIs401(t *testing.T) {
-	ctx := context.Background()
 	t.Parallel()
+	ctx := context.Background()
 
 	// given
 	httpClient := new(gatewaymock.HTTPClient)
@@ -103,8 +103,8 @@ func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnAuthenticationError_w
 }
 
 func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnOtherError_whenErrorOccurred(t *testing.T) {
-	ctx := context.Background()
 	t.Parallel()
+	ctx := context.Background()
 
 	// given
 	otherError := errors.New("ERROR")

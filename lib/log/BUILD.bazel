@@ -1,8 +1,0 @@
-load("@rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "log",
-    srcs = ["log.go"],
-    importpath = "github.com/kujilabo/cocotola-1.23/lib/log",
-    visibility = ["//visibility:public"],
-)

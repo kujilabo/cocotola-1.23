@@ -2,21 +2,19 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"time"
 
-	"github.com/gin-gonic/gin"
-
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
 
+	"github.com/gin-gonic/gin"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
@@ -58,7 +56,32 @@ func main() {
 
 	rsliberrors.UseXerrorsErrorf()
 
-	cfg, dialect, db, sqlDB, tp := Initialize(ctx, appEnv)
+	// load config
+	cfg, err := config.LoadConfig(appEnv)
+	if err != nil {
+		panic(err)
+	}
+
+	// init log
+	if err := rslibconfig.InitLog(cfg.Log); err != nil {
+		panic(err)
+	}
+
+	// init tracer
+	tp, err := rslibconfig.InitTracerProvider(ctx, cfg.App.Name, cfg.Trace)
+	if err != nil {
+		slog.ErrorContext(ctx, fmt.Sprintf("err. err: %v", err))
+		slog.ErrorContext(ctx, fmt.Sprintf("err. err: %+v", err))
+		panic(err)
+	}
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+
+	// init db
+	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, sqls.SQL)
+	if err != nil {
+		panic(err)
+	}
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans
 
@@ -73,12 +96,14 @@ func main() {
 		panic(err)
 	}
 
-	txManager, err := gateway.NewTransactionManager(db, rff)
+	// init transaction manager
+	txManager, err := rslibgateway.NewTransactionManagerT(db, rff)
 	if err != nil {
 		panic(err)
 	}
 
-	nonTxManager, err := gateway.NewNonTransactionManager(rf)
+	// init non transaction manager
+	nonTxManager, err := rslibgateway.NewNonTransactionManagerT(rf)
 	if err != nil {
 		panic(err)
 	}
@@ -91,56 +116,57 @@ func main() {
 	logger.Info("Hello")
 	service.A()
 
+	// init gin
+	if !cfg.Debug.Gin {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	router := gin.New()
+	if err := initialize.InitAppServer(ctx, router, cfg.AuthAPI, cfg.CORS, cfg.Debug, cfg.App.Name, db, txManager, nonTxManager); err != nil {
+		panic(err)
+	}
+
+	// run
+	result := run(ctx, cfg, router)
+
 	gracefulShutdownTime2 := time.Duration(cfg.Shutdown.TimeSec2) * time.Second
-
-	result := run(ctx, cfg, db, txManager, nonTxManager)
-
 	time.Sleep(gracefulShutdownTime2)
 	logger.InfoContext(ctx, "exited")
 	os.Exit(result)
 }
 
-func Initialize(ctx context.Context, env string) (*config.Config, rslibgateway.DialectRDBMS, *gorm.DB, *sql.DB, *sdktrace.TracerProvider) {
-	cfg, err := config.LoadConfig(env)
-	if err != nil {
-		panic(err)
-	}
+// func Initialize(ctx context.Context, env string) (*config.Config, rslibgateway.DialectRDBMS, *gorm.DB, *sql.DB, *sdktrace.TracerProvider) {
+// 	cfg, err := config.LoadConfig(env)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	// init log
-	if err := rslibconfig.InitLog(cfg.Log); err != nil {
-		panic(err)
-	}
+// 	// init log
+// 	if err := rslibconfig.InitLog(cfg.Log); err != nil {
+// 		panic(err)
+// 	}
 
-	// init tracer
-	tp, err := rslibconfig.InitTracerProvider(ctx, cfg.App.Name, cfg.Trace)
-	if err != nil {
-		panic(err)
-	}
-	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+// 	// init tracer
+// 	tp, err := rslibconfig.InitTracerProvider(ctx, cfg.App.Name, cfg.Trace)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	otel.SetTracerProvider(tp)
+// 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
-	// init db
-	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, sqls.SQL)
-	if err != nil {
-		panic(err)
-	}
+// 	// init db
+// 	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, sqls.SQL)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	return cfg, dialect, db, sqlDB, tp
-}
+// 	return cfg, dialect, db, sqlDB, tp
+// }
 
-func run(ctx context.Context, cfg *config.Config, db *gorm.DB, txManager, nonTxManager service.TransactionManager) int {
+func run(ctx context.Context, cfg *config.Config, router http.Handler) int {
 	var eg *errgroup.Group
 	eg, ctx = errgroup.WithContext(ctx)
 
-	if !cfg.Debug.Gin {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
 	eg.Go(func() error {
-		router := gin.New()
-		if err := initialize.InitAppServer(ctx, router, *cfg.AuthAPI, cfg.CORS, cfg.Debug, cfg.App.Name, db, txManager, nonTxManager); err != nil {
-			return err
-		}
 		return libcontroller.AppServerProcess(ctx, router, cfg.App.HTTPPort, readHeaderTimeout, time.Duration(cfg.Shutdown.TimeSec1)*time.Second) // nolint:wrapcheck
 	})
 	eg.Go(func() error {

@@ -7,31 +7,30 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
+	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
+	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
-type UserHandler interface {
-	FindSentencePairs(c *gin.Context)
+type UserUsecase interface {
+	FindSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error)
 
-	FindSentenceBySentenceNumber(c *gin.Context)
+	FindSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error)
 }
 
-type userHandler struct {
-	userUsecase usecase.UserUsecase
+type UserHandler struct {
+	userUsecase UserUsecase
 }
 
-func NewUserHandler(userUsecase usecase.UserUsecase) UserHandler {
-	return &userHandler{
+func NewUserHandler(userUsecase UserUsecase) *UserHandler {
+	return &UserHandler{
 		userUsecase: userUsecase,
 	}
 }
 
-func (h *userHandler) logger() *slog.Logger {
-	adminHandlerLoggerName := "userHandler"
-	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName))
+func (h *UserHandler) logger() *slog.Logger {
+	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler"))
 }
 
 // FindSentencePairs godoc
@@ -46,7 +45,7 @@ func (h *userHandler) logger() *slog.Logger {
 // @Failure     401
 // @Router      /v1/user/sentence_pair/find [post]
 // @Security    BasicAuth
-func (h *userHandler) FindSentencePairs(c *gin.Context) {
+func (h *UserHandler) FindSentencePairs(c *gin.Context) {
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		// param := entity.TatoebaSentenceFindParameter{}
 		// if err := c.ShouldBindJSON(&param); err != nil {
@@ -84,7 +83,7 @@ func (h *userHandler) FindSentencePairs(c *gin.Context) {
 // @Failure     401
 // @Router      /v1/user/sentence/{sentenceNumber} [get]
 // @Security    BasicAuth
-func (h *userHandler) FindSentenceBySentenceNumber(c *gin.Context) {
+func (h *UserHandler) FindSentenceBySentenceNumber(c *gin.Context) {
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		// sentenceNumber, err := helper.GetIntFromPath(c, "sentenceNumber")
 		// if err != nil {
@@ -105,7 +104,7 @@ func (h *userHandler) FindSentenceBySentenceNumber(c *gin.Context) {
 	}, h.errorHandle)
 }
 
-func (h *userHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
+func (h *UserHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
 	h.logger().ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
 	return false
 }

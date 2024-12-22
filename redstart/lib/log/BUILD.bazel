@@ -2,11 +2,7 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "log",
-    srcs = [
-        "log.go",
-        "log_handler.go",
-    ],
+    srcs = ["log.go"],
     importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/log",
     visibility = ["//visibility:public"],
-    deps = ["//redstart/lib/domain"],
 )

@@ -12,7 +12,6 @@ go_library(
         "//cocotola-tatoeba/usecase",
         "//lib/config",
         "//redstart/lib/config",
-        "//redstart/user/service",
         "@com_github_gin_gonic_gin//:gin",
     ],
 )

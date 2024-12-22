@@ -19,7 +19,6 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
-	rsusergateway "github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
 
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
 
@@ -29,10 +28,6 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/sqls"
 )
-
-// const (
-// 	loggerKey = liblog.TatoebaMainLoggerContextKey
-// )
 
 func getValue(values ...string) string {
 	for _, v := range values {
@@ -95,12 +90,6 @@ func main() {
 		panic(err)
 	}
 
-	// init rs repository factory
-	rsrf, err := rsusergateway.NewRepositoryFactory(ctx, dialect, cfg.DB.DriverName, db, time.UTC)
-	if err != nil {
-		panic(err)
-	}
-
 	// init transaction manager
 	txManager, err := rslibgateway.NewTransactionManagerT(db, rff)
 	if err != nil {
@@ -118,12 +107,17 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.New()
-	if err := initialize.InitAppServer(ctx, router, *cfg.InternalAuth, cfg.CORS, cfg.Debug, cfg.App.Name, txManager, nonTxManager, rsrf); err != nil {
+	if err := initialize.InitAppServer(ctx, router, *cfg.InternalAuth, cfg.CORS, cfg.Debug, cfg.App.Name, txManager, nonTxManager); err != nil {
 		panic(err)
 	}
 
 	// run
-	result := run(ctx, cfg, router)
+	// result := run(ctx, cfg, router)
+	result := run1(ctx,
+		WithAppServerProcess(router, cfg.App.HTTPPort, time.Duration(cfg.App.ReadHeaderTimeoutSec)*time.Second, time.Duration(cfg.Shutdown.TimeSec1)*time.Second),
+		WithSignalWatchProcess(),
+		WithMetricsServerProcess(cfg.App.MetricsPort, cfg.Shutdown.TimeSec1),
+	)
 
 	gracefulShutdownTime2 := time.Duration(cfg.Shutdown.TimeSec2) * time.Second
 	time.Sleep(gracefulShutdownTime2)
@@ -131,23 +125,63 @@ func main() {
 	os.Exit(result)
 }
 
-func run(ctx context.Context, cfg *config.Config, router http.Handler) int {
+// func run(ctx context.Context, cfg *config.Config, router http.Handler) int {
+// 	var eg *errgroup.Group
+// 	eg, ctx = errgroup.WithContext(ctx)
+
+// 	eg.Go(func() error {
+// 		return libcontroller.AppServerProcess(ctx, router, cfg.App.HTTPPort, time.Duration(cfg.App.ReadHeaderTimeoutSec)*time.Second, time.Duration(cfg.Shutdown.TimeSec1)*time.Second) // nolint:wrapcheck
+// 	})
+// 	eg.Go(func() error {
+// 		return rslibgateway.MetricsServerProcess(ctx, cfg.App.MetricsPort, cfg.Shutdown.TimeSec1) // nolint:wrapcheck
+// 	})
+// 	eg.Go(func() error {
+// 		return rslibgateway.SignalWatchProcess(ctx) // nolint:wrapcheck
+// 	})
+// 	eg.Go(func() error {
+// 		<-ctx.Done()
+// 		return ctx.Err() // nolint:wrapcheck
+// 	})
+
+// 	if err := eg.Wait(); err != nil {
+// 		return 1
+// 	}
+// 	return 0
+// }
+
+type Process func() error
+type ProcessFunc func(ctx context.Context) Process
+
+func WithAppServerProcess(router http.Handler, port int, readHeaderTimeout, shutdownTime time.Duration) ProcessFunc {
+	return func(ctx context.Context) Process {
+		return func() error {
+			return libcontroller.AppServerProcess(ctx, router, port, readHeaderTimeout, shutdownTime)
+		}
+	}
+}
+func WithMetricsServerProcess(port int, shutdownTime int) ProcessFunc {
+	return func(ctx context.Context) Process {
+		return func() error {
+			return rslibgateway.MetricsServerProcess(ctx, port, shutdownTime)
+		}
+	}
+}
+
+func WithSignalWatchProcess() ProcessFunc {
+	return func(ctx context.Context) Process {
+		return func() error {
+			return rslibgateway.SignalWatchProcess(ctx)
+		}
+	}
+}
+
+func run1(ctx context.Context, processFuncs ...ProcessFunc) int {
 	var eg *errgroup.Group
 	eg, ctx = errgroup.WithContext(ctx)
 
-	eg.Go(func() error {
-		return libcontroller.AppServerProcess(ctx, router, cfg.App.HTTPPort, time.Duration(cfg.App.ReadHeaderTimeoutSec)*time.Second, time.Duration(cfg.Shutdown.TimeSec1)*time.Second) // nolint:wrapcheck
-	})
-	eg.Go(func() error {
-		return rslibgateway.MetricsServerProcess(ctx, cfg.App.MetricsPort, cfg.Shutdown.TimeSec1) // nolint:wrapcheck
-	})
-	eg.Go(func() error {
-		return rslibgateway.SignalWatchProcess(ctx) // nolint:wrapcheck
-	})
-	eg.Go(func() error {
-		<-ctx.Done()
-		return ctx.Err() // nolint:wrapcheck
-	})
+	for _, pf := range processFuncs {
+		eg.Go(pf(ctx))
+	}
 
 	if err := eg.Wait(); err != nil {
 		return 1

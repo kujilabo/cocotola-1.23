@@ -56,28 +56,29 @@ func (s systemOwnerByOrganizationName) Get(ctx context.Context, rf service.Repos
 	return systemOwner, nil
 }
 
-func InitAppServer(ctx context.Context, parentRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, authConfig *config.AuthConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager, rsrf rsuserservice.RepositoryFactory) error {
+func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, authConfig *config.AuthConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager) error {
 	// cors
-	gincorsConfig := rslibconfig.InitCORS(corsConfig)
+	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
+
+	// usecase
+	// - google
 	httpClient := http.Client{
 		Timeout:   time.Duration(authConfig.APITimeoutSec) * time.Second,
 		Transport: otelhttp.NewTransport(http.DefaultTransport),
 	}
-	googleAuthClient := gateway.NewGoogleAuthClient(&httpClient, authConfig.GoogleClientID, authConfig.GoogleClientSecret, authConfig.GoogleCallbackURL)
-
 	signingKey := []byte(authConfig.SigningKey)
 	signingMethod := jwt.SigningMethodHS256
 	authTokenManager := gateway.NewAuthTokenManager(signingKey, signingMethod, time.Duration(authConfig.AccessTokenTTLMin)*time.Minute, time.Duration(authConfig.RefreshTokenTTLHour)*time.Hour)
-
-	rbacUsecase := usecase.NewRBAC(txManager, nonTxManager)
-	authenticationUsecase := usecase.NewAuthentication(txManager, authTokenManager, &systemOwnerByOrganizationName{})
+	googleAuthClient := gateway.NewGoogleAuthClient(&httpClient, authConfig.GoogleClientID, authConfig.GoogleClientSecret, authConfig.GoogleCallbackURL)
 	googleUserUsecase := usecase.NewGoogleUser(txManager, nonTxManager, authTokenManager, googleAuthClient)
+	// - rbac
+	rbacUsecase := usecase.NewRBAC(txManager, nonTxManager)
+	// - authentication
+	authenticationUsecase := usecase.NewAuthentication(txManager, authTokenManager, &systemOwnerByOrganizationName{})
+	// - password
 	passwordUsecase := usecase.NewPassword(txManager, nonTxManager, authTokenManager)
 
-	privateRouterGroupFunc := []controller.InitRouterGroupFunc{
-		controller.NewInitRBACRouterFunc(rbacUsecase),
-	}
-
+	// public router
 	publicRouterGroupFunc := []controller.InitRouterGroupFunc{
 		controller.NewInitTestRouterFunc(),
 		controller.NewInitAuthRouterFunc(authenticationUsecase),
@@ -85,7 +86,16 @@ func InitAppServer(ctx context.Context, parentRouterGroup gin.IRouter, corsConfi
 		controller.NewInitPasswordRouterFunc(passwordUsecase),
 	}
 
-	if err := controller.InitRouter(ctx, parentRouterGroup, publicRouterGroupFunc, privateRouterGroupFunc, gincorsConfig, debugConfig, appName); err != nil {
+	// private router
+	privateRouterGroupFunc := []controller.InitRouterGroupFunc{
+		controller.NewInitRBACRouterFunc(rbacUsecase),
+	}
+
+	// rout
+	controller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
+
+	// api
+	if err := controller.InitAPIRouterGroup(ctx, rootRouterGroup, publicRouterGroupFunc, privateRouterGroupFunc, appName); err != nil {
 		return err
 	}
 

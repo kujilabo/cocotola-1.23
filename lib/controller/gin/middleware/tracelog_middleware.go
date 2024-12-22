@@ -23,8 +23,6 @@ func NewTraceLogMiddleware(appName string) gin.HandlerFunc {
 			c.Request = c.Request.WithContext(savedCtx)
 		}()
 
-		// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-		// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 		logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "TraceLogMiddleware"))
 		logger.InfoContext(ctx, "", slog.String("uri", c.Request.RequestURI), slog.String("method", c.Request.Method), slog.String("trace_id", otTraceID))
 

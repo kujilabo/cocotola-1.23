@@ -18,7 +18,6 @@ go_library(
         "//redstart/lib/errors",
         "//redstart/lib/gateway",
         "//redstart/lib/log",
-        "//redstart/user/gateway",
         "@com_github_gin_gonic_gin//:gin",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",

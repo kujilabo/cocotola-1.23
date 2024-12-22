@@ -30,9 +30,6 @@ func NewInitTestRouterFunc() InitRouterGroupFunc {
 }
 
 func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *libconfig.DebugConfig) {
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
 	rootRouterGroup.Use(cors.New(corsConfig))
 	rootRouterGroup.Use(sloggin.New(slog.Default()))
 
