@@ -638,12 +638,6 @@ def go_dependencies():
         version = "v0.0.0-20210331224755-41bb18bfe9da",
     )
     go_repository(
-        name = "com_github_golang_jwt_jwt_v4",
-        importpath = "github.com/golang-jwt/jwt/v4",
-        sum = "h1:rcc4lwaZgFMCZ5jxF9ABolDcIHdBytAFgqFPbSJQAYs=",
-        version = "v4.4.2",
-    )
-    go_repository(
         name = "com_github_golang_jwt_jwt_v5",
         importpath = "github.com/golang-jwt/jwt/v5",
         sum = "h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17wHk=",
