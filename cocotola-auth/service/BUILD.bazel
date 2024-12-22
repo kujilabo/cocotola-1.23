@@ -4,14 +4,15 @@ go_library(
     name = "service",
     srcs = [
         "auth_token_manager.go",
+        "init.go",
         "repository_factory.go",
         "state_repository.go",
-        "transaction_manager.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-auth/service",
     visibility = ["//visibility:public"],
     deps = [
         "//cocotola-auth/domain",
+        "//redstart/lib/gateway",
         "//redstart/user/domain",
         "//redstart/user/service",
     ],
