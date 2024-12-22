@@ -11,6 +11,7 @@ import (
 
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/domain"
@@ -35,17 +36,19 @@ type WorkbookCommandUsecase interface {
 type WorkbookHandler struct {
 	workbookQueryUsecase   WorkbookQueryUsecase
 	workbookCommandUsecase WorkbookCommandUsecase
+	logger                 *slog.Logger
 }
 
 func NewWorkbookHandler(workbookQueryUsecase WorkbookQueryUsecase, workbookCommandUsecase WorkbookCommandUsecase) *WorkbookHandler {
 	return &WorkbookHandler{
 		workbookQueryUsecase:   workbookQueryUsecase,
 		workbookCommandUsecase: workbookCommandUsecase,
+		logger:                 slog.Default().With(slog.String(rsliblog.LoggerNameKey, "WorkbookHandler")),
 	}
 }
 
 func (h *WorkbookHandler) FindWorkbooks(c *gin.Context) {
-	helper.HandleSecuredFunction(c, func(ctx context.Context, logger *slog.Logger, operator service.OperatorInterface) error {
+	helper.HandleSecuredFunction(c, func(ctx context.Context, operator service.OperatorInterface) error {
 		param := libapi.WorkbookFindParameter{
 			PageNo:   1,
 			PageSize: defaultPageSize,
@@ -73,17 +76,17 @@ func (h *WorkbookHandler) FindWorkbooks(c *gin.Context) {
 // }
 
 func (h *WorkbookHandler) RetrieveWorkbookByID(c *gin.Context) {
-	helper.HandleSecuredFunction(c, func(ctx context.Context, logger *slog.Logger, operator service.OperatorInterface) error {
+	helper.HandleSecuredFunction(c, func(ctx context.Context, operator service.OperatorInterface) error {
 		workbookIDInt, err := helper.GetIntFromPath(c, "workbookID")
 		if err != nil {
-			logger.WarnContext(ctx, fmt.Sprintf("GetIntFromPath. err: %+v", err))
+			h.logger.WarnContext(ctx, fmt.Sprintf("GetIntFromPath. err: %+v", err))
 			c.Status(http.StatusBadRequest)
 			return nil
 		}
 
 		workbookID, err := domain.NewWorkbookID(workbookIDInt)
 		if err != nil {
-			logger.WarnContext(ctx, fmt.Sprintf("NewWorkbookID. err: %+v", err))
+			h.logger.WarnContext(ctx, fmt.Sprintf("NewWorkbookID. err: %+v", err))
 			c.Status(http.StatusBadRequest)
 			return nil
 		}
@@ -99,7 +102,7 @@ func (h *WorkbookHandler) RetrieveWorkbookByID(c *gin.Context) {
 }
 
 func (h *WorkbookHandler) AddWorkbook(c *gin.Context) {
-	helper.HandleSecuredFunction(c, func(ctx context.Context, logger *slog.Logger, operator service.OperatorInterface) error {
+	helper.HandleSecuredFunction(c, func(ctx context.Context, operator service.OperatorInterface) error {
 		apiParam := libapi.WorkbookAddParameter{}
 		if err := c.ShouldBindJSON(&apiParam); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": http.StatusText(http.StatusBadRequest)})
@@ -115,7 +118,7 @@ func (h *WorkbookHandler) AddWorkbook(c *gin.Context) {
 		}
 		workbookID, err := h.workbookCommandUsecase.AddWorkbook(ctx, operator, &param)
 		if err != nil {
-			logger.ErrorContext(ctx, fmt.Sprintf("workbookCommandUsecase.AddWorkbook. err: %+v", err))
+			h.logger.ErrorContext(ctx, fmt.Sprintf("workbookCommandUsecase.AddWorkbook. err: %+v", err))
 			c.JSON(http.StatusBadRequest, gin.H{"message": http.StatusText(http.StatusBadRequest)})
 			return nil
 		}
@@ -126,7 +129,7 @@ func (h *WorkbookHandler) AddWorkbook(c *gin.Context) {
 }
 
 func (h *WorkbookHandler) UpdateWorkbook(c *gin.Context) {
-	helper.HandleSecuredFunction(c, func(ctx context.Context, logger *slog.Logger, operator service.OperatorInterface) error {
+	helper.HandleSecuredFunction(c, func(ctx context.Context, operator service.OperatorInterface) error {
 		version, err := helper.GetIntFromQuery(c, "version")
 		if err != nil {
 			return rslibdomain.ErrInvalidArgument
@@ -134,14 +137,14 @@ func (h *WorkbookHandler) UpdateWorkbook(c *gin.Context) {
 
 		workbookID, err := helper.GetWorkbookIDFromPath(c, "workbookID")
 		if err != nil {
-			logger.WarnContext(ctx, fmt.Sprintf("GetIntFromPath. err: %+v", err))
+			h.logger.WarnContext(ctx, fmt.Sprintf("GetIntFromPath. err: %+v", err))
 			c.Status(http.StatusBadRequest)
 			return nil
 		}
 
 		apiParam := libapi.WorkbookUpdateParameter{}
 		if err := c.ShouldBindJSON(&apiParam); err != nil {
-			logger.WarnContext(ctx, fmt.Sprintf("ShouldBindJSON. err: %+v", err))
+			h.logger.WarnContext(ctx, fmt.Sprintf("ShouldBindJSON. err: %+v", err))
 			c.Status(http.StatusBadRequest)
 			return nil
 		}
@@ -176,9 +179,9 @@ func (h *WorkbookHandler) UpdateWorkbook(c *gin.Context) {
 // 	}
 // }
 
-func (h *WorkbookHandler) errorHandle(ctx context.Context, logger *slog.Logger, c *gin.Context, err error) bool {
+func (h *WorkbookHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
 	if errors.Is(err, rslibdomain.ErrInvalidArgument) {
-		logger.WarnContext(ctx, fmt.Sprintf("PrivateWorkbookHandler err: %+v", err))
+		h.logger.WarnContext(ctx, fmt.Sprintf("PrivateWorkbookHandler err: %+v", err))
 		c.JSON(http.StatusBadRequest, gin.H{"message": http.StatusText(http.StatusBadRequest)})
 		return true
 	}
@@ -186,7 +189,7 @@ func (h *WorkbookHandler) errorHandle(ctx context.Context, logger *slog.Logger, 
 		c.JSON(http.StatusNotFound, gin.H{"message": http.StatusText(http.StatusNotFound)})
 		return true
 	}
-	logger.ErrorContext(ctx, fmt.Sprintf("WorkbookHandler. error: %+v", err))
+	h.logger.ErrorContext(ctx, fmt.Sprintf("WorkbookHandler. error: %+v", err))
 	return false
 }
 

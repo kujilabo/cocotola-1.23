@@ -17,7 +17,6 @@ go_library(
         "//cocotola-tatoeba/usecase",
         "//lib/config",
         "//lib/controller/gin/middleware",
-        "//lib/log",
         "//redstart/lib/errors",
         "//redstart/lib/log",
         "@com_github_gin_contrib_cors//:cors",

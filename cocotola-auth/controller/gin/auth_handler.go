@@ -21,24 +21,24 @@ type AuthenticationUsecase interface {
 
 type AuthHandler struct {
 	authenticationUsecase AuthenticationUsecase
+	logger                *slog.Logger
 }
 
 func NewAuthHandler(authenticationUsecase AuthenticationUsecase) *AuthHandler {
 	return &AuthHandler{
 		authenticationUsecase: authenticationUsecase,
+		logger:                slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AuthHandler")),
 	}
 }
 
 func (h *AuthHandler) GetUserInfo(c *gin.Context) {
 	ctx := c.Request.Context()
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
-	logger.InfoContext(ctx, "GetUserInfo")
+	h.logger.InfoContext(ctx, "GetUserInfo")
 
 	authorization := c.GetHeader("Authorization")
 	if !strings.HasPrefix(authorization, "Bearer ") {
-		logger.InfoContext(ctx, "invalid header. Bearer not found")
+		h.logger.InfoContext(ctx, "invalid header. Bearer not found")
 		c.JSON(http.StatusUnauthorized, gin.H{"message": http.StatusText(http.StatusUnauthorized)})
 		return
 	}
@@ -46,7 +46,7 @@ func (h *AuthHandler) GetUserInfo(c *gin.Context) {
 	bearerToken := authorization[len("Bearer "):]
 	appUserInfo, err := h.authenticationUsecase.GetUserInfo(ctx, bearerToken)
 	if err != nil {
-		logger.InfoContext(ctx, "GetUserInfo", slog.Any("err", (err)))
+		h.logger.InfoContext(ctx, "GetUserInfo", slog.Any("err", (err)))
 		c.JSON(http.StatusUnauthorized, gin.H{"message": http.StatusText(http.StatusUnauthorized)})
 		return
 	}
@@ -62,10 +62,8 @@ func (h *AuthHandler) GetUserInfo(c *gin.Context) {
 
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	ctx := c.Request.Context()
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
-	logger.InfoContext(ctx, "Authorize")
+	h.logger.InfoContext(ctx, "Authorize")
 	refreshTokenParameter := libapi.RefreshTokenParameter{}
 	if err := c.ShouldBindJSON(&refreshTokenParameter); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": http.StatusText(http.StatusBadRequest)})

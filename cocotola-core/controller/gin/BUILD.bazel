@@ -4,7 +4,6 @@ go_library(
     name = "gin",
     srcs = [
         "app_router.go",
-        "init.go",
         "workbook_handler.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin",
@@ -16,7 +15,6 @@ go_library(
         "//lib/api",
         "//lib/config",
         "//lib/controller/gin/middleware",
-        "//lib/log",
         "//redstart/lib/domain",
         "//redstart/lib/errors",
         "//redstart/lib/log",

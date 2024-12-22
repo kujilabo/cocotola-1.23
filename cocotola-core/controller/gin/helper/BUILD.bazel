@@ -4,7 +4,6 @@ go_library(
     name = "helper",
     srcs = [
         "auth_helper.go",
-        "init.go",
         "path_helper.go",
         "query_helper.go",
     ],
@@ -13,7 +12,6 @@ go_library(
     deps = [
         "//cocotola-core/domain",
         "//cocotola-core/service",
-        "//lib/log",
         "//redstart/lib/log",
         "//redstart/user/domain",
         "@com_github_gin_gonic_gin//:gin",

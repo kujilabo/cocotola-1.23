@@ -7,9 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
+
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
 	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
-	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain"
 )
@@ -27,18 +28,18 @@ type SynthesizerUsecase interface {
 
 type SynthesizerHandler struct {
 	synthesizerUsecase SynthesizerUsecase
+	logger             *slog.Logger
 }
 
 func NewSynthesizerHandler(synthesizerUsecase SynthesizerUsecase) *SynthesizerHandler {
 	return &SynthesizerHandler{
 		synthesizerUsecase: synthesizerUsecase,
+		logger:             slog.Default().With(slog.String(rsliblog.LoggerNameKey, "SynthesizerHandler")),
 	}
 }
 
 func (h *SynthesizerHandler) Synthesize(c *gin.Context) {
 	ctx := c.Request.Context()
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
 	synthesizeParameter := libapi.SynthesizeParameter{}
 	if err := c.ShouldBindJSON(&synthesizeParameter); err != nil {
@@ -54,7 +55,7 @@ func (h *SynthesizerHandler) Synthesize(c *gin.Context) {
 
 	audioModel, err := h.synthesizerUsecase.Synthesize(ctx, lang5, synthesizeParameter.Voice, synthesizeParameter.Text)
 	if err != nil {
-		logger.ErrorContext(ctx, "synthesizerUsecase.Synthesize", slog.Any("err", err))
+		h.logger.ErrorContext(ctx, "synthesizerUsecase.Synthesize", slog.Any("err", err))
 		c.JSON(http.StatusInternalServerError, gin.H{"message": http.StatusText(http.StatusInternalServerError)})
 		return
 	}

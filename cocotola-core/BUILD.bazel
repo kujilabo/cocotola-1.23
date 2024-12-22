@@ -15,7 +15,6 @@ go_library(
         "//cocotola-core/sqls",
         "//lib/controller",
         "//lib/domain",
-        "//lib/log",
         "//redstart/lib/config",
         "//redstart/lib/errors",
         "//redstart/lib/gateway",

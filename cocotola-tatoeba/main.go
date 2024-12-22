@@ -22,7 +22,6 @@ import (
 	rsusergateway "github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
 
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
-	liblog "github.com/kujilabo/cocotola-1.23/lib/log"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/config"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
@@ -31,9 +30,9 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/sqls"
 )
 
-const (
-	loggerKey = liblog.TatoebaMainLoggerContextKey
-)
+// const (
+// 	loggerKey = liblog.TatoebaMainLoggerContextKey
+// )
 
 func getValue(values ...string) string {
 	for _, v := range values {
@@ -83,9 +82,7 @@ func main() {
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans
 
-	ctx = liblog.InitLogger(ctx)
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "main"))
 
 	// init repository factory function
 	rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
@@ -139,7 +136,7 @@ func run(ctx context.Context, cfg *config.Config, router http.Handler) int {
 	eg, ctx = errgroup.WithContext(ctx)
 
 	eg.Go(func() error {
-		return libcontroller.AppServerProcess(ctx, loggerKey, router, cfg.App.HTTPPort, time.Duration(cfg.App.ReadHeaderTimeoutSec)*time.Second, time.Duration(cfg.Shutdown.TimeSec1)*time.Second) // nolint:wrapcheck
+		return libcontroller.AppServerProcess(ctx, router, cfg.App.HTTPPort, time.Duration(cfg.App.ReadHeaderTimeoutSec)*time.Second, time.Duration(cfg.Shutdown.TimeSec1)*time.Second) // nolint:wrapcheck
 	})
 	eg.Go(func() error {
 		return rslibgateway.MetricsServerProcess(ctx, cfg.App.MetricsPort, cfg.Shutdown.TimeSec1) // nolint:wrapcheck

@@ -4,7 +4,6 @@ go_library(
     name = "gin",
     srcs = [
         "app_router.go",
-        "init.go",
         "synthesizer_handler.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin",
@@ -15,7 +14,6 @@ go_library(
         "//lib/config",
         "//lib/controller/gin/middleware",
         "//lib/domain",
-        "//lib/log",
         "//redstart/lib/log",
         "@com_github_gin_contrib_cors//:cors",
         "@com_github_gin_gonic_gin//:gin",

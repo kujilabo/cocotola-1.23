@@ -10,7 +10,6 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/lib/controller/gin/middleware",
     visibility = ["//visibility:public"],
     deps = [
-        "//lib/log",
         "//redstart/lib/log",
         "@com_github_gin_gonic_gin//:gin",
         "@io_opentelemetry_go_otel//:otel",

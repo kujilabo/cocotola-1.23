@@ -25,7 +25,6 @@ import (
 	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
 
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
-	liblog "github.com/kujilabo/cocotola-1.23/lib/log"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway"
@@ -36,8 +35,6 @@ import (
 
 const (
 	readHeaderTimeout = time.Duration(30) * time.Second
-
-	loggerKey = liblog.AuthMainLoggerContextKey
 )
 
 func getValue(values ...string) string {
@@ -63,9 +60,7 @@ func main() {
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans
 
-	ctx = liblog.InitLogger(ctx)
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "main"))
 
 	rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
 		return gateway.NewRepositoryFactory(ctx, dialect, cfg.DB.DriverName, db, time.UTC) // nolint:wrapcheck
@@ -140,7 +135,7 @@ func Run(ctx context.Context, cfg *config.Config, txManager, nonTxManager servic
 		if err := initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Auth, cfg.Debug, cfg.App.Name, txManager, nonTxManager, rsrf); err != nil {
 			return err
 		}
-		return libcontroller.AppServerProcess(ctx, loggerKey, router, cfg.App.HTTPPort, readHeaderTimeout, time.Duration(cfg.Shutdown.TimeSec1)*time.Second) // nolint:wrapcheck
+		return libcontroller.AppServerProcess(ctx, router, cfg.App.HTTPPort, readHeaderTimeout, time.Duration(cfg.Shutdown.TimeSec1)*time.Second) // nolint:wrapcheck
 	})
 	eg.Go(func() error {
 		return rslibgateway.MetricsServerProcess(ctx, cfg.App.MetricsPort, cfg.Shutdown.TimeSec1) // nolint:wrapcheck

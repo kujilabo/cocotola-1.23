@@ -15,7 +15,6 @@ go_library(
     deps = [
         "//cocotola-auth/domain",
         "//cocotola-auth/service",
-        "//lib/log",
         "//redstart/lib/domain",
         "//redstart/lib/errors",
         "//redstart/lib/gateway",

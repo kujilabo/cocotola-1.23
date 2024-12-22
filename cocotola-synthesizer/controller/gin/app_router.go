@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -31,8 +32,7 @@ func NewInitTestRouterFunc() InitRouterGroupFunc {
 }
 
 func InitRouter(ctx context.Context, parentRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, corsConfig cors.Config, debugConfig *libconfig.DebugConfig, appName string) error {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "InitRouter"))
 
 	parentRouterGroup.Use(cors.New(corsConfig))
 	parentRouterGroup.Use(sloggin.New(logger))

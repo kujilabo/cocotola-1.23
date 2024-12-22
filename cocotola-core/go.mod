@@ -5,8 +5,8 @@ go 1.23.3
 require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
-	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241220145206-2377d60edd45
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241220145206-2377d60edd45
+	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241221041434-933178523537
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241221041434-933178523537
 	github.com/ohler55/ojg v1.25.0
 	github.com/samber/slog-gin v1.13.6
 	github.com/stretchr/testify v1.10.0
@@ -55,7 +55,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.7.1 // indirect
+	github.com/jackc/pgx/v5 v5.7.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

@@ -4,14 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
-	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
+	"log/slog"
 
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
+
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
 )
 
 type organization struct {
@@ -70,6 +71,7 @@ type GoogleUserUsecase struct {
 	nonTxManager     service.TransactionManager
 	authTokenManager service.AuthTokenManager
 	googleAuthClient GoogleAuthClient
+	logger           *slog.Logger
 }
 
 func NewGoogleUser(txManager, nonTxManager service.TransactionManager, authTokenManager service.AuthTokenManager, googleAuthClient GoogleAuthClient) *GoogleUserUsecase {
@@ -78,6 +80,7 @@ func NewGoogleUser(txManager, nonTxManager service.TransactionManager, authToken
 		nonTxManager:     nonTxManager,
 		authTokenManager: authTokenManager,
 		googleAuthClient: googleAuthClient,
+		logger:           slog.Default().With(slog.String(rsliblog.LoggerNameKey, "GoogleUserUsecase")),
 	}
 }
 
@@ -227,9 +230,6 @@ func (u *GoogleUserUsecase) Authorize(ctx context.Context, state, code, organiza
 
 func (u *GoogleUserUsecase) registerAppUser(ctx context.Context, rf service.RepositoryFactory, organizationName string, loginID string, username string,
 	providerID, providerAccessToken, providerRefreshToken string) (*rsuserdomain.OrganizationModel, *rsuserdomain.AppUserModel, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
 	rsrf, err := rf.NewRedstartRepositoryFactory(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -259,11 +259,11 @@ func (u *GoogleUserUsecase) registerAppUser(ctx context.Context, rf service.Repo
 		}
 
 		if !errors.Is(err, rsuserservice.ErrAppUserNotFound) {
-			logger.InfoContext(ctx, fmt.Sprintf("Unsupported %v", err))
+			u.logger.InfoContext(ctx, fmt.Sprintf("Unsupported %v", err))
 			return nil, rsliberrors.Errorf("systemOwner.FindAppUserByLoginID. err: %w", err)
 		}
 
-		logger.InfoContext(ctx, fmt.Sprintf("Add student. %+v", appUser1))
+		u.logger.InfoContext(ctx, fmt.Sprintf("Add student. %+v", appUser1))
 		parameter, err := rsuserservice.NewAppUserAddParameter(
 			loginID,  //googleUserInfo.Email,
 			username, //googleUserInfo.Name,

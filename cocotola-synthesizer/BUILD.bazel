@@ -14,7 +14,6 @@ go_library(
         "//cocotola-synthesizer/service",
         "//cocotola-synthesizer/sqls",
         "//lib/controller",
-        "//lib/log",
         "//redstart/lib/config",
         "//redstart/lib/errors",
         "//redstart/lib/gateway",

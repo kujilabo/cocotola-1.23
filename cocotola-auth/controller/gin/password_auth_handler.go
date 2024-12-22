@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,22 +22,22 @@ type PasswordUsecaseInterface interface {
 
 type PasswordAuthHandler struct {
 	passwordUsecase PasswordUsecaseInterface
+	logger          *slog.Logger
 }
 
 func NewPasswordAuthHandler(passwordUsecase PasswordUsecaseInterface) *PasswordAuthHandler {
 	return &PasswordAuthHandler{
 		passwordUsecase: passwordUsecase,
+		logger:          slog.Default().With(slog.String(rsliblog.LoggerNameKey, "PasswordAuthHandler")),
 	}
 }
 
 func (h *PasswordAuthHandler) Authorize(c *gin.Context) {
 	ctx := c.Request.Context()
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
 	passwordAuthParameter := libapi.PasswordAuthParameter{}
 	if err := c.ShouldBindJSON(&passwordAuthParameter); err != nil {
-		logger.InfoContext(ctx, fmt.Sprintf("invalid parameter. err: %v", err))
+		h.logger.InfoContext(ctx, fmt.Sprintf("invalid parameter. err: %v", err))
 		c.JSON(http.StatusBadRequest, gin.H{"message": http.StatusText(http.StatusBadRequest)})
 		return
 	}
@@ -44,12 +45,12 @@ func (h *PasswordAuthHandler) Authorize(c *gin.Context) {
 	authResult, err := h.passwordUsecase.Authenticate(ctx, passwordAuthParameter.LoginID, passwordAuthParameter.Password, passwordAuthParameter.OrganizationName)
 	if err != nil {
 		if errors.Is(err, domain.ErrUnauthenticated) {
-			logger.InfoContext(ctx, fmt.Sprintf("invalid parameter. err: %v", err))
+			h.logger.InfoContext(ctx, fmt.Sprintf("invalid parameter. err: %v", err))
 			c.JSON(http.StatusUnauthorized, gin.H{"message": http.StatusText(http.StatusUnauthorized)})
 			return
 		}
 
-		logger.ErrorContext(ctx, fmt.Sprintf("passwordUsecase.Authenticate. err: %+v", err))
+		h.logger.ErrorContext(ctx, fmt.Sprintf("passwordUsecase.Authenticate. err: %+v", err))
 		c.JSON(http.StatusInternalServerError, gin.H{"message": http.StatusText(http.StatusInternalServerError)})
 		return
 	}

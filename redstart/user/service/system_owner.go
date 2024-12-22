@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log/slog"
 
 	libdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -26,6 +27,7 @@ type SystemOwner struct {
 	// pairOfUserAndGroup PairOfUserAndGroupRepository
 	// rbacRepo             RBACRepository
 	authorizationManager AuthorizationManager
+	logger               *slog.Logger
 }
 
 func NewSystemOwner(ctx context.Context, rf RepositoryFactory, systemOwnerModel *domain.SystemOwnerModel) (*SystemOwner, error) {
@@ -44,6 +46,7 @@ func NewSystemOwner(ctx context.Context, rf RepositoryFactory, systemOwnerModel 
 		// pairOfUserAndGroup:   pairOfUserAndGroup,
 		// rbacRepo:             rbacRepo,
 		authorizationManager: authorizationManager,
+		logger:               slog.Default().With(slog.String(liblog.LoggerNameKey, "SystemOwner")),
 	}
 
 	if err := libdomain.Validator.Struct(m); err != nil {
@@ -148,8 +151,7 @@ func (m *SystemOwner) AddFirstOwner(ctx context.Context, param AppUserAddParamet
 }
 
 func (m *SystemOwner) AddAppUser(ctx context.Context, param AppUserAddParameterInterface) (*domain.AppUserID, error) {
-	logger := liblog.GetLoggerFromContext(ctx, UserServiceContextKey)
-	logger.InfoContext(ctx, "AddStudent")
+	m.logger.InfoContext(ctx, "AddStudent")
 	appUserID, err := m.appUserRepo.AddAppUser(ctx, m, param)
 	if err != nil {
 		return nil, liberrors.Errorf("m.appUserRepo.AddAppUser. err: %w", err)

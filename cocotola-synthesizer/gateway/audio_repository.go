@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"gorm.io/gorm"
@@ -44,12 +45,14 @@ func (e *audioEntity) toAudioModel() (*domain.AudioModel, error) {
 }
 
 type audioRepository struct {
-	db *gorm.DB
+	db     *gorm.DB
+	logger *slog.Logger
 }
 
 func newAudioRepository(ctx context.Context, db *gorm.DB) service.AudioRepository {
 	return &audioRepository{
-		db: db,
+		db:     db,
+		logger: slog.Default().With(slog.String(rsliblog.LoggerNameKey, "audioRepository")),
 	}
 }
 
@@ -97,24 +100,21 @@ func (r *audioRepository) FindByLangAndText(ctx context.Context, lang5 *libdomai
 	_, span := tracer.Start(ctx, "audioRepository.FindByLangAndText")
 	defer span.End()
 
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
 	entity := audioEntity{}
 	if result := r.db.Where("lang5 = ? and text = ?", lang5.String(), text).First(&entity); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			logger.InfoContext(ctx, "audio not found. lang: %s, text: %s", lang5.String(), text)
+			r.logger.InfoContext(ctx, "audio not found. lang: %s, text: %s", lang5.String(), text)
 			return nil, service.ErrAudioNotFound
 		}
 
-		logger.InfoContext(ctx, fmt.Sprintf("err: %v", result.Error))
+		r.logger.InfoContext(ctx, fmt.Sprintf("err: %v", result.Error))
 		return nil, result.Error
 	}
 
-	logger.InfoContext(ctx, fmt.Sprintf("found: %s", text))
+	r.logger.InfoContext(ctx, fmt.Sprintf("found: %s", text))
 	audioModel, err := entity.toAudioModel()
 	if err != nil {
-		logger.InfoContext(ctx, fmt.Sprintf("err: %v", err))
+		r.logger.InfoContext(ctx, fmt.Sprintf("err: %v", err))
 		return nil, err
 	}
 

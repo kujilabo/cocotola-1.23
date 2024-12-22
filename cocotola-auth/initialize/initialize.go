@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -92,8 +93,7 @@ func InitAppServer(ctx context.Context, parentRouterGroup gin.IRouter, corsConfi
 }
 
 func InitApp1(ctx context.Context, txManager, nonTxManager service.TransactionManager, organizationName, loginID, password string) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "InitApp1"))
 
 	addOrganizationFunc := func(ctx context.Context, systemAdmin *rsuserservice.SystemAdmin) error {
 		organization, err := systemAdmin.FindOrganizationByName(ctx, organizationName)

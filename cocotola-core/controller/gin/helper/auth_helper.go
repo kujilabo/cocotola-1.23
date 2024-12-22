@@ -25,10 +25,9 @@ func (o *operator) OrganizationID() *rsuserdomain.OrganizationID {
 	return o.organizationID
 }
 
-func HandleSecuredFunction(c *gin.Context, fn func(ctx context.Context, logger *slog.Logger, operator service.OperatorInterface) error, errorHandle func(ctx context.Context, logger *slog.Logger, c *gin.Context, err error) bool) {
+func HandleSecuredFunction(c *gin.Context, fn func(ctx context.Context, operator service.OperatorInterface) error, errorHandle func(ctx context.Context, c *gin.Context, err error) bool) {
 	ctx := c.Request.Context()
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	authLogger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "HandleSecuredFunction"))
 
 	organizationIDInt := c.GetInt("OrganizationID")
 	if organizationIDInt == 0 {
@@ -54,15 +53,15 @@ func HandleSecuredFunction(c *gin.Context, fn func(ctx context.Context, logger *
 		return
 	}
 
-	authLogger.InfoContext(ctx, "", slog.Int("organization_id", organizationID.Int()), slog.Int("operator_id", operatorID.Int()))
+	logger.InfoContext(ctx, "", slog.Int("organization_id", organizationID.Int()), slog.Int("operator_id", operatorID.Int()))
 
 	operator := &operator{
 		appUserID:      operatorID,
 		organizationID: organizationID,
 	}
-	controllerLogger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-	if err := fn(ctx, controllerLogger, operator); err != nil {
-		if handled := errorHandle(ctx, controllerLogger, c, err); !handled {
+
+	if err := fn(ctx, operator); err != nil {
+		if handled := errorHandle(ctx, c, err); !handled {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": http.StatusText(http.StatusInternalServerError)})
 		}
 	}
