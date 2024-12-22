@@ -7,9 +7,10 @@ import (
 	"io"
 	"log/slog"
 
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
+
+	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
 const (
@@ -17,37 +18,24 @@ const (
 	logSize    = 100000
 )
 
-type AdminUsecase interface {
-	ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) error
-
-	ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) error
-}
-
-type adminUsecase struct {
+type AdminUsecase struct {
 	txManager    service.TransactionManager
 	nonTxManager service.TransactionManager
 	logger       *slog.Logger
 }
 
-func NewAdminUsecase(txManager, nonTxManager service.TransactionManager) AdminUsecase {
+func NewAdminUsecase(txManager, nonTxManager service.TransactionManager) *AdminUsecase {
 	adminHandlerLoggerName := "adminUsecase"
-	return &adminUsecase{
+	return &AdminUsecase{
 		txManager:    txManager,
 		nonTxManager: nonTxManager,
 		logger:       slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName)),
 	}
 }
 
-// func (u *adminUsecase) logger() *slog.Logger {
-// 	adminHandlerLoggerName := "adminUsecase"
-// 	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName))
-// }
-
-func (u *adminUsecase) ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) error {
+func (u *AdminUsecase) ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) error {
 	ctx, span := tracer.Start(ctx, "adminUsecase.ImportSentences")
 	defer span.End()
-
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 
 	var readCount = 0
 	var importCount = 0
@@ -84,10 +72,7 @@ func (u *adminUsecase) ImportSentences(ctx context.Context, iterator service.Tat
 	return nil
 }
 
-func (u *adminUsecase) importSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator, repo service.TatoebaSentenceRepository) (bool, int, int, int, error) {
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
+func (u *AdminUsecase) importSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator, repo service.TatoebaSentenceRepository) (bool, int, int, int, error) {
 	readCount := 0
 	skipCount := 0
 	importCount := 0
@@ -128,10 +113,7 @@ func (u *adminUsecase) importSentences(ctx context.Context, iterator service.Tat
 	}
 }
 
-func (u *adminUsecase) ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) error {
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
+func (u *AdminUsecase) ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) error {
 	var readCount = 0
 	var importCount = 0
 	var skipCount = 0
@@ -198,10 +180,7 @@ func (u *adminUsecase) ImportLinks(ctx context.Context, iterator service.Tatoeba
 	return nil
 }
 
-func (u *adminUsecase) importLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator, repo service.TatoebaLinkRepository) (bool, int, int, int, error) {
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
+func (u *AdminUsecase) importLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator, repo service.TatoebaLinkRepository) (bool, int, int, int, error) {
 	eof := false
 	readCount := 0
 	skipCount := 0

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -34,6 +35,7 @@ type GoogleAuthClient struct {
 	ClientSecret string
 	RedirectURI  string
 	GrantType    string
+	logger       *slog.Logger
 }
 
 func NewGoogleAuthClient(httpClient HTTPClient, clientID, clientSecret, redirectURI string) *GoogleAuthClient {
@@ -43,14 +45,13 @@ func NewGoogleAuthClient(httpClient HTTPClient, clientID, clientSecret, redirect
 		ClientSecret: clientSecret,
 		RedirectURI:  redirectURI,
 		GrantType:    "authorization_code",
+		logger:       slog.Default().With(slog.String(rsliblog.LoggerNameKey, "GoogleAuthClient")),
 	}
 }
 
 func (c *GoogleAuthClient) RetrieveAccessToken(ctx context.Context, code string) (*domain.AuthTokenSet, error) {
 	ctx, span := tracer.Start(ctx, "googleAuthClient.RetrieveAccessToken")
 	defer span.End()
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
 	paramMap := map[string]string{
 		"client_id":     c.ClientID,
@@ -84,7 +85,7 @@ func (c *GoogleAuthClient) RetrieveAccessToken(ctx context.Context, code string)
 			return nil, rsliberrors.Errorf("io.ReadAll. err: %w", err)
 		}
 
-		logger.InfoContext(ctx, fmt.Sprintf("retrieve access token. status: %d, param: %s, body:%s", resp.StatusCode, string(paramBytes), string(respBytes)))
+		c.logger.InfoContext(ctx, fmt.Sprintf("retrieve access token. status: %d, param: %s, body:%s", resp.StatusCode, string(paramBytes), string(respBytes)))
 
 		return nil, rsliberrors.Errorf("retrieve access token. err: %w", domain.ErrUnauthenticated)
 	} else if resp.StatusCode == http.StatusBadRequest {
@@ -93,7 +94,7 @@ func (c *GoogleAuthClient) RetrieveAccessToken(ctx context.Context, code string)
 			return nil, rsliberrors.Errorf("io.ReadAll. err: %w", err)
 		}
 
-		logger.InfoContext(ctx, fmt.Sprintf("retrieve access token. status: %d, param: %s, body:%s", resp.StatusCode, string(paramBytes), string(respBytes)))
+		c.logger.InfoContext(ctx, fmt.Sprintf("retrieve access token. status: %d, param: %s, body:%s", resp.StatusCode, string(paramBytes), string(respBytes)))
 
 		return nil, rsliberrors.Errorf("retrieve access token. err: %w", domain.ErrUnauthenticated)
 	} else if resp.StatusCode != http.StatusOK {

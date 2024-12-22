@@ -66,7 +66,8 @@ func initSynthesizerRouter(t *testing.T, ctx context.Context, workbokQueryUsecas
 	initPrivateRouterFunc := []handler.InitRouterGroupFunc{fn}
 
 	router := gin.New()
-	err := handler.InitRouter(ctx, router, authMiddleware, initPublicRouterFunc, initPrivateRouterFunc, corsConfig, debugConfig, appConfig.Name)
+	handler.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	err := handler.InitAPIRouterGroup(ctx, router, authMiddleware, initPublicRouterFunc, initPrivateRouterFunc, appConfig.Name)
 	require.NoError(t, err)
 
 	return router

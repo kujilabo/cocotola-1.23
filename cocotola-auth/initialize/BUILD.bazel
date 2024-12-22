@@ -2,10 +2,7 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "initialize",
-    srcs = [
-        "init.go",
-        "initialize.go",
-    ],
+    srcs = ["initialize.go"],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-auth/initialize",
     visibility = ["//visibility:public"],
     deps = [
@@ -15,13 +12,12 @@ go_library(
         "//cocotola-auth/service",
         "//cocotola-auth/usecase",
         "//lib/config",
-        "//lib/log",
         "//redstart/lib/config",
         "//redstart/lib/errors",
         "//redstart/lib/log",
         "//redstart/user/service",
         "@com_github_gin_gonic_gin//:gin",
-        "@com_github_golang_jwt_jwt//:jwt",
+        "@com_github_golang_jwt_jwt_v5//:jwt",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
     ],
 )

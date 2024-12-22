@@ -14,10 +14,10 @@ import (
 func NewAuthMiddleware(cocotolaAuthClient service.CocotolaAuthClient) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
-		ctx, span := tracer.Start(ctx, "authMiddleware")
+		ctx, span := tracer.Start(ctx, "AuthMiddleware")
 		defer span.End()
 
-		logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+		logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AuthMiddleware"))
 
 		authorization := c.GetHeader("Authorization")
 		if !strings.HasPrefix(authorization, "Bearer ") {

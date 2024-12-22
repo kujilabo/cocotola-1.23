@@ -1,15 +1,45 @@
 ---
 packageConfigs:
+  # core
   "github.com/kujilabo/cocotola-1.23/cocotola-core/domain":
     forbiddenPackages:
       - net/http
       - database/sql
       - gorm.io/gorm
-      - github.com/foo/bar/repository
+      - github.com/kujilabo/cocotola-1.23/cocotola-core/gateway
   "github.com/kujilabo/cocotola-1.23/cocotola-core/service":
     forbiddenPackages:
-      - github.com/foo/bar/repository
-      - "net/http"
+      - net/http
+      - database/sql
+      - gorm.io/gorm
+      - github.com/kujilabo/cocotola-1.23/cocotola-core/gateway
+  # tatoeba
+  "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/domain":
+    forbiddenPackages:
+      - net/http
+      - database/sql
+      - gorm.io/gorm
+      - github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway
+  "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service":
+    forbiddenPackages:
+      - net/http
+      - database/sql
+      - gorm.io/gorm
+      - github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway
+  # synthesizer
+  "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain":
+    forbiddenPackages:
+      - net/http
+      - database/sql
+      - gorm.io/gorm
+      - github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/gateway
+  "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/service":
+    forbiddenPackages:
+      - net/http
+      - database/sql
+      - gorm.io/gorm
+      - github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/gateway
+
   "main":
     forbiddenPackages:
 

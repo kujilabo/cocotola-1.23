@@ -5,11 +5,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-
-	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
+	"log/slog"
 
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
+
+	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/service"
@@ -20,6 +21,7 @@ type SynthesizerUsecase struct {
 	nonTxManager      service.TransactionManager
 	synthesizerClient service.SynthesizerClient
 	audioFile         service.AudioFile
+	logger            *slog.Logger
 }
 
 func NewSynthesizerUsecase(txManager, nonTxManager service.TransactionManager, synthesizerClient service.SynthesizerClient, audioFile service.AudioFile) *SynthesizerUsecase {
@@ -29,13 +31,11 @@ func NewSynthesizerUsecase(txManager, nonTxManager service.TransactionManager, s
 		nonTxManager:      nonTxManager,
 		synthesizerClient: synthesizerClient,
 		audioFile:         audioFile,
+		logger:            slog.Default().With(slog.String(rsliblog.LoggerNameKey, "SynthesizerUsecase")),
 	}
 }
 
 func (u *SynthesizerUsecase) Synthesize(ctx context.Context, lang5 *libdomain.Lang5, voice, text string) (*domain.AudioModel, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
 	var audioModel *domain.AudioModel
 
 	if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
@@ -62,7 +62,7 @@ func (u *SynthesizerUsecase) Synthesize(ctx context.Context, lang5 *libdomain.La
 		return audioModel, nil
 	}
 
-	logger.InfoContext(ctx, fmt.Sprintf("audio not found. lang: %s, text: %s", lang5.String(), text))
+	u.logger.InfoContext(ctx, fmt.Sprintf("audio not found. lang: %s, text: %s", lang5.String(), text))
 
 	audioContent, err := u.synthesizerClient.Synthesize(ctx, lang5, voice, text)
 	if err != nil {

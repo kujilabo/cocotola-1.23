@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	libdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -23,6 +24,7 @@ type SystemAdmin struct {
 	rf          RepositoryFactory
 	orgRepo     OrganizationRepository
 	appUserRepo AppUserRepository
+	logger      *slog.Logger
 }
 
 func NewSystemAdmin(ctx context.Context, rf RepositoryFactory) (*SystemAdmin, error) {
@@ -37,6 +39,7 @@ func NewSystemAdmin(ctx context.Context, rf RepositoryFactory) (*SystemAdmin, er
 		rf:               rf,
 		orgRepo:          orgRepo,
 		appUserRepo:      appUserRepo,
+		logger:           slog.Default().With(slog.String(liblog.LoggerNameKey, "SystemAdmin")),
 	}
 
 	return m, nil
@@ -77,8 +80,6 @@ func (m *SystemAdmin) FindOrganizationByName(ctx context.Context, name string) (
 }
 
 func (m *SystemAdmin) AddOrganization(ctx context.Context, param OrganizationAddParameterInterface) (*domain.OrganizationID, error) {
-	logger := liblog.GetLoggerFromContext(ctx, UserServiceContextKey)
-
 	// 1. add organization
 	organizationID, err := m.orgRepo.AddOrganization(ctx, m, param)
 	if err != nil {
@@ -170,7 +171,7 @@ func (m *SystemAdmin) AddOrganization(ctx context.Context, param OrganizationAdd
 		return nil, liberrors.Errorf("m.initFirstOwner. error: %w", err)
 	}
 
-	logger.InfoContext(ctx, fmt.Sprintf("SystemOwnerID:%d, ownerID: %d", systemOwner.AppUserID().Int(), ownerID.Int()))
+	m.logger.InfoContext(ctx, fmt.Sprintf("SystemOwnerID:%d, ownerID: %d", systemOwner.AppUserID().Int(), ownerID.Int()))
 
 	return organizationID, nil
 }

@@ -1,51 +1,55 @@
 package log
 
-import (
-	"context"
-	"fmt"
-	"log/slog"
-	"os"
-	"sync"
-
-	"github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
+const (
+	LoggerNameKey = "logger_name"
 )
 
-var (
-	lock            sync.Mutex
-	DefaultLogger   *slog.Logger
-	DefaultLogLevel slog.Level
-	LogHandlers     map[slog.Level]slog.Handler        = make(map[slog.Level]slog.Handler)
-	Loggers         map[domain.ContextKey]*slog.Logger = make(map[domain.ContextKey]*slog.Logger)
-)
+// import (
+// 	"context"
+// 	"fmt"
+// 	"log/slog"
+// 	"os"
+// 	"sync"
 
-func init() {
-	for _, level := range []slog.Level{slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError} {
-		LogHandlers[level] = &LogHandler{Handler: slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: level,
-		})}
-	}
+// 	"github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
+// )
 
-	DefaultLogger = slog.New(LogHandlers[slog.LevelWarn])
-}
+// var (
+// 	lock            sync.Mutex
+// 	DefaultLogger   *slog.Logger
+// 	DefaultLogLevel slog.Level
+// 	LogHandlers     map[slog.Level]slog.Handler        = make(map[slog.Level]slog.Handler)
+// 	Loggers         map[domain.ContextKey]*slog.Logger = make(map[domain.ContextKey]*slog.Logger)
+// )
 
-func WithLoggerName(ctx context.Context, val domain.ContextKey) context.Context {
-	return context.WithValue(ctx, LoggerNameContextKey, string(val))
-}
+// func init() {
+// 	for _, level := range []slog.Level{slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError} {
+// 		LogHandlers[level] = &LogHandler{Handler: slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+// 			Level: level,
+// 		})}
+// 	}
 
-// GetLoggerFromContext Gets the logger from context
-func GetLoggerFromContext(ctx context.Context, key domain.ContextKey) *slog.Logger {
-	logger, ok := ctx.Value(key).(*slog.Logger)
-	if ok {
-		return logger
-	}
+// 	DefaultLogger = slog.New(LogHandlers[slog.LevelWarn])
+// }
 
-	lock.Lock()
-	defer lock.Unlock()
+// func WithLoggerName(ctx context.Context, val domain.ContextKey) context.Context {
+// 	return context.WithValue(ctx, LoggerNameContextKey, string(val))
+// }
 
-	if _, ok := Loggers[key]; !ok {
-		DefaultLogger.DebugContext(ctx, fmt.Sprintf("logger not found. logger: %s", key))
-		return DefaultLogger
-	}
+// // GetLoggerFromContext Gets the logger from context
+// func GetLoggerFromContext(ctx context.Context, key domain.ContextKey) *slog.Logger {
+// 	logger, ok := ctx.Value(key).(*slog.Logger)
+// 	if ok {
+// 		return logger
+// 	}
 
-	return Loggers[key]
-}
+// 	lock.Lock()
+// 	defer lock.Unlock()
+
+// 	if _, ok := Loggers[key]; !ok {
+// 		DefaultLogger.DebugContext(ctx, fmt.Sprintf("logger not found. logger: %s", key))
+// 		return DefaultLogger
+// 	}
+
+// 	return Loggers[key]
+// }

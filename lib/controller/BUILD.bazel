@@ -6,7 +6,6 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/lib/controller",
     visibility = ["//visibility:public"],
     deps = [
-        "//redstart/lib/domain",
         "//redstart/lib/errors",
         "//redstart/lib/log",
     ],

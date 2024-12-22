@@ -14,11 +14,10 @@ go_library(
     deps = [
         "//cocotola-auth/domain",
         "//cocotola-auth/service",
-        "//lib/log",
         "//redstart/lib/errors",
         "//redstart/lib/log",
         "//redstart/user/domain",
         "//redstart/user/service",
-        "@com_github_golang_jwt_jwt//:jwt",
+        "@com_github_golang_jwt_jwt_v5//:jwt",
     ],
 )

@@ -8,9 +8,5 @@ go_library(
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper",
     visibility = ["//visibility:public"],
-    deps = [
-        "//lib/log",
-        "//redstart/lib/log",
-        "@com_github_gin_gonic_gin//:gin",
-    ],
+    deps = ["@com_github_gin_gonic_gin//:gin"],
 )

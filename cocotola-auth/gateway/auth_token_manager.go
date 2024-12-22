@@ -3,9 +3,10 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -24,7 +25,7 @@ type AppUserClaims struct {
 	OrganizationName string `json:"organizationName"`
 	// Role             string `json:"role"`
 	TokenType string `json:"tokenType"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type organization struct {
@@ -64,6 +65,7 @@ type AuthTokenManager struct {
 	SigningMethod  jwt.SigningMethod
 	TokenTimeout   time.Duration
 	RefreshTimeout time.Duration
+	logger         *slog.Logger
 }
 
 func NewAuthTokenManager(signingKey []byte, signingMethod jwt.SigningMethod, tokenTimeout, refreshTimeout time.Duration) *AuthTokenManager {
@@ -72,6 +74,7 @@ func NewAuthTokenManager(signingKey []byte, signingMethod jwt.SigningMethod, tok
 		SigningMethod:  signingMethod,
 		TokenTimeout:   tokenTimeout,
 		RefreshTimeout: refreshTimeout,
+		logger:         slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AuthTokenManager")),
 	}
 }
 
@@ -96,9 +99,6 @@ func (m *AuthTokenManager) CreateTokenSet(ctx context.Context, appUser service.A
 }
 
 func (m *AuthTokenManager) createJWT(ctx context.Context, appUser service.AppUserInterface, organization service.OrganizationInterface, duration time.Duration, tokenType string) (string, error) {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
 	if len(m.SigningKey) == 0 {
 		return "", rsliberrors.Errorf("m.SigningKey is not set")
 	}
@@ -111,13 +111,13 @@ func (m *AuthTokenManager) createJWT(ctx context.Context, appUser service.AppUse
 		OrganizationID:   organization.OrganizationID().Int(),
 		OrganizationName: organization.Name(),
 		TokenType:        tokenType,
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  now.Unix(),
-			ExpiresAt: now.Add(duration).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(now.Add(duration)),
 		},
 	}
 
-	logger.DebugContext(ctx, fmt.Sprintf("claims: %+v", claims))
+	m.logger.DebugContext(ctx, fmt.Sprintf("claims: %+v", claims))
 
 	token := jwt.NewWithClaims(m.SigningMethod, claims)
 	signed, err := token.SignedString(m.SigningKey)
@@ -144,15 +144,13 @@ func (m *AuthTokenManager) GetUserInfo(ctx context.Context, tokenString string) 
 }
 
 func (m *AuthTokenManager) parseToken(ctx context.Context, tokenString string) (*AppUserClaims, error) {
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return m.SigningKey, nil
 	}
 
 	currentToken, err := jwt.ParseWithClaims(tokenString, &AppUserClaims{}, keyFunc)
 	if err != nil {
-		logger.InfoContext(ctx, fmt.Sprintf("%v", err))
+		m.logger.InfoContext(ctx, fmt.Sprintf("%v", err))
 		// return nil, fmt.Errorf("jwt.ParseWithClaims. err: %w", domain.ErrUnauthenticated)
 		return nil, err
 	}
@@ -165,7 +163,8 @@ func (m *AuthTokenManager) parseToken(ctx context.Context, tokenString string) (
 		return nil, fmt.Errorf("invalid claims")
 	}
 
-	if err := currentClaims.Valid(); err != nil {
+	v := jwt.NewValidator()
+	if err := v.Validate(currentClaims); err != nil {
 		return nil, err
 	}
 

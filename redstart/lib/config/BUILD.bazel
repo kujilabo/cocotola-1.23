@@ -15,7 +15,6 @@ go_library(
         "//redstart/lib/domain",
         "//redstart/lib/errors",
         "//redstart/lib/gateway",
-        "//redstart/lib/log",
         "@com_github_gin_contrib_cors//:cors",
         "@com_github_googlecloudplatform_opentelemetry_operations_go_exporter_trace//:trace",
         "@io_gorm_gorm//:gorm",

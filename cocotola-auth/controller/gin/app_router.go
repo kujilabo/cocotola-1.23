@@ -2,14 +2,13 @@ package handler
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	sloggin "github.com/samber/slog-gin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
-
-	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	libmiddleware "github.com/kujilabo/cocotola-1.23/lib/controller/gin/middleware"
@@ -30,17 +29,16 @@ func NewInitTestRouterFunc() InitRouterGroupFunc {
 	}
 }
 
-func InitRouter(ctx context.Context, parentRouterGroup gin.IRouter, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, corsConfig cors.Config, debugConfig *libconfig.DebugConfig, appName string) error {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
-
-	parentRouterGroup.Use(cors.New(corsConfig))
-	parentRouterGroup.Use(sloggin.New(logger))
+func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *libconfig.DebugConfig) {
+	rootRouterGroup.Use(cors.New(corsConfig))
+	rootRouterGroup.Use(sloggin.New(slog.Default()))
 
 	if debugConfig.Wait {
-		parentRouterGroup.Use(libmiddleware.NewWaitMiddleware())
+		rootRouterGroup.Use(libmiddleware.NewWaitMiddleware())
 	}
+}
 
+func InitAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, appName string) error {
 	v1 := parentRouterGroup.Group("v1")
 	{
 		v1.Use(otelgin.Middleware(appName))

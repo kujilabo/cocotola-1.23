@@ -16,16 +16,21 @@ import (
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
 )
 
+type AdminUsecase interface {
+	ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) error
+
+	ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) error
+}
+
 type AdminHandler struct {
-	adminUsecase                         usecase.AdminUsecase
+	adminUsecase                         AdminUsecase
 	newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator
 	newTatoebaLinkAddParameterReader     func(reader io.Reader) service.TatoebaLinkAddParameterIterator
 }
 
-func NewAdminHandler(adminUsecase usecase.AdminUsecase, newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator, newTatoebaLinkAddParameterReader func(reader io.Reader) service.TatoebaLinkAddParameterIterator) *AdminHandler {
+func NewAdminHandler(adminUsecase AdminUsecase, newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator, newTatoebaLinkAddParameterReader func(reader io.Reader) service.TatoebaLinkAddParameterIterator) *AdminHandler {
 	return &AdminHandler{
 		adminUsecase:                         adminUsecase,
 		newTatoebaSentenceAddParameterReader: newTatoebaSentenceAddParameterReader,
@@ -34,8 +39,7 @@ func NewAdminHandler(adminUsecase usecase.AdminUsecase, newTatoebaSentenceAddPar
 }
 
 func (h *AdminHandler) logger() *slog.Logger {
-	adminHandlerLoggerName := "AdminHandler"
-	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName))
+	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.AdminHandler"))
 }
 
 // ImportSentences godoc
@@ -50,9 +54,6 @@ func (h *AdminHandler) logger() *slog.Logger {
 // @Router      /v1/admin/sentence/import [post]
 // @Security    BasicAuth
 func (h *AdminHandler) ImportSentences(c *gin.Context) {
-	// ctx := c.Request.Context()
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		h.logger().InfoContext(ctx, "ImportSentences")
 		file, err := c.FormFile("file")
@@ -99,9 +100,6 @@ func (h *AdminHandler) ImportSentences(c *gin.Context) {
 // @Router      /v1/admin/link/import [post]
 // @Security    BasicAuth
 func (h *AdminHandler) ImportLinks(c *gin.Context) {
-	// ctx := c.Request.Context()
-	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {
@@ -140,7 +138,7 @@ func (h *AdminHandler) errorHandle(ctx context.Context, c *gin.Context, err erro
 	return false
 }
 
-func NewInitAdminRouterFunc(adminUsecase usecase.AdminUsecase) InitRouterGroupFunc {
+func NewInitAdminRouterFunc(adminUsecase AdminUsecase) InitRouterGroupFunc {
 	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
 		admin := parentRouterGroup.Group("admin")
 		newSentenceReader := func(reader io.Reader) service.TatoebaSentenceAddParameterIterator {

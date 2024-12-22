@@ -63,7 +63,7 @@ func initAuthRouter(t *testing.T, ctx context.Context, authentication handler.Au
 	initPrivateRouterFunc := []handler.InitRouterGroupFunc{}
 
 	router := gin.New()
-	err := handler.InitRouter(ctx, router, initPublicRouterFunc, initPrivateRouterFunc, corsConfig, debugConfig, appConfig.Name)
+	err := handler.InitAPIRouterGroup(ctx, router, initPublicRouterFunc, initPrivateRouterFunc, appConfig.Name)
 	require.NoError(t, err)
 
 	return router

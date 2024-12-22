@@ -3,10 +3,8 @@ package config
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"strings"
-
-	libdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
-	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
 type LogConfig struct {
@@ -19,15 +17,9 @@ func InitLog(cfg *LogConfig) error {
 		defaultLogLevel = stringToLogLevel(rootLevel)
 	}
 
-	liblog.DefaultLogLevel = defaultLogLevel
-	liblog.DefaultLogger = slog.New(liblog.LogHandlers[defaultLogLevel])
-	slog.SetDefault(liblog.DefaultLogger)
-	slog.Debug("DDDD")
-
-	for name, level := range cfg.Level {
-		logLevel := stringToLogLevel(level)
-		liblog.Loggers[libdomain.ContextKey(name)] = slog.New(liblog.LogHandlers[logLevel])
-	}
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: defaultLogLevel,
+	})))
 
 	return nil
 }

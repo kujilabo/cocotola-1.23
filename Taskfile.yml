@@ -73,6 +73,28 @@ tasks:
         vars:
           PROJECT: "{{ .ITEM }}"
 
+  check-project:
+    cmds:
+      - |
+        pushd {{ .PROJECT }}
+        pkgforbid -config=../.github/pkgforbid.yml ./...
+    requires:
+      vars: [PROJECT]
+
+  check:
+    cmds:
+      - for:
+          - redstart
+          - lib
+          - cocotola-auth
+          - cocotola-core
+          - cocotola-import
+          - cocotola-synthesizer
+          - cocotola-tatoeba
+        task: check-project
+        vars:
+          PROJECT: "{{ .ITEM }}"
+
   update-mod-project:
     cmds:
       - |

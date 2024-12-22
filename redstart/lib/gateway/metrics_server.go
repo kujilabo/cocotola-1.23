@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,12 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/kujilabo/cocotola-1.23/redstart/lib/log"
+	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
 const readHeaderTimeout = time.Duration(30) * time.Second
 
 func MetricsServerProcess(ctx context.Context, port int, gracefulShutdownTimeSec int) error {
+	logger := slog.Default().With(slog.String(liblog.LoggerNameKey, "MetricsServer"))
 	router := gin.New()
 	router.Use(gin.Recovery())
 
@@ -31,7 +33,6 @@ func MetricsServerProcess(ctx context.Context, port int, gracefulShutdownTimeSec
 	})
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	logger := log.GetLoggerFromContext(ctx, LibGatewayContextKey)
 	logger.InfoContext(ctx, fmt.Sprintf("metrics server listening at %v", httpServer.Addr))
 
 	errCh := make(chan error)

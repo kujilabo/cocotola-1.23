@@ -4,18 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
 
-	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
-func AppServerProcess(ctx context.Context, loggerKey rslibdomain.ContextKey, router http.Handler, port int, readHeaderTimeout time.Duration, shutdownTime time.Duration) error {
-	ctx = rsliblog.WithLoggerName(ctx, loggerKey)
-	logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
+func AppServerProcess(ctx context.Context, router http.Handler, port int, readHeaderTimeout time.Duration, shutdownTime time.Duration) error {
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AppServerProcess"))
 
 	httpServer := http.Server{
 		Addr:              ":" + strconv.Itoa(port),

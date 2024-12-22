@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -79,12 +79,8 @@ func Test_authTokenManager_CreateTokenSet(t *testing.T) {
 	}
 	for _, tt := range tests {
 		ctx := context.Background()
-		m := &gateway.AuthTokenManager{
-			SigningKey:     tt.fields.SigningKey,
-			SigningMethod:  tt.fields.SigningMethod,
-			TokenTimeout:   tt.fields.TokenTimeout,
-			RefreshTimeout: tt.fields.RefreshTimeout,
-		}
+		m := gateway.NewAuthTokenManager(tt.fields.SigningKey, tt.fields.SigningMethod, tt.fields.TokenTimeout, tt.fields.RefreshTimeout)
+
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := m.CreateTokenSet(ctx, tt.args.appUser, tt.args.organization)
 			if err != nil {
@@ -158,12 +154,7 @@ func TestAuthTokenManager_GetUserInfo(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			m := &gateway.AuthTokenManager{
-				SigningKey:     tt.fields.SigningKey,
-				SigningMethod:  tt.fields.SigningMethod,
-				TokenTimeout:   tt.fields.TokenTimeout,
-				RefreshTimeout: tt.fields.RefreshTimeout,
-			}
+			m := gateway.NewAuthTokenManager(tt.fields.SigningKey, tt.fields.SigningMethod, tt.fields.TokenTimeout, tt.fields.RefreshTimeout)
 			tokenSet, err := m.CreateTokenSet(ctx, appUser, organization)
 			require.NoError(t, err)
 			got, err := m.GetUserInfo(ctx, tokenSet.AccessToken)
