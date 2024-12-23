@@ -3,10 +3,10 @@ package student
 import (
 	"context"
 
+	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
+
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/service"
-
-	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
 )
 
 type WorkbookQueryService interface {

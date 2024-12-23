@@ -1,6 +1,6 @@
 //go:build small
 
-package handler_test
+package controller_test
 
 import (
 	"bytes"
@@ -20,8 +20,8 @@ import (
 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
-	handler "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
-	handlermock "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin/mocks"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
+	controllermock "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin/mocks"
 )
 
 var (
@@ -55,15 +55,15 @@ func init() {
 	}
 }
 
-func initAuthRouter(t *testing.T, ctx context.Context, authentication handler.AuthenticationUsecase) *gin.Engine {
+func initAuthRouter(t *testing.T, ctx context.Context, authentication controller.AuthenticationUsecase) *gin.Engine {
 	t.Helper()
-	fn := handler.NewInitAuthRouterFunc(authentication)
+	fn := controller.NewInitAuthRouterFunc(authentication)
 
-	initPublicRouterFunc := []handler.InitRouterGroupFunc{fn}
-	initPrivateRouterFunc := []handler.InitRouterGroupFunc{}
+	initPublicRouterFuncs := []controller.InitRouterGroupFunc{fn}
+	initPrivateRouterFuncs := []controller.InitRouterGroupFunc{}
 
 	router := gin.New()
-	err := handler.InitAPIRouterGroup(ctx, router, initPublicRouterFunc, initPrivateRouterFunc, appConfig.Name)
+	err := controller.InitAPIRouterGroup(ctx, router, initPublicRouterFuncs, initPrivateRouterFuncs, appConfig.Name)
 	require.NoError(t, err)
 
 	return router
@@ -74,7 +74,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn401_whenAuthorizationHeaderIsEmpty(
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(handlermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
 
 	// given
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -103,7 +103,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn401_whenAuthorizationHeaderIsInvali
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(handlermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
 	authenticationUsecase.On("GetUserInfo", anyOfCtx, "INVALID_TOKEN").Return(nil, errors.New("INVALID"))
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -138,7 +138,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn200_whenAuthorizationHeaderIsValid(
 		LoginID:        "LOGIN_ID",
 		Username:       "USERNAME",
 	}
-	authenticationUsecase := new(handlermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
 	authenticationUsecase.On("GetUserInfo", anyOfCtx, "VALID_TOKEN").Return(appUserInfo, nil)
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -178,7 +178,7 @@ func TestAuthHandler_RefreshToken_shouldReturn400_whenRequestBodyIsEmpty(t *test
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(handlermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
 	r := initAuthRouter(t, ctx, authenticationUsecase)
 	w := httptest.NewRecorder()
 
@@ -204,7 +204,7 @@ func TestAuthHandler_RefreshToken_shouldReturn401_whenTokenIsInvalid(t *testing.
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(handlermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
 	authenticationUsecase.On("RefreshToken", anyOfCtx, "INVALID_TOKEN").Return("", errors.New("INVALID"))
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -232,7 +232,7 @@ func TestAuthHandler_RefreshToken_shouldReturn200_whenTokenIsValid(t *testing.T)
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(handlermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
 	authenticationUsecase.On("RefreshToken", anyOfCtx, "VALID_TOKEN").Return("ACCESS_TOKEN", nil)
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)

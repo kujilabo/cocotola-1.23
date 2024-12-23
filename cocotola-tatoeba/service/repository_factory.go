@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+
+	rslibservice "github.com/kujilabo/cocotola-1.23/redstart/lib/service"
 )
 
 type RepositoryFactory interface {
@@ -9,3 +11,5 @@ type RepositoryFactory interface {
 
 	NewTatoebaSentenceRepository(ctx context.Context) TatoebaSentenceRepository
 }
+
+type TransactionManager rslibservice.TransactionManagerT[RepositoryFactory]

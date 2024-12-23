@@ -26,6 +26,7 @@ import (
 	// "github.com/kujilabo/cocotola-1.23/proto"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/config"
+	contoller "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/initialize"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/service"
@@ -47,6 +48,12 @@ func getValue(values ...string) string {
 	return ""
 }
 
+func checkError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	ctx := context.Background()
 	env := flag.String("env", "", "environment")
@@ -58,9 +65,7 @@ func main() {
 
 	// load config
 	cfg, err := config.LoadConfig(appEnv)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	// init log
 	if err := rslibconfig.InitLog(cfg.Log); err != nil {
@@ -69,19 +74,15 @@ func main() {
 
 	// init tracer
 	tp, err := rslibconfig.InitTracerProvider(ctx, cfg.App.Name, cfg.Trace)
-	if err != nil {
-		slog.ErrorContext(ctx, fmt.Sprintf("err. err: %v", err))
-		slog.ErrorContext(ctx, fmt.Sprintf("err. err: %+v", err))
-		panic(err)
-	}
+	checkError(err)
+
 	otel.SetTracerProvider(tp)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// init db
 	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, sqls.SQL)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
+
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans
 
@@ -92,21 +93,15 @@ func main() {
 	}
 
 	rf, err := rff(ctx, db)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	// init transaction manager
 	txManager, err := rslibgateway.NewTransactionManagerT(db, rff)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	// init non transaction manager
 	nonTxManager, err := rslibgateway.NewNonTransactionManagerT(rf)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	// logger.Info(fmt.Sprintf("%+v", proto.HelloRequest{}))
 
@@ -120,8 +115,14 @@ func main() {
 	if !cfg.Debug.Gin {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
 	router := gin.New()
-	if err := initialize.InitAppServer(ctx, router, cfg.AuthAPI, cfg.CORS, cfg.Debug, cfg.App.Name, db, txManager, nonTxManager); err != nil {
+	authMiddleware, err := contoller.InitAuthMiddleware(cfg.AuthAPI)
+	checkError(err)
+
+	publicRouterGroupFuncs := contoller.GetPublicRouterGroupFuncs()
+	privateRouterGroupFuncs := contoller.GetPrivateRouterGroupFuncs(db, txManager, nonTxManager)
+	if err := initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs); err != nil {
 		panic(err)
 	}
 

@@ -1,6 +1,6 @@
 //go:build small
 
-package handler_test
+package controller_test
 
 import (
 	"context"
@@ -17,11 +17,12 @@ import (
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/config"
-	handler "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin/middleware"
-	handlermock "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin/mocks"
+	controllermock "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin/mocks"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/service"
 	servicemock "github.com/kujilabo/cocotola-1.23/cocotola-core/service/mocks"
 )
@@ -51,17 +52,27 @@ func init() {
 	}
 }
 
-func initWorkbookRouter(t *testing.T, ctx context.Context, cocotolaAuthClient service.CocotolaAuthClient, workbokQueryUsecase handler.WorkbookQueryUsecase, workbookCommandUsecase handler.WorkbookCommandUsecase) *gin.Engine {
+func initWorkbookRouter(t *testing.T, ctx context.Context, cocotolaAuthClient service.CocotolaAuthClient, workbokQueryUsecase controller.WorkbookQueryUsecase, workbookCommandUsecase controller.WorkbookCommandUsecase) *gin.Engine {
 	t.Helper()
-	fn := handler.NewInitWorkbookRouterFunc(workbokQueryUsecase, workbookCommandUsecase)
+	fn := controller.NewInitWorkbookRouterFunc(workbokQueryUsecase, workbookCommandUsecase)
 
 	authMiddleware := middleware.NewAuthMiddleware(cocotolaAuthClient)
-	initPublicRouterFunc := []handler.InitRouterGroupFunc{}
-	initPrivateRouterFunc := []handler.InitRouterGroupFunc{fn}
+	initPublicRouterFuncs := []libcontroller.InitRouterGroupFunc{}
+	initPrivateRouterFuncs := []libcontroller.InitRouterGroupFunc{fn}
 
 	router := gin.New()
-	err := handler.InitRouter(ctx, router, authMiddleware, initPublicRouterFunc, initPrivateRouterFunc, corsConfig, debugConfig, appConfig.Name)
-	require.NoError(t, err)
+	libcontroller.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	api := router.Group("api")
+	v1 := api.Group("v1")
+
+	if err := libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs); err != nil {
+		require.NoError(t, err)
+	}
+	if err := libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, initPrivateRouterFuncs); err != nil {
+		require.NoError(t, err)
+	}
+	// err := initialize.InitAppServer(ctx, router, authMiddleware, corsConfig, debugConfig, appConfig.Name, initPublicRouterFunc, initPrivateRouterFunc)
+	// require.NoError(t, err)
 
 	return router
 }
@@ -79,7 +90,7 @@ func TestWorkbookHandler_FindWorkbook_shouldReturn200(t *testing.T) {
 		Username:       "USERNAME",
 	}, nil)
 
-	workbookQueryUsecase := new(handlermock.WorkbookQueryUsecase)
+	workbookQueryUsecase := new(controllermock.WorkbookQueryUsecase)
 	workbookQueryUsecase.On("FindWorkbooks", anyOfCtx, mock.MatchedBy(func(o service.OperatorInterface) bool {
 		return o.OrganizationID().Int() == 456 && o.AppUserID().Int() == 123
 	}), mock.Anything).Return(&libapi.WorkbookFindResult{
@@ -91,14 +102,14 @@ func TestWorkbookHandler_FindWorkbook_shouldReturn200(t *testing.T) {
 			},
 		},
 	}, nil)
-	workbookCommandUsecase := new(handlermock.WorkbookCommandUsecase)
+	workbookCommandUsecase := new(controllermock.WorkbookCommandUsecase)
 
 	// given
 	r := initWorkbookRouter(t, ctx, cocotolaAuthClient, workbookQueryUsecase, workbookCommandUsecase)
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/v1/workbook", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/workbook", nil)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "Bearer VALID_TOKEN")
 	r.ServeHTTP(w, req)
@@ -133,15 +144,15 @@ func TestWorkbookHandler_FindWorkbook_shouldReturn401_whenAuthorizationHeaderIsE
 	ctx := context.Background()
 
 	cocotolaAuthClient := new(servicemock.CocotolaAuthClient)
-	workbookQueryUsecase := new(handlermock.WorkbookQueryUsecase)
-	workbookCommandUsecase := new(handlermock.WorkbookCommandUsecase)
+	workbookQueryUsecase := new(controllermock.WorkbookQueryUsecase)
+	workbookCommandUsecase := new(controllermock.WorkbookCommandUsecase)
 
 	// given
 	r := initWorkbookRouter(t, ctx, cocotolaAuthClient, workbookQueryUsecase, workbookCommandUsecase)
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/v1/workbook", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/workbook", nil)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "")
 	r.ServeHTTP(w, req)
@@ -164,15 +175,15 @@ func TestWorkbookHandler_FindWorkbook_shouldReturn401_whenAuthorizationHeaderIsI
 
 	cocotolaAuthClient := new(servicemock.CocotolaAuthClient)
 	cocotolaAuthClient.On("RetrieveUserInfo", anyOfCtx, "INVALID_TOKEN").Return(nil, errors.New("invalid token"))
-	workbookQueryUsecase := new(handlermock.WorkbookQueryUsecase)
-	workbookCommandUsecase := new(handlermock.WorkbookCommandUsecase)
+	workbookQueryUsecase := new(controllermock.WorkbookQueryUsecase)
+	workbookCommandUsecase := new(controllermock.WorkbookCommandUsecase)
 
 	// given
 	r := initWorkbookRouter(t, ctx, cocotolaAuthClient, workbookQueryUsecase, workbookCommandUsecase)
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/v1/workbook", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/workbook", nil)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "Bearer INVALID_TOKEN")
 	r.ServeHTTP(w, req)
@@ -202,7 +213,7 @@ func TestWorkbookHandler_FindWorkbook_shouldReturn401_whenAuthorizationHeaderIsI
 // 		Username:       "USERNAME",
 // 	}, nil)
 
-// 	workbookQueryUsecase := new(handlermock.WorkbookQueryUsecase)
+// 	workbookQueryUsecase := new(controllermock.WorkbookQueryUsecase)
 // 	workbookQueryUsecase.On("RetrieveWorkbookByID", anyOfCtx, organizationID(t, 456), appUserID(t, 123), 246).Return(&workbookfind.Result{
 // 		TotalCount: 789,
 // 		Results: []*workbookfind.WorkbookModel{
@@ -212,7 +223,7 @@ func TestWorkbookHandler_FindWorkbook_shouldReturn401_whenAuthorizationHeaderIsI
 // 			},
 // 		},
 // 	}, nil)
-// 	workbookCommandUsecase := new(handlermock.WorkbookCommandUsecase)
+// 	workbookCommandUsecase := new(controllermock.WorkbookCommandUsecase)
 
 // 	// given
 // 	r := initWorkbookRouter(t, ctx, cocotolaAuthClient, workbookQueryUsecase, workbookCommandUsecase)

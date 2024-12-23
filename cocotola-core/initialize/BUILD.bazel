@@ -6,17 +6,9 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core/initialize",
     visibility = ["//visibility:public"],
     deps = [
-        "//cocotola-core/config",
-        "//cocotola-core/controller/gin",
-        "//cocotola-core/controller/gin/middleware",
-        "//cocotola-core/gateway",
-        "//cocotola-core/gateway/usecase/student",
-        "//cocotola-core/service",
-        "//cocotola-core/usecase/student",
         "//lib/config",
+        "//lib/controller/gin",
         "//redstart/lib/config",
         "@com_github_gin_gonic_gin//:gin",
-        "@io_gorm_gorm//:gorm",
-        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
     ],
 )

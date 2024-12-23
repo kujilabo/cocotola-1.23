@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain"
@@ -80,7 +81,7 @@ func (h *SynthesizerHandler) FindAudioByID(c *gin.Context) {
 // 	return false
 // }
 
-func NewInitSynthesizerRouterFunc(synthesizerUsecase SynthesizerUsecase) InitRouterGroupFunc {
+func NewInitSynthesizerRouterFunc(synthesizerUsecase SynthesizerUsecase) libcontroller.InitRouterGroupFunc {
 	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
 		workbook := parentRouterGroup.Group("synthesize")
 		SynthesizerHandler := NewSynthesizerHandler(synthesizerUsecase)

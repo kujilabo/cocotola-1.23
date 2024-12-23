@@ -1,22 +1,20 @@
-package handler
+package controller
 
 import (
-	"context"
-	"log/slog"
 	"net/http"
+	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	sloggin "github.com/samber/slog-gin"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
-	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
-	libmiddleware "github.com/kujilabo/cocotola-1.23/lib/controller/gin/middleware"
+	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
+	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/gateway"
+	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/service"
+	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/usecase"
+	libhandler "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 )
 
-type InitRouterGroupFunc func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error
-
-func NewInitTestRouterFunc() InitRouterGroupFunc {
+func NewInitTestRouterFunc() libhandler.InitRouterGroupFunc {
 	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
 		test := parentRouterGroup.Group("test")
 		for _, m := range middleware {
@@ -29,32 +27,32 @@ func NewInitTestRouterFunc() InitRouterGroupFunc {
 	}
 }
 
-func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *libconfig.DebugConfig) {
-	rootRouterGroup.Use(cors.New(corsConfig))
-	rootRouterGroup.Use(sloggin.New(slog.Default()))
-
-	if debugConfig.Wait {
-		rootRouterGroup.Use(libmiddleware.NewWaitMiddleware())
+func GetPublicRouterGroupFuncs() []libhandler.InitRouterGroupFunc {
+	// public router
+	return []libhandler.InitRouterGroupFunc{
+		NewInitTestRouterFunc(),
 	}
 }
 
-func InitAPIRouterGroup(ctx context.Context, apiRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, appName string) error {
-	v1 := apiRouterGroup.Group("v1")
-	{
-		v1.Use(otelgin.Middleware(appName))
-		v1.Use(libmiddleware.NewTraceLogMiddleware(appName))
-
-		for _, fn := range initPublicRouterFunc {
-			if err := fn(v1); err != nil {
-				return err
-			}
-		}
-		for _, fn := range initPrivateRouterFunc {
-			if err := fn(v1, authMiddleware); err != nil {
-				return err
-			}
-		}
+func GetPrivateRouterGroupFuncs(ttsConfig *config.GoogleTextToSpeechConfig, txManager, nonTxManager service.TransactionManager) []libhandler.InitRouterGroupFunc {
+	// usecase
+	httpClient := http.Client{
+		Timeout:   time.Duration(ttsConfig.APITimeoutSec) * time.Second,
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
 	}
+	synthesizerClient := gateway.NewGoogleTTSClient(&httpClient, ttsConfig.APIKey)
+	audioFile := gateway.NewAudioFile()
+	synthesizerUsecase := usecase.NewSynthesizerUsecase(txManager, nonTxManager, synthesizerClient, audioFile)
 
-	return nil
+	// private router
+	return []libhandler.InitRouterGroupFunc{
+		NewInitSynthesizerRouterFunc(synthesizerUsecase),
+	}
+}
+
+func InitAuthMiddleware(internalAuthConfig *config.InternalAuthConfig) gin.HandlerFunc {
+	// middleware
+	return gin.BasicAuth(gin.Accounts{
+		internalAuthConfig.Username: internalAuthConfig.Password,
+	})
 }

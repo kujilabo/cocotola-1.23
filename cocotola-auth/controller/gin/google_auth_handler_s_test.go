@@ -1,6 +1,6 @@
 //go:build small
 
-package handler_test
+package controller_test
 
 import (
 	"bytes"
@@ -14,20 +14,20 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	handler "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
-	handlermock "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin/mocks"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
+	controllermock "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin/mocks"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 )
 
-func initGoogleRouter(t *testing.T, ctx context.Context, googleUser handler.GoogleUserUsecase) *gin.Engine {
+func initGoogleRouter(t *testing.T, ctx context.Context, googleUser controller.GoogleUserUsecase) *gin.Engine {
 	t.Helper()
-	fn := handler.NewInitGoogleRouterFunc(googleUser)
+	fn := controller.NewInitGoogleRouterFunc(googleUser)
 
-	initPublicRouterFunc := []handler.InitRouterGroupFunc{fn}
-	initPrivateRouterFunc := []handler.InitRouterGroupFunc{}
+	initPublicRouterFuncs := []controller.InitRouterGroupFunc{fn}
+	initPrivateRouterFuncs := []controller.InitRouterGroupFunc{}
 
 	router := gin.New()
-	err := handler.InitAPIRouterGroup(ctx, router, initPublicRouterFunc, initPrivateRouterFunc, appConfig.Name)
+	err := controller.InitAPIRouterGroup(ctx, router, initPublicRouterFuncs, initPrivateRouterFuncs, appConfig.Name)
 	require.NoError(t, err)
 
 	return router
@@ -38,7 +38,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn400_whenRequestBodyIsEmpty(t *t
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(handlermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
 
@@ -63,7 +63,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn400_whenRequestBodyIsInvalid(t 
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(handlermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
 
@@ -88,7 +88,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn500_whenErrorOccur(t *testing.T
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(handlermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
 	googleUserUsecase.On("Authorize", anyOfCtx, "VALID_STATE", "ERROR_CODE", "ORG_NAME").Return(nil, errors.New("ERROR"))
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
@@ -114,7 +114,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn401_whenCodeIsInvalid(t *testin
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(handlermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
 	googleUserUsecase.On("Authorize", anyOfCtx, "VALID_STATE", "INVALID_CODE", "ORG_NAME").Return(nil, domain.ErrUnauthenticated)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
@@ -144,7 +144,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn401_whenCodeIsValid(t *testing.
 		AccessToken:  "ACCESS_TOKEN",
 		RefreshToken: "REFRESH_TOKEN",
 	}
-	googleUserUsecase := new(handlermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
 	googleUserUsecase.On("Authorize", anyOfCtx, "VALID_STATE", "VALID_CODE", "ORG_NAME").Return(authToksenSet, nil)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()

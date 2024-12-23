@@ -12,5 +12,6 @@ go_library(
         "//cocotola-core/domain",
         "//cocotola-core/service",
         "//lib/api",
+        "//redstart/lib/service",
     ],
 )

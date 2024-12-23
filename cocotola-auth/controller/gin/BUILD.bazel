@@ -4,7 +4,6 @@ go_library(
     name = "gin",
     srcs = [
         "app_router.go",
-        "auth.go",
         "auth_handler.go",
         "google_auth_handler.go",
         "password_auth_handler.go",

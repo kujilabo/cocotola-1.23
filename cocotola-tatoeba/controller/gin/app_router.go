@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"context"
@@ -11,12 +11,11 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 	libmiddleware "github.com/kujilabo/cocotola-1.23/lib/controller/gin/middleware"
 )
 
-type InitRouterGroupFunc func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error
-
-func NewInitTestRouterFunc() InitRouterGroupFunc {
+func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
 	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
 		test := parentRouterGroup.Group("test")
 		for _, m := range middleware {
@@ -38,8 +37,12 @@ func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsC
 	}
 }
 
-func InitAPIRouterGroup(ctx context.Context, apiRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, appName string) error {
-	v1 := apiRouterGroup.Group("v1")
+func InitAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPublicRouterFunc []libcontroller.InitRouterGroupFunc, initPrivateRouterFunc []libcontroller.InitRouterGroupFunc, appName string) error {
+	api := parentRouterGroup.Group("api")
+	api.Use(otelgin.Middleware(appName))
+	api.Use(libmiddleware.NewTraceLogMiddleware(appName))
+
+	v1 := api.Group("v1")
 	{
 		v1.Use(otelgin.Middleware(appName))
 		v1.Use(libmiddleware.NewTraceLogMiddleware(appName))

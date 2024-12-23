@@ -18,6 +18,7 @@ go_library(
     deps = [
         "//redstart/lib/errors",
         "//redstart/lib/log",
+        "//redstart/lib/service",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_go_sql_driver_mysql//:mysql",
         "@com_github_golang_migrate_migrate_v4//:migrate",

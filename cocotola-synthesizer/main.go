@@ -23,6 +23,7 @@ import (
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
+	contoller "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/initialize"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/service"
@@ -107,7 +108,11 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.New()
-	if err := initialize.InitAppServer(ctx, router, *cfg.InternalAuth, cfg.CORS, cfg.Debug, cfg.TTS, cfg.App.Name, txManager, nonTxManager); err != nil {
+
+	authMiddleware := contoller.InitAuthMiddleware(cfg.InternalAuth)
+	publicRouterGroupFuncs := contoller.GetPublicRouterGroupFuncs()
+	privateRouterGroupFuncs := contoller.GetPrivateRouterGroupFuncs(cfg.TTS, txManager, nonTxManager)
+	if err := initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs); err != nil {
 		panic(err)
 	}
 
