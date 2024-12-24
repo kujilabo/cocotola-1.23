@@ -106,7 +106,7 @@ func (u *GoogleUserUsecase) GenerateState(ctx context.Context) (string, error) {
 	return state, nil
 }
 
-func (u *GoogleUserUsecase) Authorize(ctx context.Context, state, code, organizationName string) (*domain.AuthTokenSet, error) {
+func (u *GoogleUserUsecase) doesStateExist(ctx context.Context, state string) error {
 	var matched bool
 	if err := u.nonTxManager.Do(ctx, func(rf service.RepositoryFactory) error {
 		stateRepo, err := rf.NewStateRepository(ctx)
@@ -121,19 +121,35 @@ func (u *GoogleUserUsecase) Authorize(ctx context.Context, state, code, organiza
 		matched = tmpMatched
 		return nil
 	}); err != nil {
-		return nil, err
+		return err
 	}
 
 	if !matched {
-		return nil, rsliberrors.Errorf("invalid state. err: %w", domain.ErrUnauthenticated)
+		return rsliberrors.Errorf("invalid state. err: %w", domain.ErrUnauthenticated)
 	}
 
+	return nil
+}
+
+func (u *GoogleUserUsecase) getTokensAndUserInfo(ctx context.Context, code string) (string, string, *domain.UserInfo, error) {
 	resp, err := u.googleAuthClient.RetrieveAccessToken(ctx, code)
 	if err != nil {
-		return nil, rsliberrors.Errorf(". err: %w", err)
+		return "", "", nil, rsliberrors.Errorf(". err: %w", err)
 	}
 
 	info, err := u.googleAuthClient.RetrieveUserInfo(ctx, resp)
+	if err != nil {
+		return "", "", nil, rsliberrors.Errorf(". err: %w", err)
+	}
+	return resp.AccessToken, resp.RefreshToken, info, nil
+}
+
+func (u *GoogleUserUsecase) Authorize(ctx context.Context, state, code, organizationName string) (*domain.AuthTokenSet, error) {
+	if err := u.doesStateExist(ctx, state); err != nil {
+		return nil, err
+	}
+
+	accessToken, refreshToken, info, err := u.getTokensAndUserInfo(ctx, code)
 	if err != nil {
 		return nil, rsliberrors.Errorf(". err: %w", err)
 	}
@@ -143,7 +159,7 @@ func (u *GoogleUserUsecase) Authorize(ctx context.Context, state, code, organiza
 	var targetOorganization *organization
 	var targetAppUser *appUser
 	if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
-		tmpOrganization, tmpAppUser, err := u.registerAppUser(ctx, rf, organizationName, info.Email, info.Name, info.Email, resp.AccessToken, resp.RefreshToken)
+		tmpOrganization, tmpAppUser, err := u.registerAppUser(ctx, rf, organizationName, info.Email, info.Name, info.Email, accessToken, refreshToken)
 		if err != nil && !errors.Is(err, rsuserservice.ErrAppUserAlreadyExists) {
 			return rsliberrors.Errorf("s.registerAppUser. err: %w", err)
 		}
@@ -228,32 +244,26 @@ func (u *GoogleUserUsecase) Authorize(ctx context.Context, state, code, organiza
 // 	return tokenSet, nil
 // }
 
-func (u *GoogleUserUsecase) registerAppUser(ctx context.Context, rf service.RepositoryFactory, organizationName string, loginID string, username string,
-	providerID, providerAccessToken, providerRefreshToken string) (*rsuserdomain.OrganizationModel, *rsuserdomain.AppUserModel, error) {
-	rsrf, err := rf.NewRedstartRepositoryFactory(ctx)
-	if err != nil {
-		return nil, nil, err
-	}
-	systemAdmin, err := rsuserservice.NewSystemAdmin(ctx, rsrf)
+func (u *GoogleUserUsecase) registerAppUser(ctx context.Context, rf service.RepositoryFactory, organizationName string, loginID string, username string, providerID, providerAccessToken, providerRefreshToken string) (*rsuserdomain.OrganizationModel, *rsuserdomain.AppUserModel, error) {
+	action, err := NewOrganizationAction(ctx, rf,
+		WithOrganizationRepository(),
+		WithOrganization(organizationName),
+		WithAppUserRepository(),
+	)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	findOrganization := func() (*rsuserdomain.OrganizationModel, error) {
-		organization, err := systemAdmin.FindOrganizationByName(ctx, organizationName)
-		if err != nil {
-			return nil, err
-		}
-		return organization.OrganizationModel, nil
-	}
+	// findOrganization := func() (*rsuserdomain.OrganizationModel, error) {
+	// 	organization, err := action.systemAdmin.FindOrganizationByName(ctx, organizationName)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	return organization.OrganizationModel, nil
+	// }
 
 	findAppUser := func() (*rsuserdomain.AppUserModel, error) {
-		systemOwner, err := systemAdmin.FindSystemOwnerByOrganizationName(ctx, organizationName)
-		if err != nil {
-			return nil, err
-		}
-
-		appUser1, err := systemOwner.FindAppUserByLoginID(ctx, loginID)
+		appUser1, err := action.systemOwner.FindAppUserByLoginID(ctx, loginID)
 		if err == nil {
 			return appUser1.AppUserModel, nil
 		}
@@ -277,12 +287,12 @@ func (u *GoogleUserUsecase) registerAppUser(ctx context.Context, rf service.Repo
 			return nil, rsliberrors.Errorf("invalid AppUserAddParameter. err: %w", err)
 		}
 
-		studentID, err := systemOwner.AddAppUser(ctx, parameter)
+		studentID, err := action.systemOwner.AddAppUser(ctx, parameter)
 		if err != nil {
 			return nil, rsliberrors.Errorf("failed to AddStudent. err: %w", err)
 		}
 
-		appUser2, err := systemOwner.FindAppUserByID(ctx, studentID)
+		appUser2, err := action.systemOwner.FindAppUserByID(ctx, studentID)
 		if err != nil {
 			return nil, rsliberrors.Errorf("failed to FindStudentByID. err: %w", err)
 		}
@@ -290,17 +300,17 @@ func (u *GoogleUserUsecase) registerAppUser(ctx context.Context, rf service.Repo
 		return appUser2.AppUserModel, nil
 	}
 
-	organization, err := findOrganization()
-	if err != nil {
-		return nil, nil, err
-	}
+	// organization, err := findOrganization()
+	// if err != nil {
+	// 	return nil, nil, err
+	// }
 
 	appUser, err := findAppUser()
 	if errors.Is(err, rsuserservice.ErrAppUserAlreadyExists) {
-		return organization, appUser, nil
+		return action.organization.OrganizationModel, appUser, nil
 	} else if err != nil {
 		return nil, nil, rsliberrors.Errorf("registerAppUser. err: %w", err)
 	}
 
-	return organization, appUser, nil
+	return action.organization.OrganizationModel, appUser, nil
 }
