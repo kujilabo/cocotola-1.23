@@ -219,6 +219,3 @@ tasks:
   gitleaks:
     cmds:
       - docker run -v $(pwd):/path zricethezav/gitleaks:latest detect -v --source /path -c /path/.github/gitleaks.toml
-  # detect-secrets:
-  #   cmds:
-  #     -   
