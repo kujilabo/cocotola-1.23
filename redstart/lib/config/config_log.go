@@ -11,7 +11,7 @@ type LogConfig struct {
 	Level map[string]string `yaml:"level"`
 }
 
-func InitLog(cfg *LogConfig) error {
+func InitLog(cfg *LogConfig) {
 	defaultLogLevel := slog.LevelWarn
 	if rootLevel, ok := cfg.Level["default"]; ok {
 		defaultLogLevel = stringToLogLevel(rootLevel)
@@ -20,8 +20,6 @@ func InitLog(cfg *LogConfig) error {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: defaultLogLevel,
 	})))
-
-	return nil
 }
 
 func stringToLogLevel(value string) slog.Level {

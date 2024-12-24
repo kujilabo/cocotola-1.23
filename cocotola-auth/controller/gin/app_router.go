@@ -51,7 +51,7 @@ func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
 		})
 	}
 }
-func InitPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
+func GetPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
 	// - google
 	httpClient := http.Client{
 		Timeout:   time.Duration(authConfig.APITimeoutSec) * time.Second,
@@ -76,7 +76,7 @@ func InitPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxM
 	}
 }
 
-func InitPrivateRouterGroupFuncs(txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
+func GetPrivateRouterGroupFuncs(txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
 	// - rbac
 	rbacUsecase := usecase.NewRBAC(txManager, nonTxManager)
 

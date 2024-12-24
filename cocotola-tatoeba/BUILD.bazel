@@ -14,7 +14,7 @@ go_library(
         "//cocotola-tatoeba/initialize",
         "//cocotola-tatoeba/service",
         "//cocotola-tatoeba/sqls",
-        "//lib/controller",
+        "//lib/gateway",
         "//redstart/lib/config",
         "//redstart/lib/errors",
         "//redstart/lib/gateway",
@@ -23,7 +23,6 @@ go_library(
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//propagation",
-        "@org_golang_x_sync//errgroup",
     ],
 )
 

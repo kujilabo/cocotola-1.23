@@ -26,8 +26,12 @@ func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig 
 	// root
 	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
 
+	InitApiServer(ctx, rootRouterGroup, appName, publicRouterGroupFuncs)
+}
+
+func InitApiServer(ctx context.Context, root gin.IRouter, appName string, publicRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
 	// api
-	api := libcontroller.InitAPIRouterGroup(ctx, rootRouterGroup, appName)
+	api := libcontroller.InitAPIRouterGroup(ctx, root, appName)
 
 	// v1
 	v1 := api.Group("v1")

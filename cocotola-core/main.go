@@ -59,7 +59,6 @@ func main() {
 	env := flag.String("env", "", "environment")
 	flag.Parse()
 	appEnv := getValue(*env, os.Getenv("APP_ENV"), "local")
-	slog.InfoContext(ctx, fmt.Sprintf("env: %s", appEnv))
 
 	rsliberrors.UseXerrorsErrorf()
 
@@ -68,9 +67,9 @@ func main() {
 	checkError(err)
 
 	// init log
-	if err := rslibconfig.InitLog(cfg.Log); err != nil {
-		panic(err)
-	}
+	rslibconfig.InitLog(cfg.Log)
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "main"))
+	logger.InfoContext(ctx, fmt.Sprintf("env: %s", appEnv))
 
 	// init tracer
 	tp, err := rslibconfig.InitTracerProvider(ctx, cfg.App.Name, cfg.Trace)
@@ -85,8 +84,6 @@ func main() {
 
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans
-
-	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "main"))
 
 	rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
 		return gateway.NewRepositoryFactory(ctx, dialect, cfg.DB.DriverName, db, time.UTC) // nolint:wrapcheck
