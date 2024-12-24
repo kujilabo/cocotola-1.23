@@ -9,6 +9,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//cocotola-tatoeba/config",
+        "//cocotola-tatoeba/controller/gin",
         "//cocotola-tatoeba/gateway",
         "//cocotola-tatoeba/initialize",
         "//cocotola-tatoeba/service",

@@ -13,15 +13,6 @@ import (
 
 // const readHeaderTimeout = time.Duration(30) * time.Second
 
-// func InitTransactionManager(db *gorm.DB, rff gateway.RepositoryFactoryFunc) service.TransactionManager {
-// 	appTransactionManager, err := gateway.NewTransactionManager(db, rff)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	return appTransactionManager
-// }
-
 // type systemOwnerByOrganizationName struct {
 // }
 
@@ -43,7 +34,7 @@ import (
 // 	return systemOwner, nil
 // }
 
-func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) error {
+func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
 	// cors
 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
 
@@ -57,16 +48,10 @@ func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig 
 	v1 := api.Group("v1")
 
 	// public router
-	if err := libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, privateRouterGroupFuncs); err != nil {
-		return err
-	}
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
 
 	// private router
-	if err := libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs); err != nil {
-		return err
-	}
-
-	return nil
+	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, privateRouterGroupFuncs)
 }
 
 // func InitApp1(ctx context.Context, txManager service.TransactionManager, workbookQueryService studentusecase.WorkbookQueryService) error {

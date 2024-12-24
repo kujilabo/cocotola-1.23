@@ -9,40 +9,24 @@ import (
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
-
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/config"
-	controller "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin"
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase"
 )
 
-func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, internalAuthConfig config.InternalAuthConfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, txManager, nonTxManager service.TransactionManager) error {
+func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
 	// cors
 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
 
-	// usecase
-	adminUsecase := usecase.NewAdminUsecase(txManager, nonTxManager)
+	// root
+	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
 
-	// middleware
-	authMiddleware := gin.BasicAuth(gin.Accounts{
-		internalAuthConfig.Username: internalAuthConfig.Password,
-	})
+	// api
+	api := libcontroller.InitAPIRouterGroup(ctx, rootRouterGroup, appName)
+
+	// v1
+	v1 := api.Group("v1")
 
 	// public router
-	publicRouterGroupFunc := []libcontroller.InitRouterGroupFunc{
-		controller.NewInitTestRouterFunc(),
-	}
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
 
 	// private router
-	privateRouterGroupFunc := []libcontroller.InitRouterGroupFunc{
-		controller.NewInitAdminRouterFunc(adminUsecase),
-	}
-
-	controller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
-
-	if err := controller.InitAPIRouterGroup(ctx, rootRouterGroup, authMiddleware, publicRouterGroupFunc, privateRouterGroupFunc, appName); err != nil {
-		return err
-	}
-
-	return nil
+	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, privateRouterGroupFuncs)
 }

@@ -23,7 +23,7 @@ import (
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
-	contoller "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/initialize"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/service"
@@ -109,12 +109,10 @@ func main() {
 	}
 	router := gin.New()
 
-	authMiddleware := contoller.InitAuthMiddleware(cfg.InternalAuth)
-	publicRouterGroupFuncs := contoller.GetPublicRouterGroupFuncs()
-	privateRouterGroupFuncs := contoller.GetPrivateRouterGroupFuncs(cfg.TTS, txManager, nonTxManager)
-	if err := initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs); err != nil {
-		panic(err)
-	}
+	authMiddleware := controller.InitAuthMiddleware(cfg.InternalAuth)
+	publicRouterGroupFuncs := controller.GetPublicRouterGroupFuncs()
+	privateRouterGroupFuncs := controller.GetPrivateRouterGroupFuncs(cfg.TTS, txManager, nonTxManager)
+	initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs)
 
 	// run
 	result := run(ctx, cfg, router)

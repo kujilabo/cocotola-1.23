@@ -5,12 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
@@ -18,92 +14,26 @@ import (
 	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
-	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
-	controller "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
-	"github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
-	"github.com/kujilabo/cocotola-1.23/cocotola-auth/usecase"
 )
 
-// func InitTransactionManager(db *gorm.DB, rff gateway.RepositoryFactoryFunc) service.TransactionManager {
-// 	appTransactionManager, err := gateway.NewTransactionManager(db, rff)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	return appTransactionManager
-// }
-
-type systemOwnerByOrganizationName struct {
-}
-
-func (s systemOwnerByOrganizationName) Get(ctx context.Context, rf service.RepositoryFactory, organizationName string) (*rsuserservice.SystemOwner, error) {
-	rsrf, err := rf.NewRedstartRepositoryFactory(ctx)
-	if err != nil {
-		return nil, err
-	}
-	systemAdmin, err := rsuserservice.NewSystemAdmin(ctx, rsrf)
-	if err != nil {
-		return nil, err
-	}
-
-	systemOwner, err := systemAdmin.FindSystemOwnerByOrganizationName(ctx, organizationName)
-	if err != nil {
-		return nil, err
-	}
-
-	return systemOwner, nil
-}
-
-func InitPublicRouterGroupFunc(authConfig *config.AuthConfig, txManager, nonTxManager service.TransactionManager) []controller.InitRouterGroupFunc {
-	// - google
-	httpClient := http.Client{
-		Timeout:   time.Duration(authConfig.APITimeoutSec) * time.Second,
-		Transport: otelhttp.NewTransport(http.DefaultTransport),
-	}
-	signingKey := []byte(authConfig.SigningKey)
-	signingMethod := jwt.SigningMethodHS256
-	authTokenManager := gateway.NewAuthTokenManager(signingKey, signingMethod, time.Duration(authConfig.AccessTokenTTLMin)*time.Minute, time.Duration(authConfig.RefreshTokenTTLHour)*time.Hour)
-	googleAuthClient := gateway.NewGoogleAuthClient(&httpClient, authConfig.GoogleClientID, authConfig.GoogleClientSecret, authConfig.GoogleCallbackURL)
-	googleUserUsecase := usecase.NewGoogleUser(txManager, nonTxManager, authTokenManager, googleAuthClient)
-	// - authentication
-	authenticationUsecase := usecase.NewAuthentication(txManager, authTokenManager, &systemOwnerByOrganizationName{})
-	// - password
-	passwordUsecase := usecase.NewPassword(txManager, nonTxManager, authTokenManager)
-
-	// public router
-	return []controller.InitRouterGroupFunc{
-		controller.NewInitTestRouterFunc(),
-		controller.NewInitAuthRouterFunc(authenticationUsecase),
-		controller.NewInitGoogleRouterFunc(googleUserUsecase),
-		controller.NewInitPasswordRouterFunc(passwordUsecase),
-	}
-}
-
-func InitPrivateRouterGroupFunc(txManager, nonTxManager service.TransactionManager) []controller.InitRouterGroupFunc {
-	// - rbac
-	rbacUsecase := usecase.NewRBAC(txManager, nonTxManager)
-
-	// private router
-	return []controller.InitRouterGroupFunc{
-		controller.NewInitRBACRouterFunc(rbacUsecase),
-	}
-}
-
-func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, publicRouterGroupFuncs, privateRouterGroupFuncs []controller.InitRouterGroupFunc) error {
+func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, publicRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
 	// cors
 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
 
 	// root
-	controller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
+	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
 
 	// api
-	if err := controller.InitAPIRouterGroup(ctx, rootRouterGroup, publicRouterGroupFuncs, privateRouterGroupFuncs, appName); err != nil {
-		return err
-	}
+	api := libcontroller.InitAPIRouterGroup(ctx, rootRouterGroup, appName)
 
-	return nil
+	// v1
+	v1 := api.Group("v1")
+
+	// public router
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
 }
 
 func InitApp1(ctx context.Context, txManager, nonTxManager service.TransactionManager, organizationName, loginID, password string) {

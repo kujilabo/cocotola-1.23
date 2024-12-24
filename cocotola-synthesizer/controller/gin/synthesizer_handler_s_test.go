@@ -75,12 +75,8 @@ func initSynthesizerRouter(t *testing.T, ctx context.Context, workbokQueryUsecas
 	// err := handler.InitAPIRouterGroup(ctx, router, authMiddleware, initPublicRouterFunc, initPrivateRouterFunc, appConfig.Name)
 	// require.NoError(t, err)
 
-	if err := libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs); err != nil {
-		require.NoError(t, err)
-	}
-	if err := libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, initPrivateRouterFuncs); err != nil {
-		require.NoError(t, err)
-	}
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs)
+	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, initPrivateRouterFuncs)
 
 	return router
 }

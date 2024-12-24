@@ -12,6 +12,7 @@ import (
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 )
@@ -61,8 +62,8 @@ func (h *PasswordAuthHandler) Authorize(c *gin.Context) {
 	})
 }
 
-func NewInitPasswordRouterFunc(password PasswordUsecaseInterface) InitRouterGroupFunc {
-	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) error {
+func NewInitPasswordRouterFunc(password PasswordUsecaseInterface) libcontroller.InitRouterGroupFunc {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		auth := parentRouterGroup.Group("password")
 		for _, m := range middleware {
 			auth.Use(m)
@@ -70,6 +71,5 @@ func NewInitPasswordRouterFunc(password PasswordUsecaseInterface) InitRouterGrou
 
 		passwordAuthHandler := NewPasswordAuthHandler(password)
 		auth.POST("authenticate", passwordAuthHandler.Authorize)
-		return nil
 	}
 }

@@ -43,4 +43,3 @@ swagger:
 debug:
   gin: false
   wait: false
-

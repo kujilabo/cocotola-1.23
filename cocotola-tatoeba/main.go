@@ -23,6 +23,7 @@ import (
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/config"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/initialize"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
@@ -107,9 +108,11 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.New()
-	if err := initialize.InitAppServer(ctx, router, *cfg.InternalAuth, cfg.CORS, cfg.Debug, cfg.App.Name, txManager, nonTxManager); err != nil {
-		panic(err)
-	}
+	authMiddleware := controller.InitAuthMiddleware(cfg.InternalAuth)
+	publicRouterGroupFuncs := controller.GetPublicRouterGroupFuncs()
+	privateRouterGroupFuncs := controller.GetPrivateRouterGroupFuncs(txManager, nonTxManager)
+
+	initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs)
 
 	// run
 	// result := run(ctx, cfg, router)

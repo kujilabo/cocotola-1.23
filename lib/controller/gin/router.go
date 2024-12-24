@@ -13,7 +13,7 @@ import (
 	"github.com/kujilabo/cocotola-1.23/lib/controller/gin/middleware"
 )
 
-type InitRouterGroupFunc func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error
+type InitRouterGroupFunc func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc)
 
 func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *config.DebugConfig) {
 	rootRouterGroup.Use(cors.New(corsConfig))
@@ -31,22 +31,14 @@ func InitAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, appN
 	return api
 }
 
-func InitPublicAPIRouterGroup(ctx context.Context, parentRouterGroup *gin.RouterGroup, initPublicRouterFunc []InitRouterGroupFunc) error {
+func InitPublicAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, initPublicRouterFunc []InitRouterGroupFunc) {
 	for _, fn := range initPublicRouterFunc {
-		if err := fn(parentRouterGroup); err != nil {
-			return err
-		}
+		fn(parentRouterGroup)
 	}
-
-	return nil
 }
 
-func InitPrivateAPIRouterGroup(ctx context.Context, parentRouterGroup *gin.RouterGroup, authMiddleware gin.HandlerFunc, initPrivateRouterFunc []InitRouterGroupFunc) error {
+func InitPrivateAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, authMiddleware gin.HandlerFunc, initPrivateRouterFunc []InitRouterGroupFunc) {
 	for _, fn := range initPrivateRouterFunc {
-		if err := fn(parentRouterGroup, authMiddleware); err != nil {
-			return err
-		}
+		fn(parentRouterGroup, authMiddleware)
 	}
-
-	return nil
 }
