@@ -48,7 +48,6 @@ jobs:
           reporter: github-pr-review
           level: warning
           fail_level: any
-
       # - name: detect-secrets
       #   uses: reviewdog/action-detect-secrets@master
       #   with:
