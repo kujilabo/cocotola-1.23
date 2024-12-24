@@ -6,6 +6,7 @@ go_library(
         "authentication_usecase.go",
         "google_user_usecase.go",
         "init.go",
+        "organization_action.go",
         "password_usecase.go",
         "rbac_usecase.go",
     ],
