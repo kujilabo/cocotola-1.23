@@ -1,0 +1,62 @@
+---
+app:
+  name: cocotola-app
+  httpPort: 8080
+  metricsPort: 8081
+  ownerLoginId: cocotola-owner
+  ownerPassword: password
+db:
+  driverName: postgres
+  migration: true
+  mysql:
+    username: user
+    password: password
+    host: 127.0.0.1
+    port: 3306
+    database: development
+  postgres:
+    username: user
+    password: password
+    host: 127.0.0.1
+    port: 5432
+    database: postgres
+authApi:
+  endpoint: http://localhost:8080/api/auth
+  authType: static
+  username: auth_username
+  password: auth_password
+synthesizerApi:
+  endpoint: http://localhost:8080/api/synthesizer
+  authType: static
+  username: synthesizer_username
+  password: synthesizer_password
+auth:
+  signingKey: ah5T9Y9V2JPU74fhCtHQfDqLp3Zg8ZNc
+  accessTokenTtlMin: 5
+  refreshTokenTtlHour: 720
+  googleCallbackUrl: http://localhost:5173/app/auth/callback
+  googleClientId: 751610212628-f49u7fr0nivli19pr95eu3ckvn1rcdnn.apps.googleusercontent.com
+  googleClientSecret: $GOOGLE_CLIENT_SECRET
+  apiTimeoutSec: 5
+trace:
+  exporter: otlp
+  otlp:
+    endpoint: localhost:4318
+    insecure: true
+cors:
+  allowOrigins:
+    - '*'
+shutdown:
+  timeSec1: 1
+  timeSec2: 1
+log:
+  level:
+    default: debug
+    cocotola-core: debug
+swagger:
+  enabled: true
+  host: localhost:8010
+  schema: http
+debug:
+  gin: true
+  wait: true

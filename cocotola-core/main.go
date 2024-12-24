@@ -26,7 +26,7 @@ import (
 	// "github.com/kujilabo/cocotola-1.23/proto"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/config"
-	contoller "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/initialize"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/service"
@@ -59,7 +59,6 @@ func main() {
 	env := flag.String("env", "", "environment")
 	flag.Parse()
 	appEnv := getValue(*env, os.Getenv("APP_ENV"), "local")
-	slog.InfoContext(ctx, fmt.Sprintf("env: %s", appEnv))
 
 	rsliberrors.UseXerrorsErrorf()
 
@@ -68,9 +67,9 @@ func main() {
 	checkError(err)
 
 	// init log
-	if err := rslibconfig.InitLog(cfg.Log); err != nil {
-		panic(err)
-	}
+	rslibconfig.InitLog(cfg.Log)
+	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "main"))
+	logger.InfoContext(ctx, fmt.Sprintf("env: %s", appEnv))
 
 	// init tracer
 	tp, err := rslibconfig.InitTracerProvider(ctx, cfg.App.Name, cfg.Trace)
@@ -85,8 +84,6 @@ func main() {
 
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans
-
-	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "main"))
 
 	rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
 		return gateway.NewRepositoryFactory(ctx, dialect, cfg.DB.DriverName, db, time.UTC) // nolint:wrapcheck
@@ -117,14 +114,12 @@ func main() {
 	}
 
 	router := gin.New()
-	authMiddleware, err := contoller.InitAuthMiddleware(cfg.AuthAPI)
+	authMiddleware, err := controller.InitAuthMiddleware(cfg.AuthAPI)
 	checkError(err)
 
-	publicRouterGroupFuncs := contoller.GetPublicRouterGroupFuncs()
-	privateRouterGroupFuncs := contoller.GetPrivateRouterGroupFuncs(db, txManager, nonTxManager)
-	if err := initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs); err != nil {
-		panic(err)
-	}
+	publicRouterGroupFuncs := controller.GetPublicRouterGroupFuncs()
+	privateRouterGroupFuncs := controller.GetPrivateRouterGroupFuncs(db, txManager, nonTxManager)
+	initialize.InitAppServer(ctx, router, cfg.CORS, cfg.Debug, cfg.App.Name, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs)
 
 	// run
 	result := run(ctx, cfg, router)

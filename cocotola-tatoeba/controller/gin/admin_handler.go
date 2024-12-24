@@ -141,7 +141,7 @@ func (h *AdminHandler) errorHandle(ctx context.Context, c *gin.Context, err erro
 }
 
 func NewInitAdminRouterFunc(adminUsecase AdminUsecase) libcontroller.InitRouterGroupFunc {
-	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		admin := parentRouterGroup.Group("admin")
 		newSentenceReader := func(reader io.Reader) service.TatoebaSentenceAddParameterIterator {
 			return gateway.NewTatoebaSentenceAddParameterReader(reader)
@@ -155,6 +155,5 @@ func NewInitAdminRouterFunc(adminUsecase AdminUsecase) libcontroller.InitRouterG
 		}
 		admin.POST("sentence/import", adminHandler.ImportSentences)
 		admin.POST("link/import", adminHandler.ImportLinks)
-		return nil
 	}
 }

@@ -65,12 +65,8 @@ func initWorkbookRouter(t *testing.T, ctx context.Context, cocotolaAuthClient se
 	api := router.Group("api")
 	v1 := api.Group("v1")
 
-	if err := libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs); err != nil {
-		require.NoError(t, err)
-	}
-	if err := libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, initPrivateRouterFuncs); err != nil {
-		require.NoError(t, err)
-	}
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs)
+	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, initPrivateRouterFuncs)
 	// err := initialize.InitAppServer(ctx, router, authMiddleware, corsConfig, debugConfig, appConfig.Name, initPublicRouterFunc, initPrivateRouterFunc)
 	// require.NoError(t, err)
 

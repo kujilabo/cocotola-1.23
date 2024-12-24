@@ -24,7 +24,7 @@ const authClientTimeout = time.Duration(5) * time.Second
 // type NewIteratorFunc func(ctx context.Context, workbookID appD.WorkbookID, problemType appD.ProblemTypeName, reader io.Reader) (appS.ProblemAddParameterIterator, error)
 
 func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
-	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		test := parentRouterGroup.Group("test")
 		for _, m := range middleware {
 			test.Use(m)
@@ -32,7 +32,6 @@ func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
 		test.GET("/ping", func(c *gin.Context) {
 			c.String(http.StatusOK, "pong")
 		})
-		return nil
 	}
 }
 

@@ -14,7 +14,7 @@ import (
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
-	libhandler "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/domain"
@@ -194,8 +194,8 @@ func (h *WorkbookHandler) errorHandle(ctx context.Context, c *gin.Context, err e
 	return false
 }
 
-func NewInitWorkbookRouterFunc(workbookQueryUsecase WorkbookQueryUsecase, workbookCommandUsecase WorkbookCommandUsecase) libhandler.InitRouterGroupFunc {
-	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
+func NewInitWorkbookRouterFunc(workbookQueryUsecase WorkbookQueryUsecase, workbookCommandUsecase WorkbookCommandUsecase) libcontroller.InitRouterGroupFunc {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		workbook := parentRouterGroup.Group("workbook")
 		workbookHandler := NewWorkbookHandler(workbookQueryUsecase, workbookCommandUsecase)
 		for _, m := range middleware {
@@ -208,6 +208,5 @@ func NewInitWorkbookRouterFunc(workbookQueryUsecase WorkbookQueryUsecase, workbo
 		workbook.PUT(":workbookID", workbookHandler.UpdateWorkbook)
 		// workbook.DELETE(":workbookID", privateWorkbookHandler.RemoveWorkbook)
 		workbook.POST("", workbookHandler.AddWorkbook)
-		return nil
 	}
 }

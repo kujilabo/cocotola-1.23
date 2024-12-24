@@ -2,22 +2,46 @@ package controller
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
+	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	sloggin "github.com/samber/slog-gin"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"github.com/golang-jwt/jwt/v5"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
-	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
-	libmiddleware "github.com/kujilabo/cocotola-1.23/lib/controller/gin/middleware"
+	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
+
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway"
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/usecase"
 )
 
-type InitRouterGroupFunc func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) error
+type systemOwnerByOrganizationName struct {
+}
 
-func NewInitTestRouterFunc() InitRouterGroupFunc {
-	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) error {
+func (s systemOwnerByOrganizationName) Get(ctx context.Context, rf service.RepositoryFactory, organizationName string) (*rsuserservice.SystemOwner, error) {
+	rsrf, err := rf.NewRedstartRepositoryFactory(ctx)
+	if err != nil {
+		return nil, err
+	}
+	systemAdmin, err := rsuserservice.NewSystemAdmin(ctx, rsrf)
+	if err != nil {
+		return nil, err
+	}
+
+	systemOwner, err := systemAdmin.FindSystemOwnerByOrganizationName(ctx, organizationName)
+	if err != nil {
+		return nil, err
+	}
+
+	return systemOwner, nil
+}
+
+func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		test := parentRouterGroup.Group("test")
 		for _, m := range middleware {
 			test.Use(m)
@@ -25,31 +49,64 @@ func NewInitTestRouterFunc() InitRouterGroupFunc {
 		test.GET("/ping", func(c *gin.Context) {
 			c.String(http.StatusOK, "pong")
 		})
-		return nil
+	}
+}
+func GetPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
+	// - google
+	httpClient := http.Client{
+		Timeout:   time.Duration(authConfig.APITimeoutSec) * time.Second,
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
+	signingKey := []byte(authConfig.SigningKey)
+	signingMethod := jwt.SigningMethodHS256
+	authTokenManager := gateway.NewAuthTokenManager(signingKey, signingMethod, time.Duration(authConfig.AccessTokenTTLMin)*time.Minute, time.Duration(authConfig.RefreshTokenTTLHour)*time.Hour)
+	googleAuthClient := gateway.NewGoogleAuthClient(&httpClient, authConfig.GoogleClientID, authConfig.GoogleClientSecret, authConfig.GoogleCallbackURL)
+	googleUserUsecase := usecase.NewGoogleUser(txManager, nonTxManager, authTokenManager, googleAuthClient)
+	// - authentication
+	authenticationUsecase := usecase.NewAuthentication(txManager, authTokenManager, &systemOwnerByOrganizationName{})
+	// - password
+	passwordUsecase := usecase.NewPassword(txManager, nonTxManager, authTokenManager)
+
+	// public router
+	return []libcontroller.InitRouterGroupFunc{
+		NewInitTestRouterFunc(),
+		NewInitAuthRouterFunc(authenticationUsecase),
+		NewInitGoogleRouterFunc(googleUserUsecase),
+		NewInitPasswordRouterFunc(passwordUsecase),
 	}
 }
 
-func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *libconfig.DebugConfig) {
-	rootRouterGroup.Use(cors.New(corsConfig))
-	rootRouterGroup.Use(sloggin.New(slog.Default()))
+func GetPrivateRouterGroupFuncs(txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
+	// - rbac
+	rbacUsecase := usecase.NewRBAC(txManager, nonTxManager)
 
-	if debugConfig.Wait {
-		rootRouterGroup.Use(libmiddleware.NewWaitMiddleware())
+	// private router
+	return []libcontroller.InitRouterGroupFunc{
+		NewInitRBACRouterFunc(rbacUsecase),
 	}
 }
 
-func InitAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, initPublicRouterFunc []InitRouterGroupFunc, initPrivateRouterFunc []InitRouterGroupFunc, appName string) error {
-	v1 := parentRouterGroup.Group("v1")
-	{
-		v1.Use(otelgin.Middleware(appName))
-		v1.Use(libmiddleware.NewTraceLogMiddleware(appName))
+// func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *libconfig.DebugConfig) {
+// 	rootRouterGroup.Use(cors.New(corsConfig))
+// 	rootRouterGroup.Use(sloggin.New(slog.Default()))
 
-		for _, fn := range initPublicRouterFunc {
-			if err := fn(v1); err != nil {
-				return err
-			}
-		}
-	}
+// 	if debugConfig.Wait {
+// 		rootRouterGroup.Use(libmiddleware.NewWaitMiddleware())
+// 	}
+// }
 
-	return nil
-}
+// func InitAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, initPublicRouterFunc []libcontroller.InitRouterGroupFunc, initPrivateRouterFunc []libcontroller.InitRouterGroupFunc, appName string) error {
+// 	v1 := parentRouterGroup.Group("v1")
+// 	{
+// 		v1.Use(otelgin.Middleware(appName))
+// 		v1.Use(libmiddleware.NewTraceLogMiddleware(appName))
+
+// 		for _, fn := range initPublicRouterFunc {
+// 			if err := fn(v1); err != nil {
+// 				return err
+// 			}
+// 		}
+// 	}
+
+// 	return nil
+// }

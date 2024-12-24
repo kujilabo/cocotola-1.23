@@ -82,7 +82,7 @@ func (h *SynthesizerHandler) FindAudioByID(c *gin.Context) {
 // }
 
 func NewInitSynthesizerRouterFunc(synthesizerUsecase SynthesizerUsecase) libcontroller.InitRouterGroupFunc {
-	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		workbook := parentRouterGroup.Group("synthesize")
 		SynthesizerHandler := NewSynthesizerHandler(synthesizerUsecase)
 		for _, m := range middleware {
@@ -90,6 +90,5 @@ func NewInitSynthesizerRouterFunc(synthesizerUsecase SynthesizerUsecase) libcont
 		}
 		workbook.POST("synthesize", SynthesizerHandler.Synthesize)
 		workbook.GET("audio/:audioID", SynthesizerHandler.FindAudioByID)
-		return nil
 	}
 }

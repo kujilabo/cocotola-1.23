@@ -12,6 +12,7 @@ import (
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 )
@@ -135,8 +136,8 @@ func (h *GoogleUserHandler) Authorize(c *gin.Context) {
 	})
 }
 
-func NewInitGoogleRouterFunc(googleUserUsecase GoogleUserUsecase) InitRouterGroupFunc {
-	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) error {
+func NewInitGoogleRouterFunc(googleUserUsecase GoogleUserUsecase) libcontroller.InitRouterGroupFunc {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		auth := parentRouterGroup.Group("google")
 		for _, m := range middleware {
 			auth.Use(m)
@@ -145,6 +146,5 @@ func NewInitGoogleRouterFunc(googleUserUsecase GoogleUserUsecase) InitRouterGrou
 		googleAuthHandler := NewGoogleAuthHandler(googleUserUsecase)
 		auth.GET("state", googleAuthHandler.GenerateState)
 		auth.POST("authorize", googleAuthHandler.Authorize)
-		return nil
 	}
 }

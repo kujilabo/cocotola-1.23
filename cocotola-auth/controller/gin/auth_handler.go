@@ -12,6 +12,7 @@ import (
 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
+	libhandler "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 )
 
 type AuthenticationUsecase interface {
@@ -81,8 +82,8 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	})
 }
 
-func NewInitAuthRouterFunc(authenticationUsecase AuthenticationUsecase) InitRouterGroupFunc {
-	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) error {
+func NewInitAuthRouterFunc(authenticationUsecase AuthenticationUsecase) libhandler.InitRouterGroupFunc {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		auth := parentRouterGroup.Group("auth")
 		for _, m := range middleware {
 			auth.Use(m)
@@ -91,6 +92,5 @@ func NewInitAuthRouterFunc(authenticationUsecase AuthenticationUsecase) InitRout
 		authHandler := NewAuthHandler(authenticationUsecase)
 		auth.POST("refresh_token", authHandler.RefreshToken)
 		auth.GET("userinfo", authHandler.GetUserInfo)
-		return nil
 	}
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
@@ -59,12 +60,18 @@ func initAuthRouter(t *testing.T, ctx context.Context, authentication controller
 	t.Helper()
 	fn := controller.NewInitAuthRouterFunc(authentication)
 
-	initPublicRouterFuncs := []controller.InitRouterGroupFunc{fn}
-	initPrivateRouterFuncs := []controller.InitRouterGroupFunc{}
+	initPublicRouterFuncs := []libcontroller.InitRouterGroupFunc{fn}
+	// initPrivateRouterFuncs := []libcontroller.InitRouterGroupFunc{}
 
 	router := gin.New()
-	err := controller.InitAPIRouterGroup(ctx, router, initPublicRouterFuncs, initPrivateRouterFuncs, appConfig.Name)
-	require.NoError(t, err)
+	libcontroller.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	api := router.Group("api")
+	v1 := api.Group("v1")
+
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs)
+	// if err := libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, initPrivateRouterFuncs); err != nil {
+	// 	require.NoError(t, err)
+	// }
 
 	return router
 }
@@ -81,7 +88,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn401_whenAuthorizationHeaderIsEmpty(
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/v1/auth/userinfo", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/userinfo", nil)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "")
 	r.ServeHTTP(w, req)
@@ -110,7 +117,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn401_whenAuthorizationHeaderIsInvali
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/v1/auth/userinfo", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/userinfo", nil)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "Bearer INVALID_TOKEN")
 	r.ServeHTTP(w, req)
@@ -145,7 +152,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn200_whenAuthorizationHeaderIsValid(
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/v1/auth/userinfo", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/api/v1/auth/userinfo", nil)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "Bearer VALID_TOKEN")
 	r.ServeHTTP(w, req)
@@ -183,7 +190,7 @@ func TestAuthHandler_RefreshToken_shouldReturn400_whenRequestBodyIsEmpty(t *test
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/auth/refresh_token", bytes.NewBuffer([]byte("")))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/auth/refresh_token", bytes.NewBuffer([]byte("")))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 	respBytes := readBytes(t, w.Body)
@@ -211,7 +218,7 @@ func TestAuthHandler_RefreshToken_shouldReturn401_whenTokenIsInvalid(t *testing.
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/auth/refresh_token", bytes.NewBuffer([]byte(`{"refreshToken": "INVALID_TOKEN"}`)))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/auth/refresh_token", bytes.NewBuffer([]byte(`{"refreshToken": "INVALID_TOKEN"}`)))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 	respBytes := readBytes(t, w.Body)
@@ -239,7 +246,7 @@ func TestAuthHandler_RefreshToken_shouldReturn200_whenTokenIsValid(t *testing.T)
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/auth/refresh_token", bytes.NewBuffer([]byte(`{"refreshToken": "VALID_TOKEN"}`)))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/auth/refresh_token", bytes.NewBuffer([]byte(`{"refreshToken": "VALID_TOKEN"}`)))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 	respBytes := readBytes(t, w.Body)

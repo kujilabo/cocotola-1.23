@@ -17,18 +17,22 @@ import (
 	controller "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
 	controllermock "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin/mocks"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 )
 
 func initGoogleRouter(t *testing.T, ctx context.Context, googleUser controller.GoogleUserUsecase) *gin.Engine {
 	t.Helper()
 	fn := controller.NewInitGoogleRouterFunc(googleUser)
 
-	initPublicRouterFuncs := []controller.InitRouterGroupFunc{fn}
-	initPrivateRouterFuncs := []controller.InitRouterGroupFunc{}
+	initPublicRouterFuncs := []libcontroller.InitRouterGroupFunc{fn}
+	// initPrivateRouterFuncs := []libcontroller.InitRouterGroupFunc{}
 
 	router := gin.New()
-	err := controller.InitAPIRouterGroup(ctx, router, initPublicRouterFuncs, initPrivateRouterFuncs, appConfig.Name)
-	require.NoError(t, err)
+	libcontroller.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	api := router.Group("api")
+	v1 := api.Group("v1")
+
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs)
 
 	return router
 }
@@ -43,7 +47,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn400_whenRequestBodyIsEmpty(t *t
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/google/authorize", bytes.NewBuffer([]byte("")))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/google/authorize", bytes.NewBuffer([]byte("")))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 	respBytes := readBytes(t, w.Body)
@@ -68,7 +72,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn400_whenRequestBodyIsInvalid(t 
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/google/authorize", bytes.NewBuffer([]byte("[]")))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/google/authorize", bytes.NewBuffer([]byte("[]")))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 	respBytes := readBytes(t, w.Body)
@@ -120,7 +124,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn401_whenCodeIsInvalid(t *testin
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/google/authorize", bytes.NewBuffer([]byte(`{"organizationName": "ORG_NAME", "sessionState": "VALID_STATE", "paramState": "VALID_STATE", "code": "INVALID_CODE"}`)))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/google/authorize", bytes.NewBuffer([]byte(`{"organizationName": "ORG_NAME", "sessionState": "VALID_STATE", "paramState": "VALID_STATE", "code": "INVALID_CODE"}`)))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 	respBytes := readBytes(t, w.Body)
@@ -150,7 +154,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn401_whenCodeIsValid(t *testing.
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/google/authorize", bytes.NewBuffer([]byte(`{"organizationName": "ORG_NAME", "sessionState": "VALID_STATE", "paramState": "VALID_STATE", "code": "VALID_CODE"}`)))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/google/authorize", bytes.NewBuffer([]byte(`{"organizationName": "ORG_NAME", "sessionState": "VALID_STATE", "paramState": "VALID_STATE", "code": "VALID_CODE"}`)))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 	respBytes := readBytes(t, w.Body)

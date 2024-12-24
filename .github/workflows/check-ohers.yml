@@ -39,17 +39,10 @@ jobs:
           reporter: github-pr-review
           level: warning
           fail_level: any
+          gitleaks_flags: -c .github/gitleaks.toml
 
       - name: markdownlint
         uses: reviewdog/action-markdownlint@v0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          level: warning
-          fail_level: any
-
-      - name: detect-secrets
-        uses: reviewdog/action-detect-secrets@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review

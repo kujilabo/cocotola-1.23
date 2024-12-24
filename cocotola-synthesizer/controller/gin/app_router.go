@@ -7,15 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/service"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/usecase"
-	libhandler "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 )
 
-func NewInitTestRouterFunc() libhandler.InitRouterGroupFunc {
-	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
+func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		test := parentRouterGroup.Group("test")
 		for _, m := range middleware {
 			test.Use(m)
@@ -23,18 +24,17 @@ func NewInitTestRouterFunc() libhandler.InitRouterGroupFunc {
 		test.GET("/ping", func(c *gin.Context) {
 			c.String(http.StatusOK, "pong")
 		})
-		return nil
 	}
 }
 
-func GetPublicRouterGroupFuncs() []libhandler.InitRouterGroupFunc {
+func GetPublicRouterGroupFuncs() []libcontroller.InitRouterGroupFunc {
 	// public router
-	return []libhandler.InitRouterGroupFunc{
+	return []libcontroller.InitRouterGroupFunc{
 		NewInitTestRouterFunc(),
 	}
 }
 
-func GetPrivateRouterGroupFuncs(ttsConfig *config.GoogleTextToSpeechConfig, txManager, nonTxManager service.TransactionManager) []libhandler.InitRouterGroupFunc {
+func GetPrivateRouterGroupFuncs(ttsConfig *config.GoogleTextToSpeechConfig, txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
 	// usecase
 	httpClient := http.Client{
 		Timeout:   time.Duration(ttsConfig.APITimeoutSec) * time.Second,
@@ -45,7 +45,7 @@ func GetPrivateRouterGroupFuncs(ttsConfig *config.GoogleTextToSpeechConfig, txMa
 	synthesizerUsecase := usecase.NewSynthesizerUsecase(txManager, nonTxManager, synthesizerClient, audioFile)
 
 	// private router
-	return []libhandler.InitRouterGroupFunc{
+	return []libcontroller.InitRouterGroupFunc{
 		NewInitSynthesizerRouterFunc(synthesizerUsecase),
 	}
 }
