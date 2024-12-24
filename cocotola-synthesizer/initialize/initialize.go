@@ -2,21 +2,13 @@ package initialize
 
 import (
 	"context"
-	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
-
-	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
-	controller "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin"
-	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/gateway"
-	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/service"
-	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/usecase"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 )
 
 // const readHeaderTimeout = time.Duration(30) * time.Second
@@ -52,41 +44,27 @@ import (
 // 	return systemOwner, nil
 // }
 
-func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, internalAuthConfig config.InternalAuthConfig, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, ttsConfig *config.GoogleTextToSpeechConfig, appName string, txManager, nonTxManager service.TransactionManager) error {
+func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) error {
 	// cors
 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
 
-	// usecase
-	httpClient := http.Client{
-		Timeout:   time.Duration(ttsConfig.APITimeoutSec) * time.Second,
-		Transport: otelhttp.NewTransport(http.DefaultTransport),
-	}
-	synthesizerClient := gateway.NewGoogleTTSClient(&httpClient, ttsConfig.APIKey)
-	audioFile := gateway.NewAudioFile()
-	synthesizerUsecase := usecase.NewSynthesizerUsecase(txManager, nonTxManager, synthesizerClient, audioFile)
-
-	// middleware
-	authMiddleware := gin.BasicAuth(gin.Accounts{
-		internalAuthConfig.Username: internalAuthConfig.Password,
-	})
-
-	// public router
-	publicRouterGroupFunc := []controller.InitRouterGroupFunc{
-		controller.NewInitTestRouterFunc(),
-	}
-
-	// private router
-	privateRouterGroupFunc := []controller.InitRouterGroupFunc{
-		controller.NewInitSynthesizerRouterFunc(synthesizerUsecase),
-	}
-
-	// rout
-	controller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
+	// root
+	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
 
 	// api
-	if err := controller.InitAPIRouterGroup(ctx, rootRouterGroup, authMiddleware, publicRouterGroupFunc, privateRouterGroupFunc, appName); err != nil {
+	api := libcontroller.InitAPIRouterGroup(ctx, rootRouterGroup, appName)
+
+	// v1
+	v1 := api.Group("v1")
+
+	// public router
+	if err := libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, privateRouterGroupFuncs); err != nil {
 		return err
 	}
 
+	// private router
+	if err := libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs); err != nil {
+		return err
+	}
 	return nil
 }

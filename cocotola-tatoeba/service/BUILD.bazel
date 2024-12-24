@@ -3,7 +3,6 @@ load("@rules_go//go:def.bzl", "go_library")
 go_library(
     name = "service",
     srcs = [
-        "init.go",
         "repository_factory.go",
         "tatoeba_itrerator.go",
         "tatoeba_link_repository.go",
@@ -14,6 +13,6 @@ go_library(
     deps = [
         "//lib/domain",
         "//redstart/lib/domain",
-        "//redstart/lib/gateway",
+        "//redstart/lib/service",
     ],
 )

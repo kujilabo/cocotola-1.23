@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"context"
@@ -13,11 +13,12 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
+	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
+	libhandler "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-core/service"
-
-	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
 )
 
 const defaultPageSize = 10
@@ -193,7 +194,7 @@ func (h *WorkbookHandler) errorHandle(ctx context.Context, c *gin.Context, err e
 	return false
 }
 
-func NewInitWorkbookRouterFunc(workbookQueryUsecase WorkbookQueryUsecase, workbookCommandUsecase WorkbookCommandUsecase) InitRouterGroupFunc {
+func NewInitWorkbookRouterFunc(workbookQueryUsecase WorkbookQueryUsecase, workbookCommandUsecase WorkbookCommandUsecase) libhandler.InitRouterGroupFunc {
 	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
 		workbook := parentRouterGroup.Group("workbook")
 		workbookHandler := NewWorkbookHandler(workbookQueryUsecase, workbookCommandUsecase)

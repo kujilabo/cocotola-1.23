@@ -9,6 +9,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//cocotola-synthesizer/config",
+        "//cocotola-synthesizer/controller/gin",
         "//cocotola-synthesizer/gateway",
         "//cocotola-synthesizer/initialize",
         "//cocotola-synthesizer/service",

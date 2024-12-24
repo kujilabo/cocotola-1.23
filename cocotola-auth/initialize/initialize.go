@@ -84,6 +84,8 @@ func InitPublicRouterGroupFunc(authConfig *config.AuthConfig, txManager, nonTxMa
 func InitPrivateRouterGroupFunc(txManager, nonTxManager service.TransactionManager) []controller.InitRouterGroupFunc {
 	// - rbac
 	rbacUsecase := usecase.NewRBAC(txManager, nonTxManager)
+
+	// private router
 	return []controller.InitRouterGroupFunc{
 		controller.NewInitRBACRouterFunc(rbacUsecase),
 	}

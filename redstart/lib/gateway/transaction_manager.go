@@ -4,18 +4,20 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+
+	"github.com/kujilabo/cocotola-1.23/redstart/lib/service"
 )
 
-type TransactionManagerT[T any] interface {
-	Do(ctx context.Context, fn func(rf T) error) error
-}
+// type TransactionManagerT[T any] interface {
+// 	Do(ctx context.Context, fn func(rf T) error) error
+// }
 
 type transactionManagerT[RF any] struct {
 	db  *gorm.DB
 	rff func(ctx context.Context, db *gorm.DB) (RF, error)
 }
 
-func NewTransactionManagerT[RF any](db *gorm.DB, rff func(ctx context.Context, db *gorm.DB) (RF, error)) (TransactionManagerT[RF], error) {
+func NewTransactionManagerT[RF any](db *gorm.DB, rff func(ctx context.Context, db *gorm.DB) (RF, error)) (service.TransactionManagerT[RF], error) {
 	return &transactionManagerT[RF]{
 		db:  db,
 		rff: rff,
@@ -36,7 +38,7 @@ type nonTransactionManagerT[RF any] struct {
 	rf RF
 }
 
-func NewNonTransactionManagerT[RF any](rf RF) (TransactionManagerT[RF], error) {
+func NewNonTransactionManagerT[RF any](rf RF) (service.TransactionManagerT[RF], error) {
 	return &nonTransactionManagerT[RF]{
 		rf: rf,
 	}, nil

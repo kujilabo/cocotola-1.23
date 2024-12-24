@@ -1,6 +1,6 @@
 //go:build small
 
-package handler_test
+package controller_test
 
 import (
 	"bytes"

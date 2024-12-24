@@ -1,6 +1,6 @@
 //go:build small
 
-package handler_test
+package controller_test
 
 import (
 	"bytes"
@@ -17,11 +17,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
-	handler "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin"
-	handlermock "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin/mocks"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin"
+	controllermock "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/controller/gin/mocks"
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/domain"
 )
 
@@ -55,20 +56,31 @@ func init() {
 	}
 }
 
-func initSynthesizerRouter(t *testing.T, ctx context.Context, workbokQueryUsecase handler.SynthesizerUsecase) *gin.Engine {
+func initSynthesizerRouter(t *testing.T, ctx context.Context, workbokQueryUsecase controller.SynthesizerUsecase) *gin.Engine {
 	t.Helper()
-	fn := handler.NewInitSynthesizerRouterFunc(workbokQueryUsecase)
+	fn := controller.NewInitSynthesizerRouterFunc(workbokQueryUsecase)
 
 	authMiddleware := gin.BasicAuth(gin.Accounts{
 		internalAuthConfig.Username: internalAuthConfig.Password,
 	})
-	initPublicRouterFunc := []handler.InitRouterGroupFunc{}
-	initPrivateRouterFunc := []handler.InitRouterGroupFunc{fn}
+	initPublicRouterFuncs := []libcontroller.InitRouterGroupFunc{}
+	initPrivateRouterFuncs := []libcontroller.InitRouterGroupFunc{fn}
 
 	router := gin.New()
-	handler.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
-	err := handler.InitAPIRouterGroup(ctx, router, authMiddleware, initPublicRouterFunc, initPrivateRouterFunc, appConfig.Name)
-	require.NoError(t, err)
+	libcontroller.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	api := router.Group("api")
+	v1 := api.Group("v1")
+
+	// handler.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	// err := handler.InitAPIRouterGroup(ctx, router, authMiddleware, initPublicRouterFunc, initPrivateRouterFunc, appConfig.Name)
+	// require.NoError(t, err)
+
+	if err := libcontroller.InitPublicAPIRouterGroup(ctx, v1, initPublicRouterFuncs); err != nil {
+		require.NoError(t, err)
+	}
+	if err := libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, initPrivateRouterFuncs); err != nil {
+		require.NoError(t, err)
+	}
 
 	return router
 }
@@ -77,7 +89,7 @@ func TestSynthesizerHandler_Synthesize_shouldReturn200(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	synthesizerUsecase := new(handlermock.SynthesizerUsecase)
+	synthesizerUsecase := new(controllermock.SynthesizerUsecase)
 	synthesizerUsecase.On("Synthesize", anyOfCtx, mock.Anything, mock.Anything, mock.Anything).Return(&domain.AudioModel{
 		AudioID: &domain.AudioID{Value: 1},
 		Lang5:   libdomain.Lang5JAJP,
@@ -91,7 +103,7 @@ func TestSynthesizerHandler_Synthesize_shouldReturn200(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/synthesize/synthesize", bytes.NewReader([]byte(`{"lang5":"ja-JP","voice":"ja-JP-Wavenet-A","text":"こんにちは"}`)))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/synthesize/synthesize", bytes.NewReader([]byte(`{"lang5":"ja-JP","voice":"ja-JP-Wavenet-A","text":"こんにちは"}`)))
 	require.NoError(t, err)
 	req.SetBasicAuth("username", "password")
 	r.ServeHTTP(w, req)
@@ -116,14 +128,14 @@ func TestSynthesizerHandler_Synthesize_shouldReturn401_whenAuthorizationHeaderIs
 	t.Parallel()
 	ctx := context.Background()
 
-	synthesizerUsecase := new(handlermock.SynthesizerUsecase)
+	synthesizerUsecase := new(controllermock.SynthesizerUsecase)
 
 	// given
 	r := initSynthesizerRouter(t, ctx, synthesizerUsecase)
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/synthesize/synthesize", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/synthesize/synthesize", nil)
 	require.NoError(t, err)
 	req.Header.Set("Authorization", "")
 	r.ServeHTTP(w, req)
@@ -143,14 +155,14 @@ func TestSynthesizerHandler_Synthesize_shouldReturn401_whenAuthorizationHeaderIs
 	t.Parallel()
 	ctx := context.Background()
 
-	synthesizerUsecase := new(handlermock.SynthesizerUsecase)
+	synthesizerUsecase := new(controllermock.SynthesizerUsecase)
 
 	// given
 	r := initSynthesizerRouter(t, ctx, synthesizerUsecase)
 	w := httptest.NewRecorder()
 
 	// when
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/v1/synthesize/synthesize", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/api/v1/synthesize/synthesize", nil)
 	require.NoError(t, err)
 	req.SetBasicAuth("username", "invalid_password")
 	r.ServeHTTP(w, req)

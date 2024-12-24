@@ -1,6 +1,10 @@
 package service
 
-import "context"
+import (
+	"context"
+
+	rslibservice "github.com/kujilabo/cocotola-1.23/redstart/lib/service"
+)
 
 type RepositoryFactory interface {
 	NewOrganizationRepository(ctx context.Context) OrganizationRepository
@@ -13,3 +17,5 @@ type RepositoryFactory interface {
 
 	NewAuthorizationManager(ctx context.Context) AuthorizationManager
 }
+
+type TransactionManager rslibservice.TransactionManagerT[RepositoryFactory]

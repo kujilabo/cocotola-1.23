@@ -6,7 +6,6 @@ go_library(
         "cocotola_auth_client.go",
         "repository_factory.go",
         "service.go",
-        "transaction_manager.go",
         "workbook_repository.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-core/service",
@@ -14,6 +13,7 @@ go_library(
     deps = [
         "//cocotola-core/domain",
         "//lib/api",
+        "//redstart/lib/service",
         "//redstart/user/domain",
     ],
 )

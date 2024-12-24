@@ -5,8 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
+
+	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/config"
 	controller "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin"
@@ -27,13 +29,13 @@ func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, internalAut
 	})
 
 	// public router
-	privateRouterGroupFunc := []controller.InitRouterGroupFunc{
-		controller.NewInitAdminRouterFunc(adminUsecase),
+	publicRouterGroupFunc := []libcontroller.InitRouterGroupFunc{
+		controller.NewInitTestRouterFunc(),
 	}
 
 	// private router
-	publicRouterGroupFunc := []controller.InitRouterGroupFunc{
-		controller.NewInitTestRouterFunc(),
+	privateRouterGroupFunc := []libcontroller.InitRouterGroupFunc{
+		controller.NewInitAdminRouterFunc(adminUsecase),
 	}
 
 	controller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)

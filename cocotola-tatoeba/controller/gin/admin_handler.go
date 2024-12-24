@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"context"
@@ -13,7 +13,9 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
-	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+
+	controllerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
@@ -54,7 +56,7 @@ func (h *AdminHandler) logger() *slog.Logger {
 // @Router      /v1/admin/sentence/import [post]
 // @Security    BasicAuth
 func (h *AdminHandler) ImportSentences(c *gin.Context) {
-	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
+	controllerhelper.HandleFunction(c, func(ctx context.Context) error {
 		h.logger().InfoContext(ctx, "ImportSentences")
 		file, err := c.FormFile("file")
 		if err != nil {
@@ -100,7 +102,7 @@ func (h *AdminHandler) ImportSentences(c *gin.Context) {
 // @Router      /v1/admin/link/import [post]
 // @Security    BasicAuth
 func (h *AdminHandler) ImportLinks(c *gin.Context) {
-	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
+	controllerhelper.HandleFunction(c, func(ctx context.Context) error {
 		file, err := c.FormFile("file")
 		if err != nil {
 			if errors.Is(err, http.ErrMissingFile) {
@@ -138,7 +140,7 @@ func (h *AdminHandler) errorHandle(ctx context.Context, c *gin.Context, err erro
 	return false
 }
 
-func NewInitAdminRouterFunc(adminUsecase AdminUsecase) InitRouterGroupFunc {
+func NewInitAdminRouterFunc(adminUsecase AdminUsecase) libcontroller.InitRouterGroupFunc {
 	return func(parentRouterGroup *gin.RouterGroup, middleware ...gin.HandlerFunc) error {
 		admin := parentRouterGroup.Group("admin")
 		newSentenceReader := func(reader io.Reader) service.TatoebaSentenceAddParameterIterator {
