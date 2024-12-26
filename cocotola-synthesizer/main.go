@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -44,7 +45,7 @@ func getValue(values ...string) string {
 
 func checkError(err error) {
 	if err != nil {
-		panic(err)
+		log.Fatalf("err: %v", err)
 	}
 }
 

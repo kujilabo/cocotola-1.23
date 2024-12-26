@@ -9,8 +9,10 @@ internalAuth:
   username: username
   password: password
 db:
-  driverName: postgres
+  driverName: sqlite3
   migration: true
+  sqlite3:
+    file: synthesizer.db
   mysql:
     username: user
     password: password

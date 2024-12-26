@@ -22,7 +22,7 @@ func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
 			test.Use(m)
 		}
 		test.GET("/ping", func(c *gin.Context) {
-			c.String(http.StatusOK, "pong")
+			c.JSON(http.StatusOK, gin.H{"message": "pong"})
 		})
 	}
 }
