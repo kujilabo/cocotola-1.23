@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func OpenSQLite3(filePath string, logger *slog.Logger) (*gorm.DB, error) {
+func OpenSQLite3(filePath string) (*gorm.DB, error) {
 	return gorm.Open(gorm_sqlite.Open(filePath), &gorm.Config{
 		Logger: slog_gorm.New(
 			slog_gorm.WithTraceAll(), // trace all messages

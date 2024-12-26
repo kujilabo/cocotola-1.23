@@ -20,7 +20,7 @@ import (
 	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
-func OpenMySQL(username, password, host string, port int, database string, logger *slog.Logger) (*gorm.DB, error) {
+func OpenMySQL(username, password, host string, port int, database string) (*gorm.DB, error) {
 	c := mysql.Config{
 		DBName:               database,
 		User:                 username,
@@ -35,15 +35,19 @@ func OpenMySQL(username, password, host string, port int, database string, logge
 		Loc:                  time.UTC,
 	}
 	dsn := c.FormatDSN()
-	logger2 := slog_gorm.New(
-		slog_gorm.WithTraceAll(), // trace all messages
-		slog_gorm.WithContextFunc(liblog.LoggerNameKey, func(ctx context.Context) (slog.Value, bool) {
-			return slog.StringValue("gorm"), true
-		}),
-	)
-	return gorm.Open(gorm_mysql.Open(dsn), &gorm.Config{
-		Logger: logger2,
-	})
+
+	gormDialector := gorm_mysql.Open(dsn)
+
+	gormConfig := gorm.Config{
+		Logger: slog_gorm.New(
+			slog_gorm.WithTraceAll(), // trace all messages
+			slog_gorm.WithContextFunc(liblog.LoggerNameKey, func(ctx context.Context) (slog.Value, bool) {
+				return slog.StringValue("gorm"), true
+			}),
+		),
+	}
+
+	return gorm.Open(gormDialector, &gormConfig)
 }
 
 func MigrateMySQLDB(db *gorm.DB, sqlFS fs.FS) error {
