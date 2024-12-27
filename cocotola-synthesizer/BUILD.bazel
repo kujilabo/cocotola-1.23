@@ -8,21 +8,8 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer",
     visibility = ["//visibility:private"],
     deps = [
-        "//cocotola-synthesizer/config",
-        "//cocotola-synthesizer/controller/gin",
-        "//cocotola-synthesizer/gateway",
-        "//cocotola-synthesizer/initialize",
-        "//cocotola-synthesizer/service",
-        "//cocotola-synthesizer/sqls",
-        "//lib/gateway",
-        "//redstart/lib/config",
         "//redstart/lib/errors",
         "//redstart/lib/gateway",
-        "//redstart/lib/log",
-        "@com_github_gin_gonic_gin//:gin",
-        "@io_gorm_gorm//:gorm",
-        "@io_opentelemetry_go_otel//:otel",
-        "@io_opentelemetry_go_otel//propagation",
     ],
 )
 
@@ -39,7 +26,8 @@ pkg_tar(
 
 oci_image(
     name = "image",
-    base = "@distroless_static_debian12_linux_amd64",
+    # base = "@distroless_static_debian12_linux_amd64",
+    base = "@distroless_static_debian12_debug",
     entrypoint = ["/cocotola-synthesizer"],
     tars = [":pkg"],
 )
