@@ -50,7 +50,7 @@ func ConvertRelationError(err error, newErr error) error {
 	return err
 }
 
-func migrateDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
+func MigrateDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
 	sqlDB, err := db.DB()
 	if err != nil {
 		return liberrors.Errorf("db.DB in gateway.migrateDB. err: %w", err)

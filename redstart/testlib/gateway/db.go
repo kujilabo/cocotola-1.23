@@ -39,7 +39,7 @@ func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 	return list
 }
 
-func setupDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
+func SetupDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatal(err)

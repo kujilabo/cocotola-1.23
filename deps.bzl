@@ -1166,6 +1166,13 @@ def go_dependencies():
         version = "v0.0.20",
     )
     go_repository(
+        name = "com_github_mattn_go_sqlite3",
+        importpath = "github.com/mattn/go-sqlite3",
+        sum = "h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=",
+        version = "v1.14.22",
+    )
+
+    go_repository(
         name = "com_github_matttproud_golang_protobuf_extensions",
         importpath = "github.com/matttproud/golang_protobuf_extensions",
         sum = "h1:mmDVorXM7PCGKw94cs5zkfA9PSy5pEvNWRP0ET0TIVo=",
@@ -2407,12 +2414,6 @@ def go_dependencies():
         importpath = "gorm.io/driver/postgres",
         sum = "h1:ubBVAfbKEUld/twyKZ0IYn9rSQh448EdelLYk9Mv314=",
         version = "v1.5.11",
-    )
-    go_repository(
-        name = "io_gorm_driver_sqlite",
-        importpath = "gorm.io/driver/sqlite",
-        sum = "h1:8NvsrhP0ifM7LX9G4zPB97NwovUakUxc+2V2uuf3Z1I=",
-        version = "v1.5.7",
     )
     go_repository(
         name = "io_gorm_driver_sqlserver",

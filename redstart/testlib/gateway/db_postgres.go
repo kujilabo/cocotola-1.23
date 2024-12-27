@@ -43,7 +43,7 @@ func setupPostgres(sqlFS embed.FS, db *gorm.DB) error {
 		return err
 	}
 
-	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+	return SetupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
 		return migrate_postgres.WithInstance(sqlDB, &migrate_postgres.Config{})
 	})
 }

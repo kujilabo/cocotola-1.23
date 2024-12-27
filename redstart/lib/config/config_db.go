@@ -10,6 +10,7 @@ import (
 	libdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+	// libgatewaysqlite3 "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway/sqlite3"
 )
 
 type SQLite3Config struct {
@@ -78,50 +79,39 @@ func (f *mergedFS) ReadDir(name string) ([]fs.DirEntry, error) {
 	return f.entries, nil
 }
 
-func InitDB(ctx context.Context, cfg *DBConfig, sqlFSs ...fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+type DBInitializer func(context.Context, *DBConfig, fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error)
+
+func InitDB(ctx context.Context, cfg *DBConfig, initializer map[string]DBInitializer, sqlFSs ...fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
 	mergedFS, err := newMergedFS(cfg.DriverName, sqlFSs...)
 	if err != nil {
 		return nil, nil, nil, liberrors.Errorf("merge sql files in %q directory: %w", cfg.DriverName, err)
 	}
 
-	switch cfg.DriverName {
-	case "sqlite3":
-		return initSqlite3(ctx, cfg, mergedFS)
-	case "mysql":
-		return initMySQL(ctx, cfg, mergedFS)
-	case "postgres":
-		return initPostgres(ctx, cfg, mergedFS)
-	default:
+	initializerFunc, ok := initializer[cfg.DriverName]
+	if !ok {
 		return nil, nil, nil, libdomain.ErrInvalidArgument
 	}
+	return initializerFunc(ctx, cfg, mergedFS)
+	// switch cfg.DriverName {
+	// case "sqlite3":
+	//
+	//	return initSqlite3(ctx, cfg, mergedFS)
+	//
+	// case "mysql":
+	//
+	//	return initMySQL(ctx, cfg, mergedFS)
+	//
+	// case "postgres":
+	//
+	//	return initPostgres(ctx, cfg, mergedFS)
+	//
+	// default:
+	//
+	//		return nil, nil, nil, libdomain.ErrInvalidArgument
+	//	}
 }
 
-func initSqlite3(ctx context.Context, cfg *DBConfig, fs fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
-	db, err := libgateway.OpenSQLite3("./" + cfg.SQLite3.File)
-	if err != nil {
-		return nil, nil, nil, liberrors.Errorf("OpenSQLite file: %s err: %w", cfg.SQLite3.File, err)
-	}
-
-	sqlDB, err := db.DB()
-	if err != nil {
-		return nil, nil, nil, liberrors.Errorf("DB. file: %s err: %w", cfg.SQLite3.File, err)
-	}
-
-	if err := sqlDB.Ping(); err != nil {
-		return nil, nil, nil, liberrors.Errorf("Ping. file: %s err: %w", cfg.SQLite3.File, err)
-	}
-
-	if cfg.Migration {
-		if err := libgateway.MigrateSQLite3DB(db, fs); err != nil {
-			return nil, nil, nil, liberrors.Errorf("migrate DB. file: %s err: %w", cfg.SQLite3.File, err)
-		}
-	}
-
-	dialect := libgateway.DialectMySQL{}
-	return &dialect, db, sqlDB, nil
-}
-
-func initMySQL(ctx context.Context, cfg *DBConfig, fs fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+func InitMySQL(ctx context.Context, cfg *DBConfig, fs fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
 	db, err := libgateway.OpenMySQL(cfg.MySQL.Username, cfg.MySQL.Password, cfg.MySQL.Host, cfg.MySQL.Port, cfg.MySQL.Database)
 	if err != nil {
 		return nil, nil, nil, err

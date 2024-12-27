@@ -57,7 +57,7 @@ func MigrateMySQLDB(db *gorm.DB, sqlFS fs.FS) error {
 		return err
 	}
 
-	return migrateDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+	return MigrateDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
 		return migrate_mysql.WithInstance(sqlDB, &migrate_mysql.Config{})
 	})
 }
