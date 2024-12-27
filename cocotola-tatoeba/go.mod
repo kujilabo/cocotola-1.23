@@ -4,8 +4,8 @@ go 1.23.3
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227030501-520f74288b67
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227030501-520f74288b67
+	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227032205-47e3e69376df
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227032205-47e3e69376df
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/otel v1.33.0
 	gopkg.in/yaml.v3 v3.0.1

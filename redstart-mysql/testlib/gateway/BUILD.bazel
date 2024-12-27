@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gateway",
+    srcs = ["db_mysql.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart-mysql/testlib/gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//redstart/lib/errors",
+        "@com_github_go_sql_driver_mysql//:mysql",
+        "@com_github_golang_migrate_migrate_v4//database",
+        "@com_github_golang_migrate_migrate_v4//database/mysql",
+        "@com_github_golang_migrate_migrate_v4//source/file",
+        "@com_github_golang_migrate_migrate_v4//source/iofs",
+        "@com_github_orandin_slog_gorm//:slog-gorm",
+        "@io_gorm_driver_mysql//:mysql",
+        "@io_gorm_gorm//:gorm",
+    ],
+)

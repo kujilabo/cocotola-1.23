@@ -11,7 +11,8 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"gorm.io/gorm"
 
-	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+	libsqlite3gateway "github.com/kujilabo/cocotola-1.23/redstart-sqlite3/lib/gateway"
+	rstestlibgateway "github.com/kujilabo/cocotola-1.23/redstart/testlib/gateway"
 )
 
 // migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -20,7 +21,7 @@ import (
 var testDBFile string
 
 func openSQLiteForTest() (*gorm.DB, error) {
-	return libgateway.OpenSQLite3(testDBFile)
+	return libsqlite3gateway.OpenSQLite3(testDBFile)
 	// logger := slog.Default()
 	// return gorm.Open(gormSQLite.Open(testDBFile), &gorm.Config{
 	// 	Logger: slog_gorm.New(
@@ -53,7 +54,7 @@ func setupSQLite(sqlFS embed.FS, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+	return rstestlibgateway.SetupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
 		return migrate_sqlite3.WithInstance(sqlDB, &migrate_sqlite3.Config{})
 	})
 }

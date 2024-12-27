@@ -49,7 +49,6 @@ go_test(
     deps = [
         "//redstart/lib/domain",
         "//redstart/lib/gateway",
-        "//redstart/sqls",
         "//redstart/testlib/gateway",
         "//redstart/user/domain",
         "//redstart/user/service",

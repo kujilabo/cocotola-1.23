@@ -17,6 +17,7 @@ import (
 	"gorm.io/gorm"
 
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+	rstestlibgateway "github.com/kujilabo/cocotola-1.23/redstart/testlib/gateway"
 )
 
 var testDBHost string
@@ -57,7 +58,7 @@ func setupMySQL(sqlFS embed.FS, db *gorm.DB) error {
 		return err
 	}
 
-	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+	return rstestlibgateway.SetupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
 		return migrate_mysql.WithInstance(sqlDB, &migrate_mysql.Config{})
 	})
 }

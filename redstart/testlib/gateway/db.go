@@ -16,19 +16,19 @@ import (
 
 func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 	list := make(map[libgateway.DialectRDBMS]*gorm.DB)
-	m, err := openMySQLForTest()
-	if err != nil {
-		panic(err)
-	}
-	mysql := libgateway.DialectMySQL{}
-	list[&mysql] = m
+	// m, err := openMySQLForTest()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// mysql := libgateway.DialectMySQL{}
+	// list[&mysql] = m
 
-	p, err := openPostgresForTest()
-	if err != nil {
-		panic(err)
-	}
-	postgres := libgateway.DialectPostgres{}
-	list[&postgres] = p
+	// p, err := openPostgresForTest()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// postgres := libgateway.DialectPostgres{}
+	// list[&postgres] = p
 
 	// s, err := openSQLiteForTest()
 	// if err != nil {
@@ -39,7 +39,7 @@ func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 	return list
 }
 
-func setupDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
+func SetupDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatal(err)

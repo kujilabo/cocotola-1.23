@@ -21,7 +21,7 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
-	rssqls "github.com/kujilabo/cocotola-1.23/redstart/sqls"
+	"github.com/kujilabo/cocotola-1.23/redstart/sqls"
 
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 	libgateway "github.com/kujilabo/cocotola-1.23/lib/gateway"
@@ -36,7 +36,6 @@ import (
 	coregateway "github.com/kujilabo/cocotola-1.23/cocotola-core/gateway"
 	coreinit "github.com/kujilabo/cocotola-1.23/cocotola-core/initialize"
 	coreservice "github.com/kujilabo/cocotola-1.23/cocotola-core/service"
-	coresqls "github.com/kujilabo/cocotola-1.23/cocotola-core/sqls"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-app/config"
 )
@@ -83,7 +82,9 @@ func main() {
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// init db
-	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, rssqls.SQL, coresqls.SQL)
+	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, map[string]rslibconfig.DBInitializer{
+		"mysql": rslibconfig.InitMySQL,
+	}, sqls.SQL)
 	checkError(err)
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans

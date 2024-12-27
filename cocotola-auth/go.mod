@@ -7,8 +7,8 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
-	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227030501-520f74288b67
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227030501-520f74288b67
+	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227032205-47e3e69376df
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227032205-47e3e69376df
 	github.com/ohler55/ojg v1.25.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0
