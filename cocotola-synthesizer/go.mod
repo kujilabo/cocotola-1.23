@@ -7,8 +7,8 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-migrate/migrate/v4 v4.18.1
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227051746-803bf31a3ebe
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227051746-803bf31a3ebe
+	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227064644-2719a0d83ce9
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227064644-2719a0d83ce9
 	github.com/ohler55/ojg v1.25.0
 	github.com/stretchr/testify v1.10.0
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -12,17 +13,24 @@ import (
 
 	"go.uber.org/atomic"
 
+	"gorm.io/gorm"
+
 	"github.com/hashicorp/go-multierror"
+
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 
-	// rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
+	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+
+	// rslibgatewaysqlite3 "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway/sqlite3"
 
 	// migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	// "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
+	// "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/sqls"
 )
 
 func getValue(values ...string) string {
@@ -34,11 +42,11 @@ func getValue(values ...string) string {
 	return ""
 }
 
-// func checkError(err error) {
-// 	if err != nil {
-// 		log.Fatalf("err: %v", err)
-// 	}
-// }
+func checkError(err error) {
+	if err != nil {
+		log.Fatalf("err: %v", err)
+	}
+}
 
 type Config struct {
 	MigrationsTable string
@@ -54,28 +62,39 @@ type Sqlite struct {
 }
 
 func main() {
+	var db *gorm.DB
 	log.Println("Hello, World!!!!!!!!")
 	database.Register("sqlite", &Sqlite{})
 	iofs.New(nil, "")
+	var _ = db
 
 	// var _ = migrate_sqlite3.Config{}
 
-	// ctx := context.Background()
+	ctx := context.Background()
 	env := flag.String("env", "", "environment")
 	flag.Parse()
 	appEnv := getValue(*env, os.Getenv("APP_ENV"), "local")
 
 	rsliberrors.UseXerrorsErrorf()
 
-	// // load config
+	// load config
 	// cfg, err := config.LoadConfig(appEnv)
 	// checkError(err)
+	// var _ = cfg
 
 	var _ = rslibgateway.MYSQL_ER_DUP_ENTRY
-	// var _ = rslibconfig.DBConfig{}
+	var _ = rslibconfig.DBConfig{}
 	// var _ = ctx
 	// var _ = cfg
 	var _ = appEnv
+	var _ = ctx
+
+	// dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, map[string]rslibconfig.DBInitializer{
+	// 	"mysql": rslibgatewaysqlite3.InitSqlite3,
+	// }, sqls.SQL)
+	// checkError(err)
+	// var _ = dialect
+	// var _ = sqlDB
 
 	// // init log
 	// rslibconfig.InitLog(cfg.Log)
