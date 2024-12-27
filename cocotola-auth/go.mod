@@ -7,8 +7,8 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
-	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241226133234-ff9dcb861caa
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241226133234-ff9dcb861caa
+	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227030501-520f74288b67
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227030501-520f74288b67
 	github.com/ohler55/ojg v1.25.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0
@@ -18,8 +18,10 @@ require (
 )
 
 require (
-	github.com/mattn/go-sqlite3 v1.14.24 // indirect
-	gorm.io/driver/sqlite v1.5.7 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
+	modernc.org/gc/v3 v3.0.0-20241223112719-96e2e1e4408d // indirect
+	modernc.org/strutil v1.2.0 // indirect
+	modernc.org/token v1.1.0 // indirect
 )
 
 require (
@@ -76,7 +78,6 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	// github.com/mattn/go-sqlite3 v1.14.24 // indirect
 	github.com/microsoft/go-mssqldb v1.8.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect

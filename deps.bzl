@@ -1166,13 +1166,6 @@ def go_dependencies():
         version = "v0.0.20",
     )
     go_repository(
-        name = "com_github_mattn_go_sqlite3",
-        importpath = "github.com/mattn/go-sqlite3",
-        sum = "h1:tpSp2G2KyMnnQu99ngJ47EIkWVmliIizyZBfPrBWDRM=",
-        version = "v1.14.24",
-    )
-
-    go_repository(
         name = "com_github_matttproud_golang_protobuf_extensions",
         importpath = "github.com/matttproud/golang_protobuf_extensions",
         sum = "h1:mmDVorXM7PCGKw94cs5zkfA9PSy5pEvNWRP0ET0TIVo=",
