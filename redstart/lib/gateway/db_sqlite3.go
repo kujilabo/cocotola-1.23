@@ -6,15 +6,18 @@ import (
 	"io/fs"
 	"log/slog"
 
+	gorm_sqlite "github.com/glebarez/sqlite"
 	"github.com/golang-migrate/migrate/v4/database"
-	migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite3"
+	migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 	slog_gorm "github.com/orandin/slog-gorm"
-	gorm_sqlite "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+// migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite3"
+// gorm_sqlite "gorm.io/driver/sqlite"
 
 func OpenSQLite3(filePath string) (*gorm.DB, error) {
 	return gorm.Open(gorm_sqlite.Open(filePath), &gorm.Config{

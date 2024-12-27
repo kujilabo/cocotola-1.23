@@ -3,29 +3,31 @@ package gateway
 import (
 	"database/sql"
 	"embed"
-	"log/slog"
 	"os"
 
 	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+	migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	_ "github.com/mattn/go-sqlite3"
-	slog_gorm "github.com/orandin/slog-gorm"
-	gormSQLite "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 )
+
+// migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite3"
+// _ "github.com/mattn/go-sqlite3"
 
 var testDBFile string
 
 func openSQLiteForTest() (*gorm.DB, error) {
-	logger := slog.Default()
-	return gorm.Open(gormSQLite.Open(testDBFile), &gorm.Config{
-		Logger: slog_gorm.New(
-			slog_gorm.WithHandler(logger.Handler()),
-			slog_gorm.WithTraceAll(), // trace all messages
-		),
-	})
+	return libgateway.OpenSQLite3(testDBFile)
+	// logger := slog.Default()
+	// return gorm.Open(gormSQLite.Open(testDBFile), &gorm.Config{
+	// 	Logger: slog_gorm.New(
+	// 		slog_gorm.WithHandler(logger.Handler()),
+	// 		slog_gorm.WithTraceAll(), // trace all messages
+	// 	),
+	// })
 }
 
 // func OpenSQLiteInMemory(sqlFS embed.FS) (*gorm.DB, error) {
@@ -52,7 +54,7 @@ func setupSQLite(sqlFS embed.FS, db *gorm.DB) error {
 		return err
 	}
 	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
-		return sqlite3.WithInstance(sqlDB, &sqlite3.Config{})
+		return migrate_sqlite3.WithInstance(sqlDB, &migrate_sqlite3.Config{})
 	})
 }
 

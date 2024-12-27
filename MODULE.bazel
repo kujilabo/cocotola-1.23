@@ -11,6 +11,7 @@ go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_work = "//:go.work")
 use_repo(
     go_deps,
+    "com_github_glebarez_sqlite",
     "com_github_casbin_casbin_v2",
     "com_github_casbin_gorm_adapter_v3",
     "com_github_gin_contrib_cors",
@@ -23,7 +24,6 @@ use_repo(
     "com_github_googlecloudplatform_opentelemetry_operations_go_exporter_trace",
     "com_github_kujilabo_cocotola_1_23_lib",
     "com_github_kujilabo_cocotola_1_23_redstart",
-    "com_github_mattn_go_sqlite3",
     "com_github_ohler55_ojg",
     "com_github_orandin_slog_gorm",
     "com_github_pkg_errors",
@@ -64,8 +64,19 @@ oci.pull(
     ],
     tag = "nonroot",
 )
+oci.pull(
+    name = "distroless_static_debian12_debug",
+    image = "gcr.io/distroless/static-debian12:debug",
+    platforms = [
+        "linux/amd64",
+    ],
+)
+
+# to generate the lines below, run `bazel mod tidy`
 use_repo(
     oci,
     "distroless_static_debian12",
+    "distroless_static_debian12_debug",
+    "distroless_static_debian12_debug_linux_amd64",
     "distroless_static_debian12_linux_amd64",
 )
