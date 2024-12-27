@@ -34,7 +34,6 @@ use_repo(
     "in_gopkg_yaml_v3",
     "io_gorm_driver_mysql",
     "io_gorm_driver_postgres",
-    "io_gorm_driver_sqlite",
     "io_gorm_gorm",
     "io_opentelemetry_go_contrib_instrumentation_github_com_gin_gonic_gin_otelgin",
     "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
