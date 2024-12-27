@@ -10,6 +10,11 @@ go_library(
     deps = [
         "//redstart/lib/errors",
         "//redstart/lib/gateway",
+        "@com_github_golang_migrate_migrate_v4//:migrate",
+        "@com_github_golang_migrate_migrate_v4//database",
+        "@com_github_golang_migrate_migrate_v4//source/iofs",
+        "@com_github_hashicorp_go_multierror//:go-multierror",
+        "@org_uber_go_atomic//:atomic",
     ],
 )
 
