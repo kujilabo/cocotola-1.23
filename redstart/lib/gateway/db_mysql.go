@@ -17,18 +17,35 @@ import (
 	gorm_mysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	libconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
-	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
-func OpenMySQL(username, password, host string, port int, database string) (*gorm.DB, error) {
+type DialectMySQL struct {
+}
+
+func (d *DialectMySQL) Name() string {
+	return "mysql"
+}
+
+func (d *DialectMySQL) BoolDefaultValue() string {
+	return "0"
+}
+
+type MySQLConfig struct {
+	Username string `yaml:"username" validate:"required"`
+	Password string `yaml:"password" validate:"required"`
+	Host     string `yaml:"host" validate:"required"`
+	Port     int    `yaml:"port" validate:"required"`
+	Database string `yaml:"database" validate:"required"`
+}
+
+func OpenMySQL(cfg *MySQLConfig) (*gorm.DB, error) {
 	c := mysql.Config{
-		DBName:               database,
-		User:                 username,
-		Passwd:               password,
-		Addr:                 fmt.Sprintf("%s:%d", host, port),
+		DBName:               cfg.Database,
+		User:                 cfg.Username,
+		Passwd:               cfg.Password,
+		Addr:                 fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Net:                  "tcp",
 		ParseTime:            true,
 		MultiStatements:      true,
@@ -60,13 +77,13 @@ func MigrateMySQLDB(db *gorm.DB, sqlFS fs.FS) error {
 		return err
 	}
 
-	return libgateway.MigrateDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+	return MigrateDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
 		return migrate_mysql.WithInstance(sqlDB, &migrate_mysql.Config{})
 	})
 }
 
-func InitMySQL(ctx context.Context, cfg *libconfig.DBConfig, fs fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
-	db, err := OpenMySQL(cfg.MySQL.Username, cfg.MySQL.Password, cfg.MySQL.Host, cfg.MySQL.Port, cfg.MySQL.Database)
+func InitMySQL(ctx context.Context, cfg *MySQLConfig, migration bool, fs fs.FS) (DialectRDBMS, *gorm.DB, *sql.DB, error) {
+	db, err := OpenMySQL(cfg)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -80,10 +97,12 @@ func InitMySQL(ctx context.Context, cfg *libconfig.DBConfig, fs fs.FS) (libgatew
 		return nil, nil, nil, err
 	}
 
-	if err := MigrateMySQLDB(db, fs); err != nil {
-		return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
+	if migration {
+		if err := MigrateMySQLDB(db, fs); err != nil {
+			return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
+		}
 	}
 
-	dialect := libgateway.DialectMySQL{}
+	dialect := DialectMySQL{}
 	return &dialect, db, sqlDB, nil
 }

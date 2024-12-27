@@ -7,11 +7,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
-	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
+
+	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
+	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
 )
 
 func outputCasbinRule(t *testing.T, db *gorm.DB) {

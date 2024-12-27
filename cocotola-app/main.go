@@ -82,9 +82,7 @@ func main() {
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// init db
-	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, map[string]rslibconfig.DBInitializer{
-		"mysql": rslibconfig.InitMySQL,
-	}, sqls.SQL)
+	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, sqls.SQL)
 	checkError(err)
 	defer sqlDB.Close()
 	defer tp.ForceFlush(ctx) // flushes any pending spans

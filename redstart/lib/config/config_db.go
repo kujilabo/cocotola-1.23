@@ -10,35 +10,14 @@ import (
 	libdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
-	// libgatewaysqlite3 "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway/sqlite3"
 )
 
-type SQLite3Config struct {
-	File string `yaml:"file" validate:"required"`
-}
-
-type MySQLConfig struct {
-	Username string `yaml:"username" validate:"required"`
-	Password string `yaml:"password" validate:"required"`
-	Host     string `yaml:"host" validate:"required"`
-	Port     int    `yaml:"port" validate:"required"`
-	Database string `yaml:"database" validate:"required"`
-}
-
-type PostgresConfig struct {
-	Username string `yaml:"username" validate:"required"`
-	Password string `yaml:"password" validate:"required"`
-	Host     string `yaml:"host" validate:"required"`
-	Port     int    `yaml:"port" validate:"required"`
-	Database string `yaml:"database" validate:"required"`
-}
-
 type DBConfig struct {
-	DriverName string          `yaml:"driverName"`
-	SQLite3    *SQLite3Config  `yaml:"sqlite3"`
-	MySQL      *MySQLConfig    `yaml:"mysql"`
-	Postgres   *PostgresConfig `yaml:"postgres"`
-	Migration  bool            `yaml:"migration"`
+	DriverName string                     `yaml:"driverName"`
+	MySQL      *libgateway.MySQLConfig    `yaml:"mysql"`
+	Postgres   *libgateway.PostgresConfig `yaml:"postgres"`
+	SQLite3    *libgateway.SQLite3Config  `yaml:"sqlite3"`
+	Migration  bool                       `yaml:"migration"`
 }
 
 type mergedFS struct {
@@ -46,7 +25,7 @@ type mergedFS struct {
 	entries []fs.DirEntry
 }
 
-func newMergedFS(driverName string, fss ...fs.FS) (*mergedFS, error) {
+func MergeFS(driverName string, fss ...fs.FS) (*mergedFS, error) {
 	entries := make([]fs.DirEntry, 0)
 	for i := range fss {
 		e, err := fs.ReadDir(fss[i], driverName)
@@ -78,20 +57,17 @@ func (f *mergedFS) Open(name string) (fs.File, error) {
 func (f *mergedFS) ReadDir(name string) ([]fs.DirEntry, error) {
 	return f.entries, nil
 }
-
-type DBInitializer func(context.Context, *DBConfig, fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error)
-
-func InitDB(ctx context.Context, cfg *DBConfig, initializer map[string]DBInitializer, sqlFSs ...fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
-	mergedFS, err := newMergedFS(cfg.DriverName, sqlFSs...)
+func InitDB(ctx context.Context, cfg *DBConfig, sqlFSs ...fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+	mergedFS, err := MergeFS(cfg.DriverName, sqlFSs...)
 	if err != nil {
 		return nil, nil, nil, liberrors.Errorf("merge sql files in %q directory: %w", cfg.DriverName, err)
 	}
 
-	initializerFunc, ok := initializer[cfg.DriverName]
+	initDBFunc, ok := initDBs[cfg.DriverName]
 	if !ok {
 		return nil, nil, nil, libdomain.ErrInvalidArgument
 	}
-	return initializerFunc(ctx, cfg, mergedFS)
+	return initDBFunc(ctx, cfg, mergedFS)
 	// switch cfg.DriverName {
 	// case "sqlite3":
 	//

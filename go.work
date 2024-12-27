@@ -12,8 +12,5 @@ use (
 	./hello-world
 	./lib
 	./redstart
-	./redstart-mysql
-	./redstart-postgres
-	./redstart-sqlite3
 	./third-party-library
 )

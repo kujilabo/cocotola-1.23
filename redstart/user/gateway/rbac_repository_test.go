@@ -10,12 +10,13 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
-	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
-	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
+
+	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
+	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
+	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
 )
 
 type test_sdoa struct {

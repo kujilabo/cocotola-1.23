@@ -45,6 +45,8 @@ use_repo(
     "org_golang_x_crypto",
     "org_golang_x_sync",
     "org_golang_x_xerrors",
+    "org_uber_go_atomic",
+    "com_github_hashicorp_go_multierror",
 )
 
 # pkg

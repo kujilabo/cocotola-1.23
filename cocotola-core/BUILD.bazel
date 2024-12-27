@@ -31,6 +31,7 @@ go_library(
 go_binary(
     name = "cocotola-core",
     embed = [":cocotola-core_lib"],
+    pure = "on",
     visibility = ["//visibility:public"],
 )
 

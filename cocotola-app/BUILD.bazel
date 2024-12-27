@@ -34,5 +34,6 @@ go_library(
 go_binary(
     name = "cocotola-app",
     embed = [":cocotola-app_lib"],
+    pure = "on",
     visibility = ["//visibility:public"],
 )
