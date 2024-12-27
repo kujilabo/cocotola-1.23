@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gorm",
+    srcs = ["config_gorm.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/config/gorm",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//redstart/lib/config",
+        "//redstart/lib/domain",
+        "//redstart/lib/errors",
+        "//redstart/lib/gateway",
+        "@io_gorm_gorm//:gorm",
+    ],
+)

@@ -28,7 +28,7 @@ go_test(
     name = "gateway_test",
     srcs = ["tatoeba_sentence_repository_test.go"],
     deps = [
-        "//redstart/testlib/gateway",
+        "@com_github_kujilabo_cocotola_1_23_redstart//testlib/gateway",
         "@com_github_stretchr_testify//assert",
     ],
 )

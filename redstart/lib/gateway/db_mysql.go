@@ -19,7 +19,8 @@ import (
 
 	libconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
-	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+
+	// libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
@@ -60,12 +61,12 @@ func MigrateMySQLDB(db *gorm.DB, sqlFS fs.FS) error {
 		return err
 	}
 
-	return libgateway.MigrateDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+	return MigrateDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
 		return migrate_mysql.WithInstance(sqlDB, &migrate_mysql.Config{})
 	})
 }
 
-func InitMySQL(ctx context.Context, cfg *libconfig.DBConfig, fs fs.FS) (libgateway.DialectRDBMS, *gorm.DB, *sql.DB, error) {
+func InitMySQL(ctx context.Context, cfg *libconfig.DBConfig, fs fs.FS) (DialectRDBMS, *gorm.DB, *sql.DB, error) {
 	db, err := OpenMySQL(cfg.MySQL.Username, cfg.MySQL.Password, cfg.MySQL.Host, cfg.MySQL.Port, cfg.MySQL.Database)
 	if err != nil {
 		return nil, nil, nil, err
@@ -84,6 +85,6 @@ func InitMySQL(ctx context.Context, cfg *libconfig.DBConfig, fs fs.FS) (libgatew
 		return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
 	}
 
-	dialect := libgateway.DialectMySQL{}
+	dialect := DialectMySQL{}
 	return &dialect, db, sqlDB, nil
 }

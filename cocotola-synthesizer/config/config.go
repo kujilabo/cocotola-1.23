@@ -34,16 +34,16 @@ type GoogleTextToSpeechConfig struct {
 }
 
 type Config struct {
-	App          *AppConfig                 `yaml:"app" validate:"required"`
-	InternalAuth *InternalAuthConfig        `yaml:"internalAuth" validate:"required"`
-	DB           *rslibconfig.DBConfig      `yaml:"db" validate:"required"`
-	TTS          *GoogleTextToSpeechConfig  `yaml:"googleTextToSpeech" validate:"required"`
-	Trace        *rslibconfig.TraceConfig   `yaml:"trace" validate:"required"`
-	CORS         *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
-	Shutdown     *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`
-	Log          *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
-	Swagger      *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
-	Debug        *libconfig.DebugConfig     `yaml:"debug"`
+	App          *AppConfig                `yaml:"app" validate:"required"`
+	InternalAuth *InternalAuthConfig       `yaml:"internalAuth" validate:"required"`
+	DB           *rslibconfig.DBConfig     `yaml:"db" validate:"required"`
+	TTS          *GoogleTextToSpeechConfig `yaml:"googleTextToSpeech" validate:"required"`
+	Trace        *rslibconfig.TraceConfig  `yaml:"trace" validate:"required"`
+	// CORS         *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
+	Shutdown *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`
+	Log      *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
+	Swagger  *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
+	Debug    *libconfig.DebugConfig     `yaml:"debug"`
 }
 
 //go:embed local.yml

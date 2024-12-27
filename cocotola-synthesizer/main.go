@@ -20,7 +20,9 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
-	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+	// rslibconfiggcp "github.com/kujilabo/cocotola-1.23/redstart/lib/config/gcp"
+	// rslibconfigotel "github.com/kujilabo/cocotola-1.23/redstart/lib/config/otel"
+	// rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 
 	// rslibgatewaysqlite3 "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway/sqlite3"
 
@@ -29,8 +31,12 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+
 	// "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
 	// "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/sqls"
+
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
 )
 
 func getValue(values ...string) string {
@@ -62,11 +68,13 @@ type Sqlite struct {
 }
 
 func main() {
+	var se sdktrace.SpanExporter
 	var db *gorm.DB
 	log.Println("Hello, World!!!!!!!!")
 	database.Register("sqlite", &Sqlite{})
 	iofs.New(nil, "")
 	var _ = db
+	var _ = se
 
 	// var _ = migrate_sqlite3.Config{}
 
@@ -82,12 +90,15 @@ func main() {
 	// checkError(err)
 	// var _ = cfg
 
-	var _ = rslibgateway.MYSQL_ER_DUP_ENTRY
+	// var _ = rslibgateway.MYSQL_ER_DUP_ENTRY
 	var _ = rslibconfig.DBConfig{}
+	// var _ = rslibconfigotel.OTLPConfig{}
+	// var _ = rslibconfiggcp.ABC
 	// var _ = ctx
 	// var _ = cfg
 	var _ = appEnv
 	var _ = ctx
+	var _ = semconv.SchemaURL
 
 	// dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, map[string]rslibconfig.DBInitializer{
 	// 	"mysql": rslibgatewaysqlite3.InitSqlite3,

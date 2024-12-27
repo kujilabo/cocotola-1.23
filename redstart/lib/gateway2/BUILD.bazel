@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gateway2",
+    srcs = ["db.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway2",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,9 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gin",
+    srcs = ["config_cors.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart/lib/config/gin",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_gin_contrib_cors//:cors"],
+)

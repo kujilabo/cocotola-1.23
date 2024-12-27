@@ -11,8 +11,6 @@ go_library(
         "//redstart/lib/gateway",
         "//redstart/lib/log",
         "@com_github_glebarez_sqlite//:sqlite",
-        "@com_github_golang_migrate_migrate_v4//database",
-        "@com_github_golang_migrate_migrate_v4//database/sqlite",
         "@com_github_golang_migrate_migrate_v4//source/file",
         "@com_github_golang_migrate_migrate_v4//source/iofs",
         "@com_github_orandin_slog_gorm//:slog-gorm",

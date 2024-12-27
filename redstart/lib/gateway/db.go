@@ -7,13 +7,18 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/source"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"gorm.io/gorm"
 
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 )
 
-// "github.com/mattn/go-sqlite3"
+// "github.com/golang-migrate/migrate/v4"
+// "github.com/golang-migrate/migrate/v4/database"
+// "github.com/golang-migrate/migrate/v4/source"
+// _ "github.com/golang-migrate/migrate/v4/source/file"
+// "gorm.io/gorm"
+
+// liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 
 const MYSQL_ER_DUP_ENTRY = 1062
 const MYSQL_ER_NO_REFERENCED_ROW_2 = 1452

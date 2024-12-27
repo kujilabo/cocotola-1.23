@@ -3,7 +3,7 @@ module github.com/kujilabo/cocotola-1.23/cocotola-import
 go 1.23.3
 
 require (
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227032205-47e3e69376df
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227074045-1439d7ac796f
 	gopkg.in/yaml.v3 v3.0.1
 )
 

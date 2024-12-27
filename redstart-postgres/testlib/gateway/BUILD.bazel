@@ -11,6 +11,7 @@ go_library(
         "@com_github_golang_migrate_migrate_v4//database/postgres",
         "@com_github_golang_migrate_migrate_v4//source/file",
         "@com_github_golang_migrate_migrate_v4//source/iofs",
+        "@com_github_kujilabo_cocotola_1_23_redstart//testlib/gateway",
         "@com_github_orandin_slog_gorm//:slog-gorm",
         "@io_gorm_driver_postgres//:postgres",
         "@io_gorm_gorm//:gorm",

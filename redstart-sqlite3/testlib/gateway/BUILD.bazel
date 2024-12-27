@@ -7,11 +7,11 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//redstart-sqlite3/lib/gateway",
-        "//redstart/testlib/gateway",
         "@com_github_golang_migrate_migrate_v4//database",
         "@com_github_golang_migrate_migrate_v4//database/sqlite",
         "@com_github_golang_migrate_migrate_v4//source/file",
         "@com_github_golang_migrate_migrate_v4//source/iofs",
+        "@com_github_kujilabo_cocotola_1_23_redstart//testlib/gateway",
         "@io_gorm_gorm//:gorm",
     ],
 )
