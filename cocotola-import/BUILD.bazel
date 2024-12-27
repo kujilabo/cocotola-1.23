@@ -13,6 +13,7 @@ go_library(
 go_binary(
     name = "cocotola-import",
     embed = [":cocotola-import_lib"],
+    pure = "on",
     visibility = ["//visibility:public"],
 )
 

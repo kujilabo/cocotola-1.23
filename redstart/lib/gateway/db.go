@@ -12,6 +12,11 @@ import (
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 )
 
+type DialectRDBMS interface {
+	Name() string
+	BoolDefaultValue() string
+}
+
 // "github.com/golang-migrate/migrate/v4"
 // "github.com/golang-migrate/migrate/v4/database"
 // "github.com/golang-migrate/migrate/v4/source"

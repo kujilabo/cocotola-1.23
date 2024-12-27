@@ -1100,18 +1100,6 @@ def go_dependencies():
         version = "v0.0.0-20241124143107-a1ef5177cc84",
     )
     go_repository(
-        name = "com_github_kujilabo_cocotola_cocotola_tatoeba_api",
-        importpath = "github.com/kujilabo/cocotola/cocotola-tatoeba-api",
-        sum = "h1:bCy3czSCQT+zsP6NWw8FFGuIu8wwAr0IjQi4cfcBocA=",
-        version = "v0.0.0-20241105171753-d3349d2f251c",
-    )
-    go_repository(
-        name = "com_github_kujilabo_cocotola_lib",
-        importpath = "github.com/kujilabo/cocotola/lib",
-        sum = "h1:qdVSxqR54Atma+dGGuWFzrWE9pUL2AdHm+QHXPC/PJY=",
-        version = "v0.0.0-20241105171753-d3349d2f251c",
-    )
-    go_repository(
         name = "com_github_kylebanks_depth",
         importpath = "github.com/KyleBanks/depth",
         sum = "h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc=",
@@ -2853,6 +2841,7 @@ def go_dependencies():
         sum = "h1:ZvwS0R+56ePWxUNi+Atn9dWONBPp/AUETXlHW0DxSjE=",
         version = "v1.11.0",
     )
+
     go_repository(
         name = "org_uber_go_goleak",
         importpath = "go.uber.org/goleak",

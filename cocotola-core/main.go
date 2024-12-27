@@ -16,7 +16,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	rsmysqllibgateway "github.com/kujilabo/cocotola-1.23/redstart-mysql/lib/gateway"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
@@ -81,9 +80,7 @@ func main() {
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// init db
-	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, map[string]rslibconfig.DBInitializer{
-		"mysql": rsmysqllibgateway.InitMySQL,
-	}, sqls.SQL)
+	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, sqls.SQL)
 	checkError(err)
 
 	defer sqlDB.Close()

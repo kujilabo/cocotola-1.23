@@ -8,21 +8,28 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer",
     visibility = ["//visibility:private"],
     deps = [
+        "//cocotola-synthesizer/config",
+        "//cocotola-synthesizer/controller/gin",
+        "//cocotola-synthesizer/gateway",
+        "//cocotola-synthesizer/initialize",
+        "//cocotola-synthesizer/service",
+        "//cocotola-synthesizer/sqls",
+        "//lib/gateway",
         "//redstart/lib/config",
         "//redstart/lib/errors",
-        "@com_github_golang_migrate_migrate_v4//:migrate",
-        "@com_github_golang_migrate_migrate_v4//database",
-        "@com_github_golang_migrate_migrate_v4//source/iofs",
-        "@com_github_hashicorp_go_multierror//:go-multierror",
+        "//redstart/lib/gateway",
+        "//redstart/lib/log",
+        "@com_github_gin_gonic_gin//:gin",
         "@io_gorm_gorm//:gorm",
-        "@io_opentelemetry_go_otel//semconv/v1.27.0:v1_27_0",
-        "@org_uber_go_atomic//:atomic",
+        "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//propagation",
     ],
 )
 
 go_binary(
     name = "cocotola-synthesizer",
     embed = [":cocotola-synthesizer_lib"],
+    pure = "on",
     visibility = ["//visibility:public"],
 )
 

@@ -8,31 +8,30 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4/database"
-	migrate_mysql "github.com/golang-migrate/migrate/v4/database/mysql"
+	migrate_postgres "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	slog_gorm "github.com/orandin/slog-gorm"
-	gorm_mysql "gorm.io/driver/mysql"
+	gorm_postgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	liblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 )
 
-type DialectMySQL struct {
+type DialectPostgres struct {
 }
 
-func (d *DialectMySQL) Name() string {
-	return "mysql"
+func (d *DialectPostgres) Name() string {
+	return "postgres"
 }
 
-func (d *DialectMySQL) BoolDefaultValue() string {
-	return "0"
+func (d *DialectPostgres) BoolDefaultValue() string {
+	return "false"
 }
 
-type MySQLConfig struct {
+type PostgresConfig struct {
 	Username string `yaml:"username" validate:"required"`
 	Password string `yaml:"password" validate:"required"`
 	Host     string `yaml:"host" validate:"required"`
@@ -40,23 +39,10 @@ type MySQLConfig struct {
 	Database string `yaml:"database" validate:"required"`
 }
 
-func OpenMySQL(cfg *MySQLConfig) (*gorm.DB, error) {
-	c := mysql.Config{
-		DBName:               cfg.Database,
-		User:                 cfg.Username,
-		Passwd:               cfg.Password,
-		Addr:                 fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Net:                  "tcp",
-		ParseTime:            true,
-		MultiStatements:      true,
-		Params:               map[string]string{"charset": "utf8mb4"},
-		Collation:            "utf8mb4_bin",
-		AllowNativePasswords: true,
-		Loc:                  time.UTC,
-	}
-	dsn := c.FormatDSN()
+func OpenPostgres(cfg *PostgresConfig) (*gorm.DB, error) {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", cfg.Host, cfg.Username, cfg.Password, cfg.Database, cfg.Port, "disable", time.UTC.String())
 
-	gormDialector := gorm_mysql.Open(dsn)
+	gormDialector := gorm_postgres.Open(dsn)
 
 	gormConfig := gorm.Config{
 		Logger: slog_gorm.New(
@@ -70,20 +56,20 @@ func OpenMySQL(cfg *MySQLConfig) (*gorm.DB, error) {
 	return gorm.Open(gormDialector, &gormConfig)
 }
 
-func MigrateMySQLDB(db *gorm.DB, sqlFS fs.FS) error {
-	driverName := "mysql"
+func MigratePostgresDB(db *gorm.DB, sqlFS fs.FS) error {
+	driverName := "postgres"
 	sourceDriver, err := iofs.New(sqlFS, driverName)
 	if err != nil {
 		return err
 	}
 
 	return MigrateDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
-		return migrate_mysql.WithInstance(sqlDB, &migrate_mysql.Config{})
+		return migrate_postgres.WithInstance(sqlDB, &migrate_postgres.Config{})
 	})
 }
 
-func InitMySQL(ctx context.Context, cfg *MySQLConfig, migration bool, fs fs.FS) (DialectRDBMS, *gorm.DB, *sql.DB, error) {
-	db, err := OpenMySQL(cfg)
+func InitPostgres(ctx context.Context, cfg *PostgresConfig, migration bool, fs fs.FS) (DialectRDBMS, *gorm.DB, *sql.DB, error) {
+	db, err := OpenPostgres(cfg)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -98,11 +84,11 @@ func InitMySQL(ctx context.Context, cfg *MySQLConfig, migration bool, fs fs.FS) 
 	}
 
 	if migration {
-		if err := MigrateMySQLDB(db, fs); err != nil {
+		if err := MigratePostgresDB(db, fs); err != nil {
 			return nil, nil, nil, liberrors.Errorf("failed to MigrateMySQLDB. err: %w", err)
 		}
 	}
 
-	dialect := DialectMySQL{}
+	dialect := DialectPostgres{}
 	return &dialect, db, sqlDB, nil
 }

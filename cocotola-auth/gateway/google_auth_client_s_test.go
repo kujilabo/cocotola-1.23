@@ -10,11 +10,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway"
 	gatewaymock "github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway/mocks"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func newGoogleAuthClient(t *testing.T, httpClient gateway.HTTPClient) *gateway.GoogleAuthClient {

@@ -20,7 +20,6 @@ go_library(
         "//redstart/lib/gateway",
         "//redstart/lib/log",
         "@com_github_gin_gonic_gin//:gin",
-        "@com_github_kujilabo_cocotola_1_23_redstart_mysql//lib/gateway",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//propagation",
@@ -30,6 +29,7 @@ go_library(
 go_binary(
     name = "cocotola-tatoeba",
     embed = [":cocotola-tatoeba_lib"],
+    pure = "on",
     visibility = ["//visibility:public"],
 )
 

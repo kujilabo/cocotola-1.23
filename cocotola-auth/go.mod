@@ -9,7 +9,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/kujilabo/cocotola-1.23/lib v0.0.0-20241227074045-1439d7ac796f
 	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20241227074045-1439d7ac796f
-	github.com/kujilabo/cocotola-1.23/redstart-mysql v0.0.0-20241227074045-1439d7ac796f
 	github.com/ohler55/ojg v1.25.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0
@@ -76,7 +75,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
-	github.com/orandin/slog-gorm v1.4.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

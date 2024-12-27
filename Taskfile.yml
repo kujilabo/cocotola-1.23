@@ -63,9 +63,6 @@ tasks:
     cmds:
       - for:
           - redstart
-          - redstart-mysql
-          - redstart-postgres
-          - redstart-sqlite3
           - lib
           - cocotola-auth
           - cocotola-core
@@ -88,9 +85,6 @@ tasks:
     cmds:
       - for:
           - redstart
-          - redstart-mysql
-          - redstart-postgres
-          - redstart-sqlite3
           - lib
           - cocotola-auth
           - cocotola-core
@@ -114,9 +108,6 @@ tasks:
     cmds:
       - for:
           - redstart
-          - redstart-mysql
-          - redstart-postgres
-          - redstart-sqlite3
           - lib
           - cocotola-auth
           - cocotola-core
@@ -177,6 +168,7 @@ tasks:
           - cocotola-import
           - cocotola-synthesizer
           - cocotola-tatoeba
+          - third-party-library
         task: build-project
         vars:
           PROJECT: "{{ .ITEM }}"
