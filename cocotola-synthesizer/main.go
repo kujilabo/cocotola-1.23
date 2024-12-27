@@ -35,7 +35,7 @@ import (
 	// "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
 	// "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/sqls"
 
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	// sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
 )
 
@@ -68,13 +68,13 @@ type Sqlite struct {
 }
 
 func main() {
-	var se sdktrace.SpanExporter
+	// var se sdktrace.SpanExporter
 	var db *gorm.DB
 	log.Println("Hello, World!!!!!!!!")
 	database.Register("sqlite", &Sqlite{})
 	iofs.New(nil, "")
 	var _ = db
-	var _ = se
+	// var _ = se
 
 	// var _ = migrate_sqlite3.Config{}
 

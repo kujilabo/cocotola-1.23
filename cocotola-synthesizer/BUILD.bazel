@@ -16,7 +16,6 @@ go_library(
         "@com_github_hashicorp_go_multierror//:go-multierror",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//semconv/v1.27.0:v1_27_0",
-        "@io_opentelemetry_go_otel_sdk//trace",
         "@org_uber_go_atomic//:atomic",
     ],
 )
