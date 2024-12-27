@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/source"
@@ -23,10 +22,10 @@ const SQLITE_CONSTRAINT_PRIMARYKEY = 1555
 const SQLITE_CONSTRAINT_UNIQUE = 2067
 
 func ConvertDuplicatedError(err error, newErr error) error {
-	var mysqlErr *mysql.MySQLError
-	if ok := errors.As(err, &mysqlErr); ok && mysqlErr.Number == MYSQL_ER_DUP_ENTRY {
-		return newErr
-	}
+	// var mysqlErr *mysql.MySQLError
+	// if ok := errors.As(err, &mysqlErr); ok && mysqlErr.Number == MYSQL_ER_DUP_ENTRY {
+	// 	return newErr
+	// }
 
 	// TODO: Implement this for sqlite3
 	// var sqlite3Err sqlite3.Error
@@ -42,10 +41,10 @@ func ConvertDuplicatedError(err error, newErr error) error {
 }
 
 func ConvertRelationError(err error, newErr error) error {
-	var mysqlErr *mysql.MySQLError
-	if ok := errors.As(err, &mysqlErr); ok && mysqlErr.Number == MYSQL_ER_NO_REFERENCED_ROW_2 {
-		return newErr
-	}
+	// var mysqlErr *mysql.MySQLError
+	// if ok := errors.As(err, &mysqlErr); ok && mysqlErr.Number == MYSQL_ER_NO_REFERENCED_ROW_2 {
+	// 	return newErr
+	// }
 
 	return err
 }

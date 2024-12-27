@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gateway",
+    srcs = ["db_postgres.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/redstart-postgres/testlib/gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//redstart/lib/errors",
+        "@com_github_golang_migrate_migrate_v4//database",
+        "@com_github_golang_migrate_migrate_v4//database/postgres",
+        "@com_github_golang_migrate_migrate_v4//source/file",
+        "@com_github_golang_migrate_migrate_v4//source/iofs",
+        "@com_github_orandin_slog_gorm//:slog-gorm",
+        "@io_gorm_driver_postgres//:postgres",
+        "@io_gorm_gorm//:gorm",
+    ],
+)

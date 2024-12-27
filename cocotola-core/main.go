@@ -15,6 +15,8 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
+
+	rsmysqllibgateway "github.com/kujilabo/cocotola-1.23/redstart-mysql/lib/gateway"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
@@ -80,7 +82,7 @@ func main() {
 
 	// init db
 	dialect, db, sqlDB, err := rslibconfig.InitDB(ctx, cfg.DB, map[string]rslibconfig.DBInitializer{
-		"mysql": rslibconfig.InitMySQL,
+		"mysql": rsmysqllibgateway.InitMySQL,
 	}, sqls.SQL)
 	checkError(err)
 

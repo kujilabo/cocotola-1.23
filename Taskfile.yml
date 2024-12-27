@@ -63,6 +63,8 @@ tasks:
     cmds:
       - for:
           - redstart
+          - redstart-mysql
+          - redstart-postgres
           - redstart-sqlite3
           - lib
           - cocotola-auth
@@ -86,6 +88,8 @@ tasks:
     cmds:
       - for:
           - redstart
+          - redstart-mysql
+          - redstart-postgres
           - redstart-sqlite3
           - lib
           - cocotola-auth
@@ -110,6 +114,8 @@ tasks:
     cmds:
       - for:
           - redstart
+          - redstart-mysql
+          - redstart-postgres
           - redstart-sqlite3
           - lib
           - cocotola-auth

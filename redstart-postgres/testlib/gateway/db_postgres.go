@@ -16,6 +16,7 @@ import (
 	"gorm.io/gorm"
 
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+	rstestlibgateway "github.com/kujilabo/cocotola-1.23/redstart/testlib/gateway"
 )
 
 var testPostgresHost string
@@ -43,7 +44,7 @@ func setupPostgres(sqlFS embed.FS, db *gorm.DB) error {
 		return err
 	}
 
-	return SetupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+	return rstestlibgateway.SetupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
 		return migrate_postgres.WithInstance(sqlDB, &migrate_postgres.Config{})
 	})
 }
