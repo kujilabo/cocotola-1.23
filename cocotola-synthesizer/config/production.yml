@@ -1,7 +1,7 @@
 ---
 app:
   name: cocotola-synthesizer
-  httpPort: 8080
+  httpPort: $HTTP_PORT
   metricsPort: 8081
   readHeaderTimeoutSec: 30
 internalAuth:
@@ -9,8 +9,10 @@ internalAuth:
   username: $SYNTHESIZER_API_USERNAME
   password: $SYNTHESIZER_API_PASSWORD
 db:
-  driverName: mysql
+  driverName: $DB_DRIVER_NAME
   migration: false
+  sqlite3:
+    file: synthesizer.db
   mysql:
     username: $MYSQL_USERNAME
     password: $MYSQL_PASSWORD
