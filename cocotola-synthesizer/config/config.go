@@ -64,7 +64,7 @@ func LoadConfig(env string) (*Config, error) {
 	}
 
 	if err := rslibdomain.Validator.Struct(conf); err != nil {
-		return nil, rsliberrors.Errorf("Validator.Struct. filename: %s, err: %w", filename, err)
+		return nil, rsliberrors.Errorf("load config file %q: %w", filename, err)
 	}
 
 	return conf, nil

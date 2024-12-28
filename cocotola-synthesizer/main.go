@@ -45,7 +45,7 @@ func getValue(values ...string) string {
 
 func checkError(err error) {
 	if err != nil {
-		log.Fatalf("err: %v", err)
+		log.Fatalf("%+v\n", err)
 	}
 }
 
