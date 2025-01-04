@@ -7,5 +7,7 @@ rules:
     max: 200
   truthy: disable
 
-ignore: |
-  swagger.yaml
+ignore:
+  - swagger.yaml
+  - pnpm-lock.yaml
+  
