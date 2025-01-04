@@ -9,11 +9,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
@@ -28,21 +29,19 @@ import (
 )
 
 var (
-	anyOfCtx    = mock.MatchedBy(func(_ context.Context) bool { return true })
-	corsConfig  cors.Config
-	appConfig   *config.AppConfig
-	debugConfig *libconfig.DebugConfig
+	anyOfCtx = mock.MatchedBy(func(_ context.Context) bool { return true })
+	// corsConfig   cors.Config
+	corsConfig   *rslibconfig.CORSConfig
+	serverConfig *config.ServerConfig
+	debugConfig  *libconfig.DebugConfig
 	// authTokenManager  auth.AuthTokenManager
 )
 
 func init() {
-	corsConfig = cors.Config{
-		AllowAllOrigins: true,
-		AllowMethods:    []string{"*"},
-		AllowHeaders:    []string{"*"},
+	corsConfig = &rslibconfig.CORSConfig{
+		AllowOrigins: []string{"*"},
 	}
-	appConfig = &config.AppConfig{
-		Name:        "test",
+	serverConfig = &config.ServerConfig{
 		HTTPPort:    8080,
 		MetricsPort: 8081,
 	}
@@ -60,8 +59,7 @@ func initWorkbookRouter(t *testing.T, ctx context.Context, cocotolaAuthClient se
 	initPublicRouterFuncs := []libcontroller.InitRouterGroupFunc{}
 	initPrivateRouterFuncs := []libcontroller.InitRouterGroupFunc{fn}
 
-	router := gin.New()
-	libcontroller.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	router := libcontroller.InitRootRouterGroup(ctx, corsConfig, debugConfig)
 	api := router.Group("api")
 	v1 := api.Group("v1")
 

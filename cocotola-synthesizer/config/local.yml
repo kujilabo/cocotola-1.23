@@ -1,13 +1,15 @@
 ---
 app:
-  name: cocotola-synthesizer
-  httpPort: 8020
-  metricsPort: 8021
+  internalAuth:
+    username: username
+    password: password
+  googleTextToSpeech:
+    apiKey: $GOOGLE_TEXT_TO_SPEECH_API_KEY
+    apiTimeoutSec: 5
+server:
+  httpPort: 8030
+  metricsPort: 8031
   readHeaderTimeoutSec: 30
-internalAuth:
-  type: static
-  username: username
-  password: password
 db:
   driverName: sqlite3
   migration: true
@@ -17,21 +19,14 @@ db:
     username: user
     password: password
     host: 127.0.0.1
-    port: 3306
+    port: 3336
     database: development
   postgres:
     username: user
     password: password
     host: 127.0.0.1
-    port: 5452
+    port: 5462
     database: postgres
-# authApi:
-#   endpoint: http://localhost:8010
-#   username: username
-#   password: password
-googleTextToSpeech:
-  apiKey: $GOOGLE_TEXT_TO_SPEECH_API_KEY
-  apiTimeoutSec: 5
 trace:
   exporter: otlp
   otlp:
@@ -44,12 +39,10 @@ shutdown:
   timeSec1: 1
   timeSec2: 1
 log:
-  level:
-    default: debug
-    cocotola-core: debug
+  level: debug
 swagger:
   enabled: true
-  host: localhost:8080
+  host: localhost:8030
   schema: http
 debug:
   gin: true

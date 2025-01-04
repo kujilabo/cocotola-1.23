@@ -48,3 +48,7 @@ run:
     - small
     - medium
     - large
+
+issues:
+  exclude-files:
+    - lib/gateway/sqlite/db_sqlite3_migrate.go

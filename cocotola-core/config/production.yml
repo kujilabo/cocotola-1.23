@@ -1,11 +1,20 @@
 ---
 app:
-  name: cocotola-core
-  httpPort: 8080
-  metricsPort: 8081
-  jobPort: 8082
-  ownerPassword: $OWNER_PASSWORD
-  testUserEmail: $TEST_USER_EMAIL
+  server:
+    name: cocotola-core
+    httpPort: 8080
+    metricsPort: 8081
+    # jobPort: 8082
+    # ownerPassword: $OWNER_PASSWORD
+    # testUserEmail: $TEST_USER_EMAIL
+  authApi:
+    endpoint: http://localhost:8080
+    username: $AUTH_API_USERNAME
+    password: $AUTH_API_PASSWORD
+  synthesizerApi:
+    endpoint: http://localhost:8080
+    username: $SYNTHESIZER_API_USERNAME
+    password: $SYNTHESIZER_API_PASSWORD
 db:
   # driverName: sqlite3
   # sqlite3:
@@ -18,16 +27,6 @@ db:
     host: $MYSQL_HOST
     port: $MYSQL_PORT
     database: $MYSQL_DATABASE
-authApi:
-  endpoint: http://localhost:8080
-  authType: static
-  username: $AUTH_API_USERNAME
-  password: $AUTH_API_PASSWORD
-synthesizerApi:
-  endpoint: http://localhost:8080
-  authType: static
-  username: $SYNTHESIZER_API_USERNAME
-  password: $SYNTHESIZER_API_PASSWORD
 auth:
   signingKey: $SIGNING_KEY
   accessTokenTtlMin: 30

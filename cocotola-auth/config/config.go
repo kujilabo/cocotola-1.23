@@ -15,13 +15,10 @@ import (
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 )
 
-type AppConfig struct {
-	Name                 string `yaml:"name" validate:"required"`
-	HTTPPort             int    `yaml:"httpPort" validate:"required"`
-	MetricsPort          int    `yaml:"metricsPort" validate:"required"`
-	ReadHeaderTimeoutSec int    `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
-	OwnerLoginID         string `yaml:"ownerLoginId" validate:"required"`
-	OwnerPassword        string `yaml:"ownerPassword" validate:"required"`
+type ServerConfig struct {
+	HTTPPort             int `yaml:"httpPort" validate:"required"`
+	MetricsPort          int `yaml:"metricsPort" validate:"required"`
+	ReadHeaderTimeoutSec int `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
 }
 
 type AuthConfig struct {
@@ -34,10 +31,16 @@ type AuthConfig struct {
 	APITimeoutSec       int    `yaml:"apiTimeoutSec" validate:"gte=1"`
 }
 
+type AppConfig struct {
+	Auth          *AuthConfig `yaml:"auth" validate:"required"`
+	OwnerLoginID  string      `yaml:"ownerLoginId" validate:"required"`
+	OwnerPassword string      `yaml:"ownerPassword" validate:"required"`
+}
+
 type Config struct {
 	App      *AppConfig                 `yaml:"app" validate:"required"`
+	Server   *ServerConfig              `yaml:"server" validate:"required"`
 	DB       *rslibconfig.DBConfig      `yaml:"db" validate:"required"`
-	Auth     *AuthConfig                `yaml:"auth" validate:"required"`
 	Trace    *rslibconfig.TraceConfig   `yaml:"trace" validate:"required"`
 	CORS     *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
 	Shutdown *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`

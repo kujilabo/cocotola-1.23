@@ -2,14 +2,69 @@ package initialize
 
 import (
 	"context"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
-	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
+	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 
-	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+
+	"github.com/kujilabo/cocotola-1.23/cocotola-core/config"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-core/controller/gin"
+	"github.com/kujilabo/cocotola-1.23/cocotola-core/gateway"
+	"github.com/kujilabo/cocotola-1.23/cocotola-core/service"
 )
+
+const AppName = "cocotola-core"
+
+func Initialize(ctx context.Context, parent gin.IRouter, dialect rslibgateway.DialectRDBMS, driverName string, db *gorm.DB, cfg *config.AppConfig) error {
+	rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
+		return gateway.NewRepositoryFactory(ctx, dialect, driverName, db, time.UTC) // nolint:wrapcheck
+	}
+	rf, err := rff(ctx, db)
+	if err != nil {
+		return err
+	}
+	// init transaction manager
+	txManager, err := rslibgateway.NewTransactionManagerT(db, rff)
+	if err != nil {
+		return err
+	}
+	// init non transaction manager
+	nonTxManager, err := rslibgateway.NewNonTransactionManagerT(rf)
+	if err != nil {
+		return err
+	}
+
+	authMiddleware, err := controller.InitAuthMiddleware(cfg.AuthAPI)
+	if err != nil {
+		return err
+	}
+
+	// init public and private router group functions
+	publicRouterGroupFuncs := controller.GetPublicRouterGroupFuncs()
+	privateRouterGroupFuncs := controller.GetPrivateRouterGroupFuncs(db, txManager, nonTxManager)
+
+	initApiServer(ctx, parent, AppName, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs)
+
+	return nil
+}
+
+func initApiServer(ctx context.Context, root gin.IRouter, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
+	// api
+	api := libcontroller.InitAPIRouterGroup(ctx, root, appName)
+
+	// v1
+	v1 := api.Group("v1")
+
+	// public router
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
+
+	// private router
+	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, privateRouterGroupFuncs)
+}
 
 // const readHeaderTimeout = time.Duration(30) * time.Second
 
@@ -34,29 +89,15 @@ import (
 // 	return systemOwner, nil
 // }
 
-func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
-	// cors
-	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
+// func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
+// 	// cors
+// 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
 
-	// root
-	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
+// 	// root
+// 	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
 
-	InitApiServer(ctx, rootRouterGroup, appName, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs)
-}
-
-func InitApiServer(ctx context.Context, root gin.IRouter, appName string, authMiddleware gin.HandlerFunc, publicRouterGroupFuncs, privateRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
-	// api
-	api := libcontroller.InitAPIRouterGroup(ctx, root, appName)
-
-	// v1
-	v1 := api.Group("v1")
-
-	// public router
-	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
-
-	// private router
-	libcontroller.InitPrivateAPIRouterGroup(ctx, v1, authMiddleware, privateRouterGroupFuncs)
-}
+// 	InitApiServer(ctx, rootRouterGroup, appName, authMiddleware, publicRouterGroupFuncs, privateRouterGroupFuncs)
+// }
 
 // func InitApp1(ctx context.Context, txManager service.TransactionManager, workbookQueryService studentusecase.WorkbookQueryService) error {
 // 	if err := txManager.Do(ctx, func(rf service.RepositoryFactory) error {

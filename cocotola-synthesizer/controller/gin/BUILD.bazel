@@ -23,6 +23,30 @@ go_library(
     ],
 )
 
+go_test(
+    name = "gin_test",
+    srcs = [
+        "helper_test.go",
+        "synthesizer_handler_s_test.go",
+    ],
+    deps = [
+        ":gin",
+        "//cocotola-synthesizer/config",
+        "//cocotola-synthesizer/controller/gin/mocks",
+        "//cocotola-synthesizer/domain",
+        "//lib/config",
+        "//lib/controller/gin",
+        "//lib/domain",
+        "//redstart/lib/config",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_ohler55_ojg//jp",
+        "@com_github_ohler55_ojg//oj",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+    ],
+)
+
 # keep
 go_test(
     name = "gin_s_test",
@@ -40,31 +64,7 @@ go_test(
         "//lib/config",
         "//lib/controller/gin",
         "//lib/domain",
-        "@com_github_gin_contrib_cors//:cors",
-        "@com_github_gin_gonic_gin//:gin",
-        "@com_github_ohler55_ojg//jp",
-        "@com_github_ohler55_ojg//oj",
-        "@com_github_stretchr_testify//assert",
-        "@com_github_stretchr_testify//mock",
-        "@com_github_stretchr_testify//require",
-    ],
-)
-
-go_test(
-    name = "gin_test",
-    srcs = [
-        "helper_test.go",
-        "synthesizer_handler_s_test.go",
-    ],
-    deps = [
-        ":gin",
-        "//cocotola-synthesizer/config",
-        "//cocotola-synthesizer/controller/gin/mocks",
-        "//cocotola-synthesizer/domain",
-        "//lib/config",
-        "//lib/controller/gin",
-        "//lib/domain",
-        "@com_github_gin_contrib_cors//:cors",
+        "//redstart/lib/config",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_ohler55_ojg//jp",
         "@com_github_ohler55_ojg//oj",

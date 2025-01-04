@@ -10,15 +10,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
+	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
+
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
-	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
 	controller "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
@@ -26,22 +27,20 @@ import (
 )
 
 var (
-	anyOfCtx    = mock.MatchedBy(func(_ context.Context) bool { return true })
-	corsConfig  cors.Config
-	appConfig   *config.AppConfig
-	authConfig  *config.AuthConfig
-	debugConfig *libconfig.DebugConfig
+	anyOfCtx = mock.MatchedBy(func(_ context.Context) bool { return true })
+	// corsConfig   cors.Config
+	corsConfig   *rslibconfig.CORSConfig
+	serverConfig *config.ServerConfig
+	authConfig   *config.AuthConfig
+	debugConfig  *libconfig.DebugConfig
 	// authTokenManager  auth.AuthTokenManager
 )
 
 func init() {
-	corsConfig = cors.Config{
-		AllowAllOrigins: true,
-		AllowMethods:    []string{"*"},
-		AllowHeaders:    []string{"*"},
+	corsConfig = &rslibconfig.CORSConfig{
+		AllowOrigins: []string{"*"},
 	}
-	appConfig = &config.AppConfig{
-		Name:        "test",
+	serverConfig = &config.ServerConfig{
 		HTTPPort:    8080,
 		MetricsPort: 8081,
 	}
@@ -63,8 +62,7 @@ func initAuthRouter(t *testing.T, ctx context.Context, authentication controller
 	initPublicRouterFuncs := []libcontroller.InitRouterGroupFunc{fn}
 	// initPrivateRouterFuncs := []libcontroller.InitRouterGroupFunc{}
 
-	router := gin.New()
-	libcontroller.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	router := libcontroller.InitRootRouterGroup(ctx, corsConfig, debugConfig)
 	api := router.Group("api")
 	v1 := api.Group("v1")
 

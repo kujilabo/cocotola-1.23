@@ -1,0 +1,58 @@
+---
+services:
+  dev-auth-mysql:
+    image: mysql:8.0.40
+    container_name: dev-auth-mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: development
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      TZ: 'Etc/GMT'
+    ports:
+      - 3316:3306
+  dev-core-mysql:
+    image: mysql:8.0.40
+    container_name: dev-core-mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: development
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - 3326:3306
+  dev-auth-postgres:
+    image: postgres:15.5-alpine3.19
+    container_name: dev-auth-postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5442:5432
+  dev-core-postgres:
+    image: postgres:15.5-alpine3.19
+    container_name: dev-core-postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5452:5432
+  dev-synthesizer-postgres:
+    image: postgres:15.5-alpine3.19
+    container_name: dev-synthesizer-postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5462:5432
+  dev-microservice-jaeger:
+    image: jaegertracing/all-in-one:1.64.0
+    container_name: dev-microservice-jaeger
+    ports:
+      - 4328:4318
+      - 14278:14268
+      - 16696:16686

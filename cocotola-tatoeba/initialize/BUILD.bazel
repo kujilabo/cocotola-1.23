@@ -6,9 +6,13 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/initialize",
     visibility = ["//visibility:public"],
     deps = [
-        "//lib/config",
+        "//cocotola-tatoeba/config",
+        "//cocotola-tatoeba/controller/gin",
+        "//cocotola-tatoeba/gateway",
+        "//cocotola-tatoeba/service",
         "//lib/controller/gin",
-        "//redstart/lib/config",
+        "//redstart/lib/gateway",
         "@com_github_gin_gonic_gin//:gin",
+        "@io_gorm_gorm//:gorm",
     ],
 )

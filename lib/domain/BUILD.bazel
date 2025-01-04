@@ -3,8 +3,10 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "domain",
     srcs = [
+        "errors.go",
         "init.go",
         "lang.go",
+        "strings.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/lib/domain",
     visibility = ["//visibility:public"],
