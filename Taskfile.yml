@@ -154,10 +154,6 @@ tasks:
     cmds:
       - bazelisk run //cocotola-import:cocotola-import
 
-  run-app:
-    cmds:
-      - bazelisk run //cocotola-app:cocotola-app
-
   run-web:
     dir: '{{.USER_WORKING_DIR}}/cocotola-web'
     cmds:
@@ -172,7 +168,7 @@ tasks:
       - bazelisk run //{{ .PROJECT }}:load
     requires:
       vars: [PROJECT]
-  
+
   build-web:
     cmds:
       - |
