@@ -7,8 +7,8 @@ app:
     password: auth_password
   ownerLoginId: cocotola-owner
   ownerPassword: password
-auth:  
-  auth: 
+auth:
+  auth:
     signingKey: ah5T9Y9V2JPU74fhCtHQfDqLp3Zg8ZNc
     accessTokenTtlMin: 5
     refreshTokenTtlHour: 720
