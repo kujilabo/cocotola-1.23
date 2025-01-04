@@ -130,6 +130,10 @@ tasks:
     cmds:
       - bazelisk run //third-party-library:third-party-library
 
+  run-app:
+    cmds:
+      - bazelisk run //cocotola-app:cocotola-app
+
   run-auth:
     cmds:
       - bazelisk run //cocotola-auth:cocotola-auth
@@ -220,3 +224,14 @@ tasks:
   gitleaks:
     cmds:
       - docker run -v $(pwd):/path zricethezav/gitleaks:latest detect -v --source /path -c /path/.github/gitleaks.toml
+
+  kics:
+    cmds:
+      - docker run -t -v $(pwd):/path checkmarx/kics:latest scan -p /path -o /path/ --config /path/.github/kics.yml
+
+  docker-dev-microserivce-up:
+    cmds:
+      - docker compose -f docker/dev-microservice/compose.yml up -d
+  docker-dev-microserivce-down:
+    cmds:
+      - docker compose -f docker/dev-microservice/compose.yml down

@@ -9,7 +9,7 @@ import (
 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
-	libhandler "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 )
 
 type SystemAdminInterface interface {
@@ -61,7 +61,7 @@ func (h *RBACHandler) AddPolicyToGroup(c *gin.Context) {
 
 }
 
-func NewInitRBACRouterFunc(rbacUsecase RBACUsecase) libhandler.InitRouterGroupFunc {
+func NewInitRBACRouterFunc(rbacUsecase RBACUsecase) libcontroller.InitRouterGroupFunc {
 	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
 		rbac := parentRouterGroup.Group("rbac")
 		for _, m := range middleware {

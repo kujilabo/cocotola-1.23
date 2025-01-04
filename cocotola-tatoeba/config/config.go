@@ -13,29 +13,32 @@ import (
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 )
 
-type AppConfig struct {
-	Name                 string `yaml:"name" validate:"required"`
-	HTTPPort             int    `yaml:"httpPort" validate:"required"`
-	MetricsPort          int    `yaml:"metricsPort" validate:"required"`
-	ReadHeaderTimeoutSec int    `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
+type ServerConfig struct {
+	HTTPPort             int `yaml:"httpPort" validate:"required"`
+	MetricsPort          int `yaml:"metricsPort" validate:"required"`
+	ReadHeaderTimeoutSec int `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
 }
 
 type InternalAuthConfig struct {
-	Type     string `yaml:"type" validate:"required"`
+	// Type     string `yaml:"type" validate:"required"`
 	Username string `yaml:"username" validate:"required"`
 	Password string `yaml:"password" validate:"required"`
 }
 
+type AppConfig struct {
+	InternalAuth *InternalAuthConfig `yaml:"internalAuth" validate:"required"`
+}
+
 type Config struct {
-	App          *AppConfig                 `yaml:"app" validate:"required"`
-	DB           *rslibconfig.DBConfig      `yaml:"db" validate:"required"`
-	InternalAuth *InternalAuthConfig        `yaml:"internalAuth" validate:"required"`
-	Trace        *rslibconfig.TraceConfig   `yaml:"trace" validate:"required"`
-	CORS         *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
-	Shutdown     *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`
-	Log          *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
-	Swagger      *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
-	Debug        *libconfig.DebugConfig     `yaml:"debug"`
+	App      *AppConfig                 `yaml:"app" validate:"required"`
+	Server   *ServerConfig              `yaml:"server" validate:"required"`
+	DB       *rslibconfig.DBConfig      `yaml:"db" validate:"required"`
+	Trace    *rslibconfig.TraceConfig   `yaml:"trace" validate:"required"`
+	CORS     *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
+	Shutdown *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`
+	Log      *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
+	Swagger  *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
+	Debug    *libconfig.DebugConfig     `yaml:"debug"`
 }
 
 //go:embed local.yml

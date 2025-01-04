@@ -1,0 +1,149 @@
+---
+services:
+  dev-auth-mysql:
+    image: mysql:8.0.40
+    container_name: dev-auth-mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    environment:
+      # kics-scan ignore-line
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: development
+      MYSQL_USER: user
+      # kics-scan ignore-line
+      MYSQL_PASSWORD: password
+      TZ: 'Etc/GMT'
+    ports:
+      - 127.0.0.1:3316:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
+  dev-core-mysql:
+    image: mysql:8.0.40
+    container_name: dev-core-mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    environment:
+      # kics-scan ignore-line
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: development
+      MYSQL_USER: user
+      # kics-scan ignore-line
+      MYSQL_PASSWORD: password
+    ports:
+      - 127.0.0.1:3326:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
+  dev-auth-postgres:
+    image: postgres:15.5-alpine3.19
+    container_name: dev-auth-postgres
+    environment:
+      POSTGRES_USER: user
+      # kics-scan ignore-line
+      POSTGRES_PASSWORD: password
+    ports:
+      - 127.0.0.1:5442:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
+  dev-core-postgres:
+    image: postgres:15.5-alpine3.19
+    container_name: dev-core-postgres
+    environment:
+      POSTGRES_USER: user
+      # kics-scan ignore-line
+      POSTGRES_PASSWORD: password
+    ports:
+      - 127.0.0.1:5452:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
+  dev-synthesizer-postgres:
+    image: postgres:15.5-alpine3.19
+    container_name: dev-synthesizer-postgres
+    environment:
+      POSTGRES_USER: user
+      # kics-scan ignore-line
+      POSTGRES_PASSWORD: password
+    ports:
+      - 127.0.0.1:5462:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
+  dev-microservice-jaeger:
+    image: jaegertracing/all-in-one:1.64.0
+    container_name: dev-microservice-jaeger
+    ports:
+      - 127.0.0.1:4328:4318
+      - 127.0.0.1:14278:14268
+      - 127.0.0.1:16696:16686
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "localhost:16686"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT

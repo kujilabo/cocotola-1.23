@@ -10,11 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
@@ -28,21 +29,18 @@ import (
 
 var (
 	anyOfCtx           = mock.MatchedBy(func(_ context.Context) bool { return true })
-	corsConfig         cors.Config
-	appConfig          *config.AppConfig
+	corsConfig         *rslibconfig.CORSConfig
+	serverConfig       *config.ServerConfig
 	debugConfig        *libconfig.DebugConfig
 	internalAuthConfig config.InternalAuthConfig
 	// authTokenManager  auth.AuthTokenManager
 )
 
 func init() {
-	corsConfig = cors.Config{
-		AllowAllOrigins: true,
-		AllowMethods:    []string{"*"},
-		AllowHeaders:    []string{"*"},
+	corsConfig = &rslibconfig.CORSConfig{
+		AllowOrigins: []string{"*"},
 	}
-	appConfig = &config.AppConfig{
-		Name:        "test",
+	serverConfig = &config.ServerConfig{
 		HTTPPort:    8080,
 		MetricsPort: 8081,
 	}
@@ -66,8 +64,7 @@ func initSynthesizerRouter(t *testing.T, ctx context.Context, workbokQueryUsecas
 	initPublicRouterFuncs := []libcontroller.InitRouterGroupFunc{}
 	initPrivateRouterFuncs := []libcontroller.InitRouterGroupFunc{fn}
 
-	router := gin.New()
-	libcontroller.InitRootRouterGroup(ctx, router, corsConfig, debugConfig)
+	router := libcontroller.InitRootRouterGroup(ctx, corsConfig, debugConfig)
 	api := router.Group("api")
 	v1 := api.Group("v1")
 

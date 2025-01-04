@@ -1,12 +1,48 @@
 ---
 app:
-  name: cocotola-app
-  httpPort: 8080
-  metricsPort: 8081
+  authApi:
+    endpoint: http://localhost:8080/api/auth
+    authType: static
+    username: auth_username
+    password: auth_password
   ownerLoginId: cocotola-owner
   ownerPassword: password
+auth:
+  auth:
+    signingKey: ah5T9Y9V2JPU74fhCtHQfDqLp3Zg8ZNc
+    accessTokenTtlMin: 5
+    refreshTokenTtlHour: 720
+    googleCallbackUrl: http://localhost:5173/app/auth/callback
+    googleClientId: 751610212628-f49u7fr0nivli19pr95eu3ckvn1rcdnn.apps.googleusercontent.com
+    googleClientSecret: $GOOGLE_CLIENT_SECRET
+    apiTimeoutSec: 5
+  ownerLoginId: cocotola-owner
+  ownerPassword: password
+core:
+  authApi:
+    endpoint: http://localhost:8010
+    username: username
+    password: password
+  synthesizerApi:
+    username: username
+    password: password
+synthesizer:
+  internalAuth:
+    username: username
+    password: password
+  googleTextToSpeech:
+    apiKey: $GOOGLE_TEXT_TO_SPEECH_API_KEY
+    apiTimeoutSec: 5
+tatoeba:
+  internalAuth:
+    username: username
+    password: password  # pragma: allowlist secret
+server:
+  httpPort: 8000
+  metricsPort: 8001
+  readHeaderTimeoutSec: 30
 db:
-  driverName: postgres
+  driverName: mysql
   migration: true
   mysql:
     username: user
@@ -20,24 +56,6 @@ db:
     host: 127.0.0.1
     port: 5432
     database: postgres
-authApi:
-  endpoint: http://localhost:8080/api/auth
-  authType: static
-  username: auth_username
-  password: auth_password
-synthesizerApi:
-  endpoint: http://localhost:8080/api/synthesizer
-  authType: static
-  username: synthesizer_username
-  password: synthesizer_password
-auth:
-  signingKey: ah5T9Y9V2JPU74fhCtHQfDqLp3Zg8ZNc
-  accessTokenTtlMin: 5
-  refreshTokenTtlHour: 720
-  googleCallbackUrl: http://localhost:5173/app/auth/callback
-  googleClientId: 751610212628-f49u7fr0nivli19pr95eu3ckvn1rcdnn.apps.googleusercontent.com
-  googleClientSecret: $GOOGLE_CLIENT_SECRET
-  apiTimeoutSec: 5
 trace:
   exporter: otlp
   otlp:
@@ -50,12 +68,10 @@ shutdown:
   timeSec1: 1
   timeSec2: 1
 log:
-  level:
-    default: debug
-    cocotola-core: debug
+  level: debug
 swagger:
   enabled: true
-  host: localhost:8010
+  host: localhost:8000
   schema: http
 debug:
   gin: true

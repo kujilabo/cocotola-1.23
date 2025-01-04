@@ -11,17 +11,30 @@ import (
 
 	"github.com/kujilabo/cocotola-1.23/lib/config"
 	"github.com/kujilabo/cocotola-1.23/lib/controller/gin/middleware"
+	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 )
 
 type InitRouterGroupFunc func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc)
 
-func InitRootRouterGroup(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig cors.Config, debugConfig *config.DebugConfig) {
-	rootRouterGroup.Use(cors.New(corsConfig))
-	rootRouterGroup.Use(sloggin.New(slog.Default()))
+func InitRootRouterGroup(ctx context.Context, corsConfig *rslibconfig.CORSConfig, debugConfig *config.DebugConfig) *gin.Engine {
+	if !debugConfig.Gin {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	router := gin.New()
+
+	// cors
+	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
+
+	router.Use(gin.Recovery())
+	router.Use(cors.New(ginCorsConfig))
+	router.Use(sloggin.New(slog.Default()))
 
 	if debugConfig.Wait {
-		rootRouterGroup.Use(middleware.NewWaitMiddleware())
+		router.Use(middleware.NewWaitMiddleware())
 	}
+
+	return router
 }
 
 func InitAPIRouterGroup(ctx context.Context, parentRouterGroup gin.IRouter, appName string) *gin.RouterGroup {

@@ -5,31 +5,59 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
-	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
+	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 	rsuserservice "github.com/kujilabo/cocotola-1.23/redstart/user/service"
 
-	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
+	controller "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin"
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
 )
 
-func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, publicRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
-	// cors
-	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
+const AppName = "cocotola-auth"
 
-	// root
-	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
+func Initialize(ctx context.Context, parent gin.IRouter, dialect rslibgateway.DialectRDBMS, driverName string, db *gorm.DB, cfg *config.AppConfig) error {
+	rff := func(ctx context.Context, db *gorm.DB) (service.RepositoryFactory, error) {
+		return gateway.NewRepositoryFactory(ctx, dialect, driverName, db, time.UTC) // nolint:wrapcheck
+	}
+	rf, err := rff(ctx, db)
+	if err != nil {
+		return err
+	}
 
-	InitApiServer(ctx, rootRouterGroup, appName, publicRouterGroupFuncs)
+	// init transaction manager
+	txManager, err := rslibgateway.NewTransactionManagerT(db, rff)
+	if err != nil {
+		return err
+	}
+
+	// init non transaction manager
+	nonTxManager, err := rslibgateway.NewNonTransactionManagerT(rf)
+	if err != nil {
+		return err
+	}
+
+	// init public and private router group functions
+	publicRouterGroupFuncs := controller.GetPublicRouterGroupFuncs(cfg.Auth, txManager, nonTxManager)
+
+	initApiServer(ctx, parent, AppName, publicRouterGroupFuncs)
+
+	initApp1(ctx, txManager, nonTxManager, "cocotola", cfg.OwnerLoginID, cfg.OwnerPassword)
+
+	return nil
 }
 
-func InitApiServer(ctx context.Context, root gin.IRouter, appName string, publicRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
+func initApiServer(ctx context.Context, root gin.IRouter, appName string, publicRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
 	// api
 	api := libcontroller.InitAPIRouterGroup(ctx, root, appName)
 
@@ -40,7 +68,7 @@ func InitApiServer(ctx context.Context, root gin.IRouter, appName string, public
 	libcontroller.InitPublicAPIRouterGroup(ctx, v1, publicRouterGroupFuncs)
 }
 
-func InitApp1(ctx context.Context, txManager, nonTxManager service.TransactionManager, organizationName, loginID, password string) {
+func initApp1(ctx context.Context, txManager, nonTxManager service.TransactionManager, organizationName, loginID, password string) {
 	logger := slog.Default().With(slog.String(rsliblog.LoggerNameKey, "InitApp1"))
 
 	addOrganizationFunc := func(ctx context.Context, systemAdmin *rsuserservice.SystemAdmin) error {
@@ -91,3 +119,13 @@ func systemAdminAction(ctx context.Context, transactionManager service.Transacti
 		return fn(ctx, systemAdmin)
 	})
 }
+
+// func InitAppServer(ctx context.Context, rootRouterGroup gin.IRouter, corsConfig *rslibconfig.CORSConfig, debugConfig *libconfig.DebugConfig, appName string, publicRouterGroupFuncs []libcontroller.InitRouterGroupFunc) {
+// 	// cors
+// 	ginCorsConfig := rslibconfig.InitCORS(corsConfig)
+
+// 	// root
+// 	libcontroller.InitRootRouterGroup(ctx, rootRouterGroup, ginCorsConfig, debugConfig)
+
+// 	InitApiServer(ctx, rootRouterGroup, appName, publicRouterGroupFuncs)
+// }

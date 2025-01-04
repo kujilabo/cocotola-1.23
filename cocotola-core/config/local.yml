@@ -1,8 +1,16 @@
 ---
 app:
-  name: golang-structure
-  httpPort: 8000
-  metricsPort: 8001
+  authApi:
+    endpoint: http://localhost:8010
+    username: username
+    password: password
+  synthesizerApi:
+    username: username
+    password: password
+server:
+  httpPort: 8020
+  metricsPort: 8021
+  readHeaderTimeoutSec: 30
 db:
   # driverName: sqlite3
   # sqlite3:
@@ -13,23 +21,14 @@ db:
     username: user
     password: password
     host: 127.0.0.1
-    port: 3306
+    port: 3326
     database: development
   postgres:
     username: user
     password: password
     host: 127.0.0.1
-    port: 5432
+    port: 5452
     database: postgres
-authApi:
-  endpoint: http://localhost:8010
-  authType: static
-  username: username
-  password: password
-synthesizerApi:
-  authType: static
-  username: username
-  password: password
 trace:
   exporter: otlp
   otlp:
@@ -42,12 +41,10 @@ shutdown:
   timeSec1: 1
   timeSec2: 1
 log:
-  level:
-    default: debug
-    cocotola-core: debug
+  level: debug
 swagger:
   enabled: true
-  host: localhost:8080
+  host: localhost:8020
   schema: http
 debug:
   gin: true

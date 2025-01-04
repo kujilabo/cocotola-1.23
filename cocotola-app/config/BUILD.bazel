@@ -12,6 +12,8 @@ go_library(
     deps = [
         "//cocotola-auth/config",
         "//cocotola-core/config",
+        "//cocotola-synthesizer/config",
+        "//cocotola-tatoeba/config",
         "//lib/config",
         "//redstart/lib/config",
         "//redstart/lib/domain",

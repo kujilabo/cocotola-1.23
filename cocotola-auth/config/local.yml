@@ -1,12 +1,24 @@
 ---
 app:
-  name: cocotola-auth
-  httpPort: 8010
-  metricsPort: 8011
+  auth:
+    signingKey: ah5T9Y9V2JPU74fhCtHQfDqLp3Zg8ZNc
+    accessTokenTtlMin: 5
+    refreshTokenTtlHour: 720
+    googleCallbackUrl: http://localhost:5173/app/auth/callback
+    googleClientId: 751610212628-f49u7fr0nivli19pr95eu3ckvn1rcdnn.apps.googleusercontent.com
+    googleClientSecret: $GOOGLE_CLIENT_SECRET
+    apiTimeoutSec: 5
   ownerLoginId: cocotola-owner
   ownerPassword: password
+server:
+  httpPort: 8010
+  metricsPort: 8011
+  readHeaderTimeoutSec: 30
 db:
-  driverName: postgres
+  driverName: mysql
+  migration: true
+  sqlite3:
+    file: auth.db
   mysql:
     username: user
     password: password
@@ -19,18 +31,10 @@ db:
     host: 127.0.0.1
     port: 5442
     database: postgres
-auth:
-  signingKey: ah5T9Y9V2JPU74fhCtHQfDqLp3Zg8ZNc
-  accessTokenTtlMin: 5
-  refreshTokenTtlHour: 720
-  googleCallbackUrl: http://localhost:5173/app/auth/callback
-  googleClientId: 751610212628-f49u7fr0nivli19pr95eu3ckvn1rcdnn.apps.googleusercontent.com
-  googleClientSecret: $GOOGLE_CLIENT_SECRET
-  apiTimeoutSec: 5
 trace:
   exporter: otlp
   otlp:
-    endpoint: localhost:4318
+    endpoint: localhost:4328
     insecure: true
 cors:
   allowOrigins:
@@ -39,9 +43,7 @@ shutdown:
   timeSec1: 1
   timeSec2: 1
 log:
-  level:
-    default: debug
-    auth_main: debug
+  level: debug
 swagger:
   enabled: true
   host: localhost:8010

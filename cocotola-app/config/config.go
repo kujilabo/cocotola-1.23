@@ -16,28 +16,42 @@ import (
 
 	authconfig "github.com/kujilabo/cocotola-1.23/cocotola-auth/config"
 	coreconfig "github.com/kujilabo/cocotola-1.23/cocotola-core/config"
+	synthesizerconfig "github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/config"
+	tatoebaconfig "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/config"
 )
 
+type ServerConfig struct {
+	HTTPPort             int `yaml:"httpPort" validate:"required"`
+	MetricsPort          int `yaml:"metricsPort" validate:"required"`
+	ReadHeaderTimeoutSec int `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
+}
+
+type AuthAPIonfig struct {
+	Endpoint string `yaml:"endpoint" validate:"required"`
+	Username string `yaml:"username" validate:"required"`
+	Password string `yaml:"password" validate:"required"`
+}
+
 type AppConfig struct {
-	Name                 string `yaml:"name" validate:"required"`
-	HTTPPort             int    `yaml:"httpPort" validate:"required"`
-	MetricsPort          int    `yaml:"metricsPort" validate:"required"`
-	ReadHeaderTimeoutSec int    `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
-	OwnerLoginID         string `yaml:"ownerLoginId" validate:"required"`
-	OwnerPassword        string `yaml:"ownerPassword" validate:"required"`
+	AuthAPI       *AuthAPIonfig `yaml:"authApi" validate:"required"`
+	OwnerLoginID  string        `yaml:"ownerLoginId" validate:"required"`
+	OwnerPassword string        `yaml:"ownerPassword" validate:"required"`
 }
 
 type Config struct {
-	App      *AppConfig                 `yaml:"app" validate:"required"`
-	DB       *rslibconfig.DBConfig      `yaml:"db" validate:"required"`
-	AuthAPI  *coreconfig.AuthAPIonfig   `yaml:"authApi" validate:"required"`
-	Auth     *authconfig.AuthConfig     `yaml:"auth" validate:"required"`
-	Trace    *rslibconfig.TraceConfig   `yaml:"trace" validate:"required"`
-	CORS     *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
-	Shutdown *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`
-	Log      *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
-	Swagger  *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
-	Debug    *libconfig.DebugConfig     `yaml:"debug"`
+	Auth        *authconfig.AppConfig        `yaml:"auth" validate:"required"`
+	Core        *coreconfig.AppConfig        `yaml:"core" validate:"required"`
+	Synthesizer *synthesizerconfig.AppConfig `yaml:"synthesizer" validate:"required"`
+	Tatoeba     *tatoebaconfig.AppConfig     `yaml:"tatoeba" validate:"required"`
+	App         *AppConfig                   `yaml:"app" validate:"required"`
+	Server      *ServerConfig                `yaml:"server" validate:"required"`
+	DB          *rslibconfig.DBConfig        `yaml:"db" validate:"required"`
+	Trace       *rslibconfig.TraceConfig     `yaml:"trace" validate:"required"`
+	CORS        *rslibconfig.CORSConfig      `yaml:"cors" validate:"required"`
+	Shutdown    *libconfig.ShutdownConfig    `yaml:"shutdown" validate:"required"`
+	Log         *rslibconfig.LogConfig       `yaml:"log" validate:"required"`
+	Swagger     *rslibconfig.SwaggerConfig   `yaml:"swagger" validate:"required"`
+	Debug       *libconfig.DebugConfig       `yaml:"debug"`
 }
 
 //go:embed local.yml

@@ -15,19 +15,10 @@ import (
 	libconfig "github.com/kujilabo/cocotola-1.23/lib/config"
 )
 
-type AppConfig struct {
-	Name        string `yaml:"name" validate:"required"`
-	HTTPPort    int    `yaml:"httpPort" validate:"required"`
-	MetricsPort int    `yaml:"metricsPort" validate:"required"`
-}
-
-type ShutdownConfig struct {
-	TimeSec1 int `yaml:"timeSec1" validate:"gte=1"`
-	TimeSec2 int `yaml:"timeSec2" validate:"gte=1"`
-}
-
-type GoogleTextToSpeechConfig struct {
-	APIKey string `yaml:"apiKey" validate:"required"`
+type ServerConfig struct {
+	HTTPPort             int `yaml:"httpPort" validate:"required"`
+	MetricsPort          int `yaml:"metricsPort" validate:"required"`
+	ReadHeaderTimeoutSec int `yaml:"readHeaderTimeoutSec" validate:"gte=1"`
 }
 
 type AuthAPIonfig struct {
@@ -36,13 +27,17 @@ type AuthAPIonfig struct {
 	Password string `yaml:"password" validate:"required"`
 }
 
+type AppConfig struct {
+	AuthAPI *AuthAPIonfig `yaml:"authApi" validate:"required"`
+}
+
 type Config struct {
 	App      *AppConfig                 `yaml:"app" validate:"required"`
+	Server   *ServerConfig              `yaml:"server" validate:"required"`
 	DB       *rslibconfig.DBConfig      `yaml:"db" validate:"required"`
-	AuthAPI  *AuthAPIonfig              `yaml:"authApi" validate:"required"`
 	Trace    *rslibconfig.TraceConfig   `yaml:"trace" validate:"required"`
 	CORS     *rslibconfig.CORSConfig    `yaml:"cors" validate:"required"`
-	Shutdown *ShutdownConfig            `yaml:"shutdown" validate:"required"`
+	Shutdown *libconfig.ShutdownConfig  `yaml:"shutdown" validate:"required"`
 	Log      *rslibconfig.LogConfig     `yaml:"log" validate:"required"`
 	Swagger  *rslibconfig.SwaggerConfig `yaml:"swagger" validate:"required"`
 	Debug    *libconfig.DebugConfig     `yaml:"debug"`

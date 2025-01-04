@@ -1,13 +1,15 @@
 ---
 app:
-  name: cocotola-synthesizer
-  httpPort: $HTTP_PORT
-  metricsPort: 8081
-  readHeaderTimeoutSec: 30
-internalAuth:
-  type: static
-  username: $SYNTHESIZER_API_USERNAME
-  password: $SYNTHESIZER_API_PASSWORD
+  server:
+    httpPort: $HTTP_PORT
+    metricsPort: 8081
+    readHeaderTimeoutSec: 30
+  internalAuth:
+    username: $SYNTHESIZER_API_USERNAME
+    password: $SYNTHESIZER_API_PASSWORD
+  googleTextToSpeech:
+    apiKey: $GOOGLE_TEXT_TO_SPEECH_API_KEY
+    apiTimeoutSec: 5
 db:
   driverName: $DB_DRIVER_NAME
   migration: $DB_MIGRATION
@@ -19,13 +21,6 @@ db:
     host: $MYSQL_HOST
     port: $MYSQL_PORT
     database: $MYSQL_DATABASE
-# authApi:
-#   endpoint: http://localhost:8080
-#   username: $AUTH_API_USERNAME
-#   password: $AUTH_API_PASSWORD
-googleTextToSpeech:
-  apiKey: $GOOGLE_TEXT_TO_SPEECH_API_KEY
-  apiTimeoutSec: 5
 trace:
   exporter: none
 cors:
@@ -35,9 +30,7 @@ shutdown:
   timeSec1: 10
   timeSec2: 10
 log:
-  level:
-    default: warn
-    cocotola-core: warn
+  level: warn
 swagger:
   enabled: false
   host: localhost:8080
