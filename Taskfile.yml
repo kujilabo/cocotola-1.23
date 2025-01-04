@@ -72,6 +72,11 @@ tasks:
         task: lint-project
         vars:
           PROJECT: "{{ .ITEM }}"
+      - |
+        pushd cocotola-web
+        pnpm run format
+        pnpm run check
+        popd
 
   check-project:
     cmds:
@@ -157,7 +162,7 @@ tasks:
   run-web:
     dir: '{{.USER_WORKING_DIR}}/cocotola-web'
     cmds:
-      - npm run dev
+      - pnpm run dev
 
   build-hello-world:
     cmds:
@@ -173,8 +178,8 @@ tasks:
     cmds:
       - |
         pushd cocotola-web
-        npm install
-        npm run build
+        pnpm install
+        pnpm run build
         popd
       - |
         pushd cocotola-app
