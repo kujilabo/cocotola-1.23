@@ -3,12 +3,17 @@ package main
 import (
 	"context"
 	"embed"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
 	"log/slog"
+	"mime"
 	"net/http"
 	"os"
+	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -33,10 +38,11 @@ import (
 	tatoebainit "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/initialize"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-app/config"
+	web "github.com/kujilabo/cocotola-1.23/cocotola-app/web_dist"
 )
 
-//go:embed web_dist
-var web embed.FS
+// //go:embed web_dist
+// var web embed.FS
 
 const AppName = "cocotola-app"
 
@@ -73,9 +79,9 @@ func main() {
 
 	// web
 	{
-		viteStaticFS, err := fs.Sub(web, "web_dist")
+		viteStaticFS, err := fs.Sub(web.Web, "flutter")
 		libdomain.CheckError(err)
-		initGinWeb(ctx, router, viteStaticFS)
+		initGinWeb(ctx, router, viteStaticFS, "flutter")
 	}
 	// auth
 	{
@@ -113,28 +119,45 @@ func main() {
 	os.Exit(result)
 }
 
-// func initGinRouter(ctx context.Context, cfg *config.Config) *gin.Engine {
-// 	if !cfg.Debug.Gin {
-// 		gin.SetMode(gin.ReleaseMode)
-// 	}
+var ErrDir = errors.New("path is dir")
 
-// 	router := gin.New()
+func tryRead(fs embed.FS, prefix, requestedPath string, w http.ResponseWriter) error {
+	f, err := fs.Open(path.Join(prefix, requestedPath))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
 
-// 	// cors
-// 	ginCorsConfig := rslibconfig.InitCORS(cfg.CORS)
+	// Goのfs.Openはディレクトリを読みこもとうしてもエラーにはならないがここでは邪魔なのでエラー扱いにする
+	stat, _ := f.Stat()
+	if stat.IsDir() {
+		return ErrDir
+	}
 
-// 	// root
-// 	libcontroller.InitRootRouterGroup(ctx, router, ginCorsConfig, cfg.Debug)
+	contentType := mime.TypeByExtension(filepath.Ext(requestedPath))
+	w.Header().Set("Content-Type", contentType)
+	_, err = io.Copy(w, f)
+	return err
+}
 
-// 	return router
-// }
-
-func initGinWeb(ctx context.Context, router *gin.Engine, viteStaticFS fs.FS) {
+func initGinWeb(ctx context.Context, router *gin.Engine, viteStaticFS fs.FS, webType string) {
 	router.NoRoute(func(c *gin.Context) {
-		if strings.HasPrefix(c.Request.RequestURI, "/assets") {
-			c.FileFromFS(c.Request.URL.Path, http.FS(viteStaticFS))
-			return
+		if webType == "flutter" {
+			for _, prefix := range web.GetFlutterResources() {
+				if strings.HasPrefix(c.Request.RequestURI, prefix) {
+					c.FileFromFS(c.Request.URL.Path, http.FS(viteStaticFS))
+					return
+				}
+			}
+		} else if webType == "react" {
+			for _, prefix := range web.GetReactResources() {
+				if strings.HasPrefix(c.Request.RequestURI, prefix) {
+					c.FileFromFS(c.Request.URL.Path, http.FS(viteStaticFS))
+					return
+				}
+			}
 		}
+
 		if !strings.HasPrefix(c.Request.URL.Path, "/auth") {
 			c.FileFromFS("", http.FS(viteStaticFS))
 			return
