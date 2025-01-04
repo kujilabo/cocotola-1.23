@@ -10,7 +10,7 @@ internalAuth:
   password: $SYNTHESIZER_API_PASSWORD
 db:
   driverName: $DB_DRIVER_NAME
-  migration: false
+  migration: $DB_MIGRATION
   sqlite3:
     file: synthesizer.db
   mysql:
