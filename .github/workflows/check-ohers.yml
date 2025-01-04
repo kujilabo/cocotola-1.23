@@ -48,3 +48,4 @@ jobs:
           reporter: github-pr-review
           level: warning
           fail_level: any
+          markdownlint_flags: "--config .github/markdownlint.yaml ."
