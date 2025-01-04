@@ -8,8 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format": "biome format --write",
-    "check": "biome check --write"
+    "format": "biome format --config-path ../.github/biome.json --write",
+    "check": "biome check --config-path ../.github/biome.json --write"
   },
   "dependencies": {
     "react": "^18.3.1",
