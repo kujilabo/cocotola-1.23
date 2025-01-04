@@ -5,48 +5,125 @@ services:
     container_name: test-auth-mysql
     command: mysqld --character-set-server=utf8mb4
     environment:
+      # kics-scan ignore-line
       MYSQL_ROOT_PASSWORD: mysql
       MYSQL_PORT: 3306
       MYSQL_DATABASE: testdb
       MYSQL_USER: user
+      # kics-scan ignore-line
       MYSQL_PASSWORD: password
       TZ: 'Etc/GMT'
     ports:
-      - 3317:3306
+      - 127.0.0.1:3317:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
   test-core-mysql:
     image: mysql:8.0.27
     container_name: test-core-mysql
     command: mysqld --character-set-server=utf8mb4
     environment:
+      # kics-scan ignore-line
       MYSQL_ROOT_PASSWORD: mysql
       MYSQL_PORT: 3306
       MYSQL_DATABASE: testdb
       MYSQL_USER: user
+      # kics-scan ignore-line
       MYSQL_PASSWORD: password
       TZ: 'Etc/GMT'
     ports:
-      - 3307:3306
+      - 127.0.0.1:3327:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
   test-auth-postgres:
     image: postgres:15.5-alpine3.19
     container_name: test-auth-postgres
     environment:
       POSTGRES_USER: user
+      # kics-scan ignore-line
       POSTGRES_PASSWORD: password
     ports:
-      - 5443:5432
+      - 127.0.0.1:5443:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
   test-core-postgres:
     image: postgres:15.5-alpine3.19
     container_name: test-core-postgres
     environment:
       POSTGRES_USER: user
+      # kics-scan ignore-line
       POSTGRES_PASSWORD: password
     ports:
-      - 5433:5432
+      - 127.0.0.1:5433:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
   test-synthesizer-postgres:
     image: postgres:15.5-alpine3.19
     container_name: test-synthesizer-postgres
     environment:
       POSTGRES_USER: user
+      # kics-scan ignore-line
       POSTGRES_PASSWORD: password
     ports:
-      - 5453:5432
+      - 127.0.0.1:5453:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT

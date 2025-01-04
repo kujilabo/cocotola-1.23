@@ -33,3 +33,5 @@ coverage.txt
 coverage.lcov
 
 .trunk
+
+results.json

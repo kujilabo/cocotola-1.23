@@ -5,26 +5,71 @@ services:
     container_name: dev-cocotola-mysql
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
     environment:
+      # kics-scan ignore-line
       MYSQL_ROOT_PASSWORD: mysql
       MYSQL_PORT: 3306
       MYSQL_DATABASE: development
       MYSQL_USER: user
+      # kics-scan ignore-line
       MYSQL_PASSWORD: password
       TZ: 'Etc/GMT'
     ports:
-      - 3306:3306
+      - 127.0.0.1:3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
   dev-cocotola-postgres:
     image: postgres:15.5-alpine3.19
     container_name: dev-cocotola-postgres
     environment:
       POSTGRES_USER: user
+      # kics-scan ignore-line
       POSTGRES_PASSWORD: password
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
   dev-cocotola-jaeger:
     image: jaegertracing/all-in-one:1.64.0
     container_name: dev-cocotola-jaeger
     ports:
-      - 4318:4318
-      - 14268:14268
-      - 16686:16686
+      - 127.0.0.1:4318:4318
+      - 127.0.0.1:14268:14268
+      - 127.0.0.1:16686:16686
+    healthcheck:
+      test: ["CMD", "curl", "-X", "GET", "localhost:14269"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT

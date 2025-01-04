@@ -34,7 +34,7 @@ db:
 trace:
   exporter: otlp
   otlp:
-    endpoint: localhost:4318
+    endpoint: localhost:4328
     insecure: true
 cors:
   allowOrigins:
