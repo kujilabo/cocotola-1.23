@@ -30,10 +30,6 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-synthesizer/sqls"
 )
 
-// const (
-// 	loggerKey = liblog.SynthesizerMainLoggerContextKey
-// )
-
 func getValue(values ...string) string {
 	for _, v := range values {
 		if len(v) != 0 {
