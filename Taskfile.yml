@@ -154,6 +154,15 @@ tasks:
     cmds:
       - bazelisk run //cocotola-import:cocotola-import
 
+  run-app:
+    cmds:
+      - bazelisk run //cocotola-app:cocotola-app
+
+  run-web:
+    dir: '{{.USER_WORKING_DIR}}/cocotola-web'
+    cmds:
+      - npm run dev
+
   build-hello-world:
     cmds:
       - bazelisk run //hello-world:load
@@ -163,6 +172,19 @@ tasks:
       - bazelisk run //{{ .PROJECT }}:load
     requires:
       vars: [PROJECT]
+  
+  build-web:
+    cmds:
+      - |
+        pushd cocotola-web
+        npm install
+        npm run build
+        popd
+      - |
+        pushd cocotola-app
+        rm -rf web_dist/*
+        popd
+      - cp -r cocotola-web/dist/* cocotola-app/web_dist/
 
   build:
     cmds:
