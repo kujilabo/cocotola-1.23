@@ -137,7 +137,10 @@ tasks:
 
   run-app:
     cmds:
-      - bazelisk run //cocotola-app:cocotola-app
+      - |
+        export GOOGLE_CLIENT_SECRET=a
+        export GOOGLE_TEXT_TO_SPEECH_API_KEY=a
+        bazelisk run //cocotola-app:cocotola-app
 
   run-auth:
     cmds:
@@ -174,7 +177,7 @@ tasks:
     requires:
       vars: [PROJECT]
 
-  build-web:
+  build-web-react:
     cmds:
       - |
         pushd cocotola-web
@@ -183,9 +186,23 @@ tasks:
         popd
       - |
         pushd cocotola-app
-        rm -rf web_dist/*
+        rm -rf web_dist/react/*
         popd
-      - cp -r cocotola-web/dist/* cocotola-app/web_dist/
+      - cp -r cocotola-web/dist/* cocotola-app/web_dist/react
+      - task: gazelle
+
+  build-web-flutter:
+    cmds:
+      - |
+        pushd cocotola-mobile
+        flutter build web --web-renderer=html --source-maps
+        popd
+      - |
+        pushd cocotola-app
+        rm -rf web_dist/flutter/*
+        popd
+      - cp -r cocotola-mobile/build/web/* cocotola-app/web_dist/flutter
+      - task: gazelle
 
   build:
     cmds:

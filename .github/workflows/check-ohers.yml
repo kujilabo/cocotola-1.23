@@ -23,6 +23,8 @@ jobs:
           reporter: github-pr-review
           locale: US
           fail_on_error: true
+          exclude: |
+            ./cocotola-app/web_dist/*
 
       - name: yamllint
         uses: reviewdog/action-yamllint@v1

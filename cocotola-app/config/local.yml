@@ -75,4 +75,4 @@ swagger:
   schema: http
 debug:
   gin: true
-  wait: true
+  wait: false
