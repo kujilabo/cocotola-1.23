@@ -11,3 +11,4 @@ ignore:
   - swagger.yaml
   - pnpm-lock.yaml
   - analysis_options.yaml
+  - pubspec.yaml
