@@ -75,3 +75,22 @@ jobs:
       - uses: arduino/setup-task@v2
 
       - run: task build-web-react
+
+  test_flutter:
+    strategy:
+      matrix:
+        flutter-version: [3.27.1]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ matrix.flutter-version }}
+      - run: flutter --version
+
+      - uses: actions/checkout@v4
+
+      - uses: arduino/setup-task@v2
+
+      - run: task build-web-flutter
