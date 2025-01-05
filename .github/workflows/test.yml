@@ -66,9 +66,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/checkout@v4
 
       - uses: arduino/setup-task@v2
 
       - run: task build-web-react
-
