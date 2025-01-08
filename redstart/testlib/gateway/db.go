@@ -1,16 +1,8 @@
 package gateway
 
 import (
-	"database/sql"
-	"errors"
-	"log"
-
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/source"
 	"gorm.io/gorm"
 
-	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 )
 
@@ -25,13 +17,13 @@ func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 	mysql := libgateway.DialectMySQL{}
 	list[&mysql] = m
 
-	// postgres
-	p, err := openPostgresForTest()
-	if err != nil {
-		panic(err)
-	}
-	postgres := libgateway.DialectPostgres{}
-	list[&postgres] = p
+	// // postgres
+	// p, err := openPostgresForTest()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// postgres := libgateway.DialectPostgres{}
+	// list[&postgres] = p
 
 	// // sqlite3
 	// s, err := openSQLiteForTest()
@@ -44,31 +36,31 @@ func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 	return list
 }
 
-func setupDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
-	sqlDB, err := db.DB()
-	if err != nil {
-		log.Fatal(err)
-		return err
-	}
+// func setupDB(db *gorm.DB, driverName string, sourceDriver source.Driver, getDatabaseDriver func(sqlDB *sql.DB) (database.Driver, error)) error {
+// 	sqlDB, err := db.DB()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return err
+// 	}
 
-	databaseDriver, err := getDatabaseDriver(sqlDB)
-	if err != nil {
-		log.Fatal(liberrors.Errorf("failed to WithInstance. err: %w", err))
-		return err
-	}
+// 	databaseDriver, err := getDatabaseDriver(sqlDB)
+// 	if err != nil {
+// 		log.Fatal(liberrors.Errorf("failed to WithInstance. err: %w", err))
+// 		return err
+// 	}
 
-	m, err := migrate.NewWithInstance("iofs", sourceDriver, driverName, databaseDriver)
-	if err != nil {
-		log.Fatal(liberrors.Errorf("failed to NewWithDatabaseInstance. err: %w", err))
-		return err
-	}
+// 	m, err := migrate.NewWithInstance("iofs", sourceDriver, driverName, databaseDriver)
+// 	if err != nil {
+// 		log.Fatal(liberrors.Errorf("failed to NewWithDatabaseInstance. err: %w", err))
+// 		return err
+// 	}
 
-	if err := m.Up(); err != nil {
-		if !errors.Is(err, migrate.ErrNoChange) {
-			log.Fatal(liberrors.Errorf("failed to Up. driver:%s, err: %w", driverName, err))
-			return err
-		}
-	}
+// 	if err := m.Up(); err != nil {
+// 		if !errors.Is(err, migrate.ErrNoChange) {
+// 			log.Fatal(liberrors.Errorf("failed to Up. driver:%s, err: %w", driverName, err))
+// 			return err
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

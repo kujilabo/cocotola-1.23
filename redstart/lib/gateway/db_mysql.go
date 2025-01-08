@@ -40,22 +40,7 @@ type MySQLConfig struct {
 	Database string `yaml:"database" validate:"required"`
 }
 
-func OpenMySQL(cfg *MySQLConfig) (*gorm.DB, error) {
-	c := mysql.Config{
-		DBName:               cfg.Database,
-		User:                 cfg.Username,
-		Passwd:               cfg.Password,
-		Addr:                 fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Net:                  "tcp",
-		ParseTime:            true,
-		MultiStatements:      true,
-		Params:               map[string]string{"charset": "utf8mb4"},
-		Collation:            "utf8mb4_bin",
-		AllowNativePasswords: true,
-		Loc:                  time.UTC,
-	}
-	dsn := c.FormatDSN()
-
+func OpenMySQLWithDSN(dsn string) (*gorm.DB, error) {
 	gormDialector := gorm_mysql.Open(dsn)
 
 	gormConfig := gorm.Config{
@@ -68,6 +53,26 @@ func OpenMySQL(cfg *MySQLConfig) (*gorm.DB, error) {
 	}
 
 	return gorm.Open(gormDialector, &gormConfig)
+}
+
+func OpenMySQL(cfg *MySQLConfig) (*gorm.DB, error) {
+	c := mysql.Config{
+		DBName:               cfg.Database,
+		User:                 cfg.Username,
+		Passwd:               cfg.Password,
+		Addr:                 fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
+		Net:                  "tcp",
+		ParseTime:            true,
+		MultiStatements:      true,
+		Params:               map[string]string{"charset": "utf8mb4"},
+		Collation:            "utf8mb4_bin",
+		AllowNativePasswords: true,
+		CheckConnLiveness:    true,
+		MaxAllowedPacket:     64 << 20, // 64 MiB.
+		Loc:                  time.UTC,
+	}
+
+	return OpenMySQLWithDSN(c.FormatDSN())
 }
 
 func MigrateMySQLDB(db *gorm.DB, sqlFS fs.FS) error {

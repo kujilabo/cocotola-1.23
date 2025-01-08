@@ -11,9 +11,13 @@ import (
 type RBACRepository interface {
 	Init() error
 
+	// who can do what actions on which resources
 	AddPolicy(ctx context.Context, domain domain.RBACDomain, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error
 
+	// add user to group
 	AddSubjectGroupingPolicy(ctx context.Context, domain domain.RBACDomain, subject domain.RBACUser, object domain.RBACRole) error
+
+	// add child object to parent object
 	AddObjectGroupingPolicy(ctx context.Context, domain domain.RBACDomain, child domain.RBACObject, parent domain.RBACObject) error
 
 	RemovePolicy(ctx context.Context, domain domain.RBACDomain, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error

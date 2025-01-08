@@ -608,7 +608,7 @@
     "@@rules_oci~//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "LZg2r+PKqkVISN+eLMB0QaSzSTkh+UzURohD6GfYGcQ=",
-        "usagesDigest": "1pb8xARNspPxder90WsXtzxM6uyCDldoyrrPC9BPD+k=",
+        "usagesDigest": "kLvt7c7yo31oT+0l23zd691zJvLFMX7XWq7PJMDuk0M=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -649,7 +649,7 @@
               "scheme": "https",
               "registry": "gcr.io",
               "repository": "distroless/static-debian12",
-              "identifier": "debug",
+              "identifier": "sha256:0eb1b021dc83cd103a4f5bec6d5292907b7f649137a200e178aa42d768d93ba2",
               "platform": "linux/amd64",
               "target_name": "distroless_static_debian12_debug_linux_amd64",
               "bazel_tags": []
@@ -663,7 +663,7 @@
               "scheme": "https",
               "registry": "gcr.io",
               "repository": "distroless/static-debian12",
-              "identifier": "debug",
+              "identifier": "sha256:0eb1b021dc83cd103a4f5bec6d5292907b7f649137a200e178aa42d768d93ba2",
               "platforms": {
                 "@@platforms//cpu:x86_64": "@distroless_static_debian12_debug_linux_amd64"
               },

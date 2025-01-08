@@ -37,6 +37,7 @@ go_test(
     name = "gateway_test",
     srcs = [
         "app_user_repository_test.go",
+        "authorization_maanger_test.go",
         "authorization_test.go",
         "export_test.go",
         "gateway_test.go",

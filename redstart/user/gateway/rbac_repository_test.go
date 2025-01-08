@@ -67,6 +67,17 @@ func addPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRep
 	require.NoError(t, err)
 }
 
+//	func addSubjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, obj string) {
+//		t.Helper()
+//		err := rbacRepository.AddSubjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACRole(obj))
+//		require.NoError(t, err)
+//	}
+func addObjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, child, parent string) {
+	t.Helper()
+	err := rbacRepository.AddObjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACObject(child), domain.NewRBACObject(parent))
+	require.NoError(t, err)
+}
+
 func TestA(t *testing.T) {
 	t.Parallel()
 
@@ -80,28 +91,22 @@ func TestA(t *testing.T) {
 
 		err := initRBACRepository(t, ts.db, gateway.Conf)
 		require.NoError(t, err)
-		addPolicy(t, ctx, &rbacRepo, "domain1", "alice", "read", "domain:1_data:1")
+		addPolicy(t, ctx, &rbacRepo, "domain1", "alice", "read", "domain:1,data:1")
+		addPolicy(t, ctx, &rbacRepo, "domain1", "bob", "write", "domain:1,data:2")
 		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
+		addObjectGroupingPolicy(t, ctx, &rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
 
-		// const policy = `
-		// p, alice, domain:1_data:1, read, allow, domain1
-		// p, bob, domain:2_data:2, write, allow, domain2
-		// p, bob, domain:1_data:2, write, allow, domain1
-		// p, charlie, domain:1_data*, read, allow, domain1
-		// p, domain:1_data2_admin, domain:1_data:2, read, allow, domain1
-		// p, domain:1_data2_admin, domain:1_data:2, write, allow, domain1
-
-		// g, alice, domain:1_data2_admin, domain1
-		// g2, domain:1_data_child, domain:1_data_parent, domain1
-		// g2, domain:2_data_child, domain:2_data_parent, domain2
-		// `
 		tests := []test_sdoa{
-			{subject: "alice", domain: "domain1", object: "domain:1_data:1", action: "read", want: true},
-			// {subject: "alice", domain: "domain1", object: "domain:1_data:1", action: "write", want: false},
-			// {subject: "alice", domain: "domain1", object: "domain:1_data:2", action: "read", want: true},
-			// {subject: "alice", domain: "domain1", object: "domain:1_data:2", action: "write", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "read", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "write", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "read", want: true},
 
-			// {subject: "bob", domain: "domain1", object: "domain:1_data:1", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "write", want: true},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:1", action: "write", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "read", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "write", want: true},

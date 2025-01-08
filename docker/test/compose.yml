@@ -1,5 +1,34 @@
 ---
 services:
+  test-redstart-mysql:
+    image: mysql:8.0.27
+    container_name: test-redstart-mysql
+    command: mysqld --character-set-server=utf8mb4
+    environment:
+      # kics-scan ignore-line
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: user
+      # kics-scan ignore-line
+      MYSQL_PASSWORD: password
+      TZ: 'Etc/GMT'
+    ports:
+      - 127.0.0.1:3307:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SETFCAP
+      - SYS_CHROOT
   test-auth-mysql:
     image: mysql:8.0.27
     container_name: test-auth-mysql

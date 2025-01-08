@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/kujilabo/cocotola-1.23/redstart/sqls"
 	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
-	"gorm.io/gorm"
 
 	testlibgateway "github.com/kujilabo/cocotola-1.23/redstart/testlib/gateway"
 )
@@ -31,6 +32,26 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
+// func createMySQLContainer() string {
+// 	ctx := context.Background()
+// 	mysqlContainer, err := tc_mysql.Run(ctx,
+// 		"mysql:8.0.36",
+// 		// tc_mysql.WithConfigFile(filepath.Join("testdata", "my_8.cnf")),
+// 		tc_mysql.WithUsername("user"),
+// 		tc_mysql.WithPassword("password"),
+// 		tc_mysql.WithDatabase("testdb"),
+// 		// tc_mysql.WithScripts(filepath.Join("testdata", "schema.sql")),
+// 	)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	connectionString, err := mysqlContainer.ConnectionString(ctx, "collation=utf8mb4_bin", "multiStatements=true", "parseTime=true", "charset=utf8mb4")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	return connectionString
+// }
+
 func init() {
 	invalidOrgIDTmp, err := domain.NewOrganizationID(99999)
 	if err != nil {
@@ -44,25 +65,30 @@ func init() {
 	}
 	invalidAppUserID = invalidAppUserIDTmp
 
+	ctx := context.Background()
 	mysqlHost := getEnv("MYSQL_HOST", "127.0.0.1")
 	mysqlPortS := getEnv("MYSQL_PORT", "3307")
 	mysqlPort, err := strconv.Atoi(mysqlPortS)
 	if err != nil {
 		panic(err)
 	}
-	postgresHost := getEnv("POSTGRES_HOST", "127.0.0.1")
-	postgresPortS := getEnv("POSTGRES_PORT", "5433")
-	postgresPort, err := strconv.Atoi(postgresPortS)
-	if err != nil {
-		panic(err)
-	}
+
+	// postgresHost := getEnv("POSTGRES_HOST", "127.0.0.1")
+	// postgresPortS := getEnv("POSTGRES_PORT", "5433")
+	// postgresPort, err := strconv.Atoi(postgresPortS)
+	// if err != nil {
+	// 	panic(err)
+	// }
 	fns := []func() (*gorm.DB, error){
+		// func() (*gorm.DB, error) {
+		// 	return testlibgateway.InitMySQLWithDSN(sqls.SQL, connectionString)
+		// },
 		func() (*gorm.DB, error) {
 			return testlibgateway.InitMySQL(sqls.SQL, mysqlHost, mysqlPort)
 		},
-		func() (*gorm.DB, error) {
-			return testlibgateway.InitPostgres(sqls.SQL, postgresHost, postgresPort)
-		},
+		// func() (*gorm.DB, error) {
+		// 	return testlibgateway.InitPostgres(sqls.SQL, postgresHost, postgresPort)
+		// },
 		// func() (*gorm.DB, error) {
 		// 	return testlibgateway.InitSQLiteInFile(sqls.SQL)
 		// },
@@ -80,7 +106,6 @@ func init() {
 		sqlDB.Close()
 	}
 
-	ctx := context.Background()
 	for dialect, db := range testlibgateway.ListDB() {
 		dialect := dialect
 		db := db
