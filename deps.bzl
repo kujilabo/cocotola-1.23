@@ -1847,8 +1847,8 @@ def go_dependencies():
     go_repository(
         name = "com_google_cloud_go_auth",
         importpath = "cloud.google.com/go/auth",
-        sum = "h1:8Fu8TZy167JkW8Tj3q7dIkr2v4cndv41ouecJx0PAHs=",
-        version = "v0.13.0",
+        sum = "h1:A5C4dKV/Spdvxcl0ggWwWEzzP7AZMJSEIgrkngwhGYM=",
+        version = "v0.14.0",
     )
     go_repository(
         name = "com_google_cloud_go_auth_oauth2adapt",
