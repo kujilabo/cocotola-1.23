@@ -19,6 +19,7 @@ type SystemAdminInterface interface {
 }
 
 type RBACUsecase interface {
+	// Who can do what actions on which resources
 	AddPolicyToUser(ctx context.Context, organizationID *rsuserdomain.OrganizationID, subject rsuserdomain.RBACSubject, action rsuserdomain.RBACAction, object rsuserdomain.RBACObject, effect rsuserdomain.RBACEffect) error
 }
 

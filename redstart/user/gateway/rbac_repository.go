@@ -33,19 +33,35 @@ m = g(r.sub, p.sub, r.dom) && (keyMatch(r.obj, p.obj) || g2(r.obj, p.obj, r.dom)
 `
 
 type rbacRepository struct {
-	DB   *gorm.DB
-	Conf string
+	DB       *gorm.DB
+	Conf     string
+	enforcer casbin.IEnforcer
 }
 
-func newRBACRepository(ctx context.Context, db *gorm.DB) service.RBACRepository {
+func newRBACRepository(ctx context.Context, db *gorm.DB) (service.RBACRepository, error) {
 	if db == nil {
 		panic(errors.New("db is nil"))
 	}
 
-	return &rbacRepository{
-		DB:   db,
-		Conf: conf,
+	a, err := gormadapter.NewAdapterByDB(db)
+	if err != nil {
+		return nil, liberrors.Errorf("gormadapter.NewAdapterByDB. err: %w", err)
 	}
+
+	m, err := model.NewModelFromString(conf)
+	if err != nil {
+		return nil, liberrors.Errorf("model.NewModelFromString. err: %w", err)
+	}
+
+	e, err := casbin.NewEnforcer(m, a)
+	if err != nil {
+		return nil, liberrors.Errorf("casbin.NewEnforcer. err: %w", err)
+	}
+	return &rbacRepository{
+		DB:       db,
+		Conf:     conf,
+		enforcer: e,
+	}, nil
 }
 
 func (r *rbacRepository) Init() error {
@@ -66,24 +82,25 @@ func (r *rbacRepository) Init() error {
 	return nil
 }
 
-func (r *rbacRepository) initEnforcer(ctx context.Context) (*casbin.Enforcer, error) {
+func (r *rbacRepository) initEnforcer(ctx context.Context) (casbin.IEnforcer, error) {
+	return r.enforcer, nil
 	// logger := log.GetLoggerFromContext(ctx, UserGatewayContextKey)
-	a, err := gormadapter.NewAdapterByDB(r.DB)
-	if err != nil {
-		return nil, liberrors.Errorf("gormadapter.NewAdapterByDB. err: %w", err)
-	}
+	// a, err := gormadapter.NewAdapterByDB(r.DB)
+	// if err != nil {
+	// 	return nil, liberrors.Errorf("gormadapter.NewAdapterByDB. err: %w", err)
+	// }
 
-	m, err := model.NewModelFromString(r.Conf)
-	if err != nil {
-		return nil, liberrors.Errorf("model.NewModelFromString. err: %w", err)
-	}
+	// m, err := model.NewModelFromString(r.Conf)
+	// if err != nil {
+	// 	return nil, liberrors.Errorf("model.NewModelFromString. err: %w", err)
+	// }
 
-	e, err := casbin.NewEnforcer(m, a)
-	if err != nil {
-		return nil, liberrors.Errorf("casbin.NewEnforcer. err: %w", err)
-	}
+	// e, err := casbin.NewEnforcer(m, a)
+	// if err != nil {
+	// 	return nil, liberrors.Errorf("casbin.NewEnforcer. err: %w", err)
+	// }
 
-	return e, nil
+	// return e, nil
 }
 
 // p, alice, domain:1_data:1, read, allow, domain1
@@ -188,7 +205,7 @@ func (r *rbacRepository) RemoveObjectGroupingPolicy(ctx context.Context, domain 
 	return nil
 }
 
-func (r *rbacRepository) NewEnforcerWithGroupsAndUsers(ctx context.Context, groups []domain.RBACRole, users []domain.RBACUser) (*casbin.Enforcer, error) {
+func (r *rbacRepository) NewEnforcerWithGroupsAndUsers(ctx context.Context, groups []domain.RBACRole, users []domain.RBACUser) (casbin.IEnforcer, error) {
 	subjects := make([]string, 0)
 	for _, s := range groups {
 		subjects = append(subjects, s.Role())
@@ -196,14 +213,21 @@ func (r *rbacRepository) NewEnforcerWithGroupsAndUsers(ctx context.Context, grou
 	for _, s := range users {
 		subjects = append(subjects, s.Subject())
 	}
-	e, err := r.initEnforcer(ctx)
-	if err != nil {
-		return nil, liberrors.Errorf("r.initEnforcer. err: %w", err)
-	}
-	if err := e.LoadFilteredPolicy(gormadapter.Filter{V0: subjects}); err != nil {
+	if err := r.enforcer.LoadFilteredPolicy(gormadapter.Filter{V0: subjects}); err != nil {
 		return nil, liberrors.Errorf("e.LoadFilteredPolicy. err: %w", err)
 	}
-	return e, nil
+	return r.enforcer, nil
+	// e, err := r.initEnforcer(ctx)
+	// if err != nil {
+	// 	return nil, liberrors.Errorf("r.initEnforcer. err: %w", err)
+	// }
+	// if err := e.LoadFilteredPolicy(gormadapter.Filter{V0: subjects}); err != nil {
+	// 	return nil, liberrors.Errorf("e.LoadFilteredPolicy. err: %w", err)
+	// }
+	// return e, nil
+}
+func (r *rbacRepository) GetEnforcer() casbin.IEnforcer {
+	return r.enforcer
 }
 
 // func (r *rbacRepository) CanDo(ctx context.Context, operatorID domain.AppUserID, ticketID domain.TicketID, action domain.RBACAction) (bool, error) {

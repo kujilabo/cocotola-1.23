@@ -2,18 +2,12 @@ package main
 
 import (
 	"context"
-	"embed"
-	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/fs"
 	"log/slog"
-	"mime"
 	"net/http"
 	"os"
-	"path"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -40,9 +34,6 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-app/config"
 	web "github.com/kujilabo/cocotola-1.23/cocotola-app/web_dist"
 )
-
-// //go:embed web_dist
-// var web embed.FS
 
 const AppName = "cocotola-app"
 
@@ -117,27 +108,6 @@ func main() {
 	time.Sleep(gracefulShutdownTime2)
 	logger.InfoContext(ctx, "exited")
 	os.Exit(result)
-}
-
-var ErrDir = errors.New("path is dir")
-
-func tryRead(fs embed.FS, prefix, requestedPath string, w http.ResponseWriter) error {
-	f, err := fs.Open(path.Join(prefix, requestedPath))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	// Goのfs.Openはディレクトリを読みこもとうしてもエラーにはならないがここでは邪魔なのでエラー扱いにする
-	stat, _ := f.Stat()
-	if stat.IsDir() {
-		return ErrDir
-	}
-
-	contentType := mime.TypeByExtension(filepath.Ext(requestedPath))
-	w.Header().Set("Content-Type", contentType)
-	_, err = io.Copy(w, f)
-	return err
 }
 
 func initGinWeb(ctx context.Context, router *gin.Engine, viteStaticFS fs.FS, webType string) {

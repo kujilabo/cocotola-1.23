@@ -1,15 +1,11 @@
 package gateway
 
 import (
-	"database/sql"
 	"embed"
 	"log/slog"
 	"os"
 
-	"github.com/golang-migrate/migrate/v4/database"
-	migrate_sqlite3 "github.com/golang-migrate/migrate/v4/database/sqlite"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"gorm.io/gorm"
 
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
@@ -40,18 +36,18 @@ func openSQLiteForTest() (*gorm.DB, error) {
 // 	return db, nil
 // }
 
-func setupSQLite(sqlFS embed.FS, db *gorm.DB) error {
-	driverName := "sqlite3"
-	sourceDriver, err := iofs.New(sqlFS, driverName)
-	if err != nil {
-		return err
-	}
-	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
-		return migrate_sqlite3.WithInstance(sqlDB, &migrate_sqlite3.Config{})
-	})
-}
+// func setupSQLite(sqlFS embed.FS, db *gorm.DB) error {
+// 	driverName := "sqlite3"
+// 	sourceDriver, err := iofs.New(sqlFS, driverName)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+// 		return migrate_sqlite3.WithInstance(sqlDB, &migrate_sqlite3.Config{})
+// 	})
+// }
 
-func InitSQLiteInFile(sqlFS embed.FS) (*gorm.DB, error) {
+func InitSQLiteInFile(fs embed.FS) (*gorm.DB, error) {
 	slog.Default().Error("InitSQLiteInFile")
 	testDBFile = "./test.db"
 	os.Remove(testDBFile)
@@ -59,8 +55,18 @@ func InitSQLiteInFile(sqlFS embed.FS) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := setupSQLite(sqlFS, db); err != nil {
+	sqlDB, err := db.DB()
+	if err != nil {
 		return nil, err
 	}
+
+	if err := sqlDB.Ping(); err != nil {
+		return nil, err
+	}
+
+	if err := libgateway.MigrateMySQLDB(db, fs); err != nil {
+		return nil, err
+	}
+
 	return db, nil
 }

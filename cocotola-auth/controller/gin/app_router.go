@@ -78,7 +78,7 @@ func GetPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxMa
 
 func GetPrivateRouterGroupFuncs(txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
 	// - rbac
-	rbacUsecase := usecase.NewRBAC(txManager, nonTxManager)
+	rbacUsecase := usecase.NewRBACUsecase(txManager, nonTxManager)
 
 	// private router
 	return []libcontroller.InitRouterGroupFunc{

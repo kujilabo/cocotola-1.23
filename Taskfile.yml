@@ -74,6 +74,7 @@ tasks:
           PROJECT: "{{ .ITEM }}"
       - |
         pushd cocotola-web
+        pnpm install
         pnpm run format
         pnpm run check
         popd
@@ -275,3 +276,9 @@ tasks:
   docker-dev-microserivce-down:
     cmds:
       - docker compose -f docker/dev-microservice/compose.yml down
+  docker-test-up:
+    cmds:
+      - docker compose -f docker/test/compose.yml up -d
+  docker-test-down:
+    cmds:
+      - docker compose -f docker/test/compose.yml down

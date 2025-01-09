@@ -1,13 +1,9 @@
 package gateway
 
 import (
-	"database/sql"
 	"embed"
 
-	"github.com/golang-migrate/migrate/v4/database"
-	migrate_postgres "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"gorm.io/gorm"
 
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
@@ -26,19 +22,19 @@ func openPostgresForTest() (*gorm.DB, error) {
 	})
 }
 
-func setupPostgres(sqlFS embed.FS, db *gorm.DB) error {
-	driverName := "postgres"
-	sourceDriver, err := iofs.New(sqlFS, driverName)
-	if err != nil {
-		return err
-	}
+// func setupPostgres(sqlFS embed.FS, db *gorm.DB) error {
+// 	driverName := "postgres"
+// 	sourceDriver, err := iofs.New(sqlFS, driverName)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
-		return migrate_postgres.WithInstance(sqlDB, &migrate_postgres.Config{})
-	})
-}
+// 	return setupDB(db, driverName, sourceDriver, func(sqlDB *sql.DB) (database.Driver, error) {
+// 		return migrate_postgres.WithInstance(sqlDB, &migrate_postgres.Config{})
+// 	})
+// }
 
-func InitPostgres(sqlFS embed.FS, dbHost string, dbPort int) (*gorm.DB, error) {
+func InitPostgres(fs embed.FS, dbHost string, dbPort int) (*gorm.DB, error) {
 	testPostgresHost = dbHost
 	testPostgresPort = dbPort
 	db, err := openPostgresForTest()
@@ -46,7 +42,7 @@ func InitPostgres(sqlFS embed.FS, dbHost string, dbPort int) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := setupPostgres(sqlFS, db); err != nil {
+	if err := libgateway.MigrateMySQLDB(db, fs); err != nil {
 		return nil, err
 	}
 

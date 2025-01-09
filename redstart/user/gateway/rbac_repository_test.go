@@ -7,12 +7,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/casbin/casbin/v2"
-	"github.com/casbin/casbin/v2/model"
-	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
 
 	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
@@ -31,39 +27,50 @@ func (t *test_sdoa) String() string {
 	return fmt.Sprintf("%s,%s,%s,%s,%v", t.subject, t.domain, t.object, t.action, t.want)
 }
 
-func initRBACRepository(t *testing.T, db *gorm.DB, conf string) error {
-	t.Helper()
+// func initRBACRepository(t *testing.T, db *gorm.DB, conf string) error {
+// 	t.Helper()
 
-	a, err := gormadapter.NewAdapterByDB(db)
-	require.NoError(t, err)
+// 	a, err := gormadapter.NewAdapterByDB(db)
+// 	require.NoError(t, err)
 
-	m, err := model.NewModelFromString(conf)
-	require.NoError(t, err)
+// 	m, err := model.NewModelFromString(conf)
+// 	require.NoError(t, err)
 
-	err = a.SavePolicy(m)
-	require.NoError(t, err)
+// 	err = a.SavePolicy(m)
+// 	require.NoError(t, err)
 
-	return nil
-}
+// 	return nil
+// }
 
-func initEnforcer(t *testing.T, db *gorm.DB, conf string) *casbin.Enforcer {
-	t.Helper()
+// func initEnforcer(t *testing.T, db *gorm.DB, conf string) *casbin.Enforcer {
+// 	t.Helper()
 
-	a, err := gormadapter.NewAdapterByDB(db)
-	require.NoError(t, err)
+// 	a, err := gormadapter.NewAdapterByDB(db)
+// 	require.NoError(t, err)
 
-	m, err := model.NewModelFromString(conf)
-	require.NoError(t, err)
+// 	m, err := model.NewModelFromString(conf)
+// 	require.NoError(t, err)
 
-	e, err := casbin.NewEnforcer(m, a)
-	require.NoError(t, err)
+// 	e, err := casbin.NewEnforcer(m, a)
+// 	require.NoError(t, err)
 
-	return e
-}
+// 	return e
+// }
 
 func addPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, act, obj string) {
 	t.Helper()
 	err := rbacRepository.AddPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACAction(act), domain.NewRBACObject(obj), service.RBACAllowEffect)
+	require.NoError(t, err)
+}
+
+//	func addSubjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, obj string) {
+//		t.Helper()
+//		err := rbacRepository.AddSubjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACRole(obj))
+//		require.NoError(t, err)
+//	}
+func addObjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, child, parent string) {
+	t.Helper()
+	err := rbacRepository.AddObjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACObject(child), domain.NewRBACObject(parent))
 	require.NoError(t, err)
 }
 
@@ -73,35 +80,37 @@ func TestA(t *testing.T) {
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
 		t.Helper()
 		defer teardownCasbin(t, ts)
-		rbacRepo := gateway.RBACRepository{
-			DB:   ts.db,
-			Conf: gateway.Conf,
-		}
-
-		err := initRBACRepository(t, ts.db, gateway.Conf)
+		// rbacRepo := gateway.RBACRepository{
+		// 	DB:   ts.db,
+		// 	Conf: gateway.Conf,
+		// }
+		rbacRepo, err := gateway.NewRBACRepository(ctx, ts.db)
 		require.NoError(t, err)
-		addPolicy(t, ctx, &rbacRepo, "domain1", "alice", "read", "domain:1_data:1")
+		e := rbacRepo.GetEnforcer()
+
+		// rbacRepo.Init()
+
+		// err := initRBACRepository(t, ts.db, gateway.Conf)
+		// require.NoError(t, err)
+		addPolicy(t, ctx, rbacRepo, "domain1", "alice", "read", "domain:1,data:1")
+		addPolicy(t, ctx, rbacRepo, "domain1", "bob", "write", "domain:1,data:2")
 		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
+		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
 
-		// const policy = `
-		// p, alice, domain:1_data:1, read, allow, domain1
-		// p, bob, domain:2_data:2, write, allow, domain2
-		// p, bob, domain:1_data:2, write, allow, domain1
-		// p, charlie, domain:1_data*, read, allow, domain1
-		// p, domain:1_data2_admin, domain:1_data:2, read, allow, domain1
-		// p, domain:1_data2_admin, domain:1_data:2, write, allow, domain1
-
-		// g, alice, domain:1_data2_admin, domain1
-		// g2, domain:1_data_child, domain:1_data_parent, domain1
-		// g2, domain:2_data_child, domain:2_data_parent, domain2
-		// `
 		tests := []test_sdoa{
-			{subject: "alice", domain: "domain1", object: "domain:1_data:1", action: "read", want: true},
-			// {subject: "alice", domain: "domain1", object: "domain:1_data:1", action: "write", want: false},
-			// {subject: "alice", domain: "domain1", object: "domain:1_data:2", action: "read", want: true},
-			// {subject: "alice", domain: "domain1", object: "domain:1_data:2", action: "write", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "read", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "write", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "read", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
 
-			// {subject: "bob", domain: "domain1", object: "domain:1_data:1", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "write", want: true},
+			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:1", action: "write", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "read", want: false},
 			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "write", want: true},
@@ -109,9 +118,12 @@ func TestA(t *testing.T) {
 			// {subject: "charlie", domain: "domain1", object: "domain:1_data:2", action: "read", want: true},
 			// {subject: "charlie", domain: "domain1", object: "domain:1_data_parent", action: "read", want: true},
 		}
+		// e := initEnforcer(t, ts.db, gateway.Conf)
+		// e, err := rbacRepo.InitEnforcer(ctx)
+		require.NoError(t, err)
 		for _, tt := range tests {
 			t.Run(tt.String(), func(t *testing.T) {
-				e := initEnforcer(t, ts.db, gateway.Conf)
+				t.Parallel()
 				ok, err := e.Enforce(tt.subject, tt.object, tt.action, tt.domain)
 				require.NoError(t, err)
 				assert.Equal(t, tt.want, ok)
