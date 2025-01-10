@@ -188,15 +188,15 @@ func NewRBACAppUser(organizationID *domain.OrganizationID, appUserID *domain.App
 //		return domain.NewRBACRole(fmt.Sprintf("role_%d", userRoleID.Int()))
 //	}
 func NewRBACUserRole(organizationID *domain.OrganizationID, userGroupID *domain.UserGroupID) domain.RBACRole {
-	return domain.NewRBACRole(fmt.Sprintf("domain:%d_role:%d", organizationID.Int(), userGroupID.Int()))
+	return domain.NewRBACRole(fmt.Sprintf("domain:%d,role:%d", organizationID.Int(), userGroupID.Int()))
 }
 
 func NewRBACUserRoleObject(organizationID *domain.OrganizationID, userRoleID *domain.UserGroupID) domain.RBACObject {
-	return domain.NewRBACObject(fmt.Sprintf("domain:%d_role:%d", organizationID.Int(), userRoleID.Int()))
+	return domain.NewRBACObject(fmt.Sprintf("domain:%d,role:%d", organizationID.Int(), userRoleID.Int()))
 }
 
 func NewRBACAllUserRolesObject(organizationID *domain.OrganizationID) domain.RBACObject {
-	return domain.NewRBACObject(fmt.Sprintf("domain:%d_role:*", organizationID.Int()))
+	return domain.NewRBACObject(fmt.Sprintf("domain:%d,role:*", organizationID.Int()))
 }
 
 var RBACSetAction = domain.NewRBACAction("Set")

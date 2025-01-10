@@ -73,6 +73,11 @@ func addObjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository s
 	err := rbacRepository.AddObjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACObject(child), domain.NewRBACObject(parent))
 	require.NoError(t, err)
 }
+func addSubjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, obj string) {
+	t.Helper()
+	err := rbacRepository.AddSubjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACRole(obj))
+	require.NoError(t, err)
+}
 
 func TestA(t *testing.T) {
 	t.Parallel()
@@ -94,6 +99,69 @@ func TestA(t *testing.T) {
 		// require.NoError(t, err)
 		addPolicy(t, ctx, rbacRepo, "domain1", "alice", "read", "domain:1,data:1")
 		addPolicy(t, ctx, rbacRepo, "domain1", "bob", "write", "domain:1,data:2")
+		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
+		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
+
+		tests := []test_sdoa{
+			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "read", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "write", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "read", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
+
+			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:1", action: "write", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,data:2", action: "write", want: true},
+			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "read", want: false},
+			{subject: "bob", domain: "domain1", object: "domain:1,child:1", action: "write", want: false},
+			// {subject: "bob", domain: "domain1", object: "domain:1_data:1", action: "write", want: false},
+			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "read", want: false},
+			// {subject: "bob", domain: "domain1", object: "domain:1_data:2", action: "write", want: true},
+
+			// {subject: "charlie", domain: "domain1", object: "domain:1_data:2", action: "read", want: true},
+			// {subject: "charlie", domain: "domain1", object: "domain:1_data_parent", action: "read", want: true},
+		}
+		// e := initEnforcer(t, ts.db, gateway.Conf)
+		// e, err := rbacRepo.InitEnforcer(ctx)
+		require.NoError(t, err)
+		for _, tt := range tests {
+			t.Run(tt.String(), func(t *testing.T) {
+				t.Parallel()
+				ok, err := e.Enforce(tt.subject, tt.object, tt.action, tt.domain)
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, ok)
+			})
+		}
+	}
+	testDB(t, fn)
+}
+
+func TestB(t *testing.T) {
+	t.Parallel()
+
+	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
+		defer teardownCasbin(t, ts)
+		// rbacRepo := gateway.RBACRepository{
+		// 	DB:   ts.db,
+		// 	Conf: gateway.Conf,
+		// }
+		rbacRepo, err := gateway.NewRBACRepository(ctx, ts.db)
+		require.NoError(t, err)
+		e := rbacRepo.GetEnforcer()
+
+		// rbacRepo.Init()
+
+		// err := initRBACRepository(t, ts.db, gateway.Conf)
+		// require.NoError(t, err)
+		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "alice", "domain:1,reader")
+		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "bob", "domain:1,writer")
+		// addPolicy(t, ctx, rbacRepo, "domain1", "alice", "read", "domain:1,data:1")
+		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:1")
+		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,writer", "write", "domain:1,data:2")
+		// addPolicy(t, ctx, rbacRepo, "domain1", "bob", "write", "domain:1,data:2")
 		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
 		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
 
