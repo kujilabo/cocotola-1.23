@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/widgets/word_study_main.dart';
-import 'package:mobile/widgets/word_study_top.dart';
-import 'package:mobile/widgets/keyboard.dart';
+// import 'package:mobile/widgets/word_study_top.dart';
+// import 'package:mobile/widgets/keyboard.dart';
 
 class WordStudyTop extends StatefulWidget {
   const WordStudyTop({super.key});
@@ -13,7 +13,6 @@ class WordStudyTop extends StatefulWidget {
 class _WordStudyTopState extends State<WordStudyTop> {
   @override
   Widget build(BuildContext context) {
-    TextEditingController textController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Word Study'),
@@ -35,14 +34,6 @@ class _WordStudyTopState extends State<WordStudyTop> {
                 }));
               },
               child: const Text('Save Expense'),
-            ),
-            TextField(
-              controller: textController,
-              keyboardType: TextInputType.none,
-            ),
-            // const Spacer(),
-            Keyboard(
-              controller: textController,
             ),
           ],
         ),
