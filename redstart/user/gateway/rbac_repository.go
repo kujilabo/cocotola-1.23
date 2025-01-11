@@ -153,13 +153,14 @@ func (r *rbacRepository) RemoveSubjectPolicy(ctx context.Context, domain domain.
 	return nil
 }
 
-func (r *rbacRepository) AddSubjectGroupingPolicy(ctx context.Context, domain domain.RBACDomain, subject domain.RBACUser, object domain.RBACRole) error {
+// func (r *rbacRepository) AddSubjectGroupingPolicy(ctx context.Context, domain domain.RBACDomain, subject domain.RBACUser, object domain.RBACRole) error {
+func (r *rbacRepository) AddSubjectGroupingPolicy(ctx context.Context, domain domain.RBACDomain, child domain.RBACSubject, parent domain.RBACSubject) error {
 	e, err := r.initEnforcer(ctx)
 	if err != nil {
 		return liberrors.Errorf("r.initEnforcer. err: %w", err)
 	}
 
-	if _, err := e.AddNamedGroupingPolicy("g", subject.Subject(), object.Role(), domain.Domain()); err != nil {
+	if _, err := e.AddNamedGroupingPolicy("g", child.Subject(), parent.Subject(), domain.Domain()); err != nil {
 		return liberrors.Errorf("e.AddNamedGroupingPolicy. err: %w", err)
 	}
 

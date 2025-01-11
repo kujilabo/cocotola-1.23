@@ -42,3 +42,15 @@ func (u *RBACUsecase) AddPolicyToUser(ctx context.Context, organizationID *rsuse
 		return nil
 	})
 }
+
+func (u *RBACUsecase) Authorize(ctx context.Context, operator service.OperatorInterface, action rsuserdomain.RBACAction, object rsuserdomain.RBACObject) (bool, error) {
+	return rslibservice.Do1(ctx, u.nonTxManager, func(rf service.RepositoryFactory) (bool, error) {
+		rsrf, err := rf.NewRedstartRepositoryFactory(ctx)
+		if err != nil {
+			return false, err
+		}
+
+		authorizationManager := rsrf.NewAuthorizationManager(ctx)
+		return authorizationManager.Authorize(ctx, operator, action, object)
+	})
+}

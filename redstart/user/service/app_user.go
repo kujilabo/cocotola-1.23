@@ -11,8 +11,8 @@ import (
 type AppUserInterface interface {
 	AppUserID() *domain.AppUserID
 	OrganizationID() *domain.OrganizationID
-	LoginID() string
-	Username() string
+	// LoginID() string
+	// Username() string
 	// GetUserGroups() []domain.UserGroupModel
 }
 

@@ -42,7 +42,7 @@ func InitPostgres(fs embed.FS, dbHost string, dbPort int) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := libgateway.MigrateMySQLDB(db, fs); err != nil {
+	if err := libgateway.MigratePostgresDB(db, fs); err != nil {
 		return nil, err
 	}
 

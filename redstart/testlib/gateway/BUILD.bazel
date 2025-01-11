@@ -11,6 +11,7 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/redstart/testlib/gateway",
     visibility = ["//visibility:public"],
     deps = [
+        "//redstart/lib/errors",
         "//redstart/lib/gateway",
         "@com_github_golang_migrate_migrate_v4//source/file",
         "@io_gorm_gorm//:gorm",

@@ -2,12 +2,12 @@ package gateway
 
 import (
 	"embed"
-	"log/slog"
 	"os"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"gorm.io/gorm"
 
+	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 )
 
@@ -48,24 +48,23 @@ func openSQLiteForTest() (*gorm.DB, error) {
 // }
 
 func InitSQLiteInFile(fs embed.FS) (*gorm.DB, error) {
-	slog.Default().Error("InitSQLiteInFile")
 	testDBFile = "./test.db"
 	os.Remove(testDBFile)
 	db, err := openSQLiteForTest()
 	if err != nil {
-		return nil, err
+		return nil, liberrors.Errorf("openSQLiteForTest. err: %w", err)
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		return nil, err
+		return nil, liberrors.Errorf("db.DB. err: %w", err)
 	}
 
 	if err := sqlDB.Ping(); err != nil {
-		return nil, err
+		return nil, liberrors.Errorf("sqlDB.ping. err: %w", err)
 	}
 
-	if err := libgateway.MigrateMySQLDB(db, fs); err != nil {
-		return nil, err
+	if err := libgateway.MigrateSQLite3DB(db, fs); err != nil {
+		return nil, liberrors.Errorf("migrate. err: %w", err)
 	}
 
 	return db, nil

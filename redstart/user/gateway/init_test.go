@@ -4,8 +4,8 @@ package gateway_test
 
 import (
 	"context"
+	"log"
 	"os"
-	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -66,12 +66,12 @@ func init() {
 	invalidAppUserID = invalidAppUserIDTmp
 
 	ctx := context.Background()
-	mysqlHost := getEnv("MYSQL_HOST", "127.0.0.1")
-	mysqlPortS := getEnv("MYSQL_PORT", "3307")
-	mysqlPort, err := strconv.Atoi(mysqlPortS)
-	if err != nil {
-		panic(err)
-	}
+	// mysqlHost := getEnv("MYSQL_HOST", "127.0.0.1")
+	// mysqlPortS := getEnv("MYSQL_PORT", "3307")
+	// mysqlPort, err := strconv.Atoi(mysqlPortS)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	// postgresHost := getEnv("POSTGRES_HOST", "127.0.0.1")
 	// postgresPortS := getEnv("POSTGRES_PORT", "5433")
@@ -83,20 +83,21 @@ func init() {
 		// func() (*gorm.DB, error) {
 		// 	return testlibgateway.InitMySQLWithDSN(sqls.SQL, connectionString)
 		// },
-		func() (*gorm.DB, error) {
-			return testlibgateway.InitMySQL(sqls.SQL, mysqlHost, mysqlPort)
-		},
+		// func() (*gorm.DB, error) {
+		// 	return testlibgateway.InitMySQL(sqls.SQL, mysqlHost, mysqlPort)
+		// },
 		// func() (*gorm.DB, error) {
 		// 	return testlibgateway.InitPostgres(sqls.SQL, postgresHost, postgresPort)
 		// },
-		// func() (*gorm.DB, error) {
-		// 	return testlibgateway.InitSQLiteInFile(sqls.SQL)
-		// },
+		func() (*gorm.DB, error) {
+			return testlibgateway.InitSQLiteInFile(sqls.SQL)
+		},
 	}
 
 	for _, fn := range fns {
 		db, err := fn()
 		if err != nil {
+			log.Fatalf("failed to initialize db: %+v", err)
 			panic(err)
 		}
 		sqlDB, err := db.DB()
