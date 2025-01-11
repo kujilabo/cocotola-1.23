@@ -27,36 +27,6 @@ func (t *test_sdoa) String() string {
 	return fmt.Sprintf("%s,%s,%s,%s,%v", t.subject, t.domain, t.object, t.action, t.want)
 }
 
-// func initRBACRepository(t *testing.T, db *gorm.DB, conf string) error {
-// 	t.Helper()
-
-// 	a, err := gormadapter.NewAdapterByDB(db)
-// 	require.NoError(t, err)
-
-// 	m, err := model.NewModelFromString(conf)
-// 	require.NoError(t, err)
-
-// 	err = a.SavePolicy(m)
-// 	require.NoError(t, err)
-
-// 	return nil
-// }
-
-// func initEnforcer(t *testing.T, db *gorm.DB, conf string) *casbin.Enforcer {
-// 	t.Helper()
-
-// 	a, err := gormadapter.NewAdapterByDB(db)
-// 	require.NoError(t, err)
-
-// 	m, err := model.NewModelFromString(conf)
-// 	require.NoError(t, err)
-
-// 	e, err := casbin.NewEnforcer(m, a)
-// 	require.NoError(t, err)
-
-// 	return e
-// }
-
 func addPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, act, obj string, allowed bool) {
 	t.Helper()
 	effect := service.RBACAllowEffect
@@ -178,9 +148,50 @@ func TestB(t *testing.T) {
 			// {subject: "charlie", domain: "domain1", object: "domain:1_data:2", action: "read", want: true},
 			// {subject: "charlie", domain: "domain1", object: "domain:1_data_parent", action: "read", want: true},
 		}
-		// e := initEnforcer(t, ts.db, gateway.Conf)
-		// e, err := rbacRepo.InitEnforcer(ctx)
+		for _, tt := range tests {
+			t.Run(tt.String(), func(t *testing.T) {
+				t.Parallel()
+				ok, err := e.Enforce(tt.subject, tt.object, tt.action, tt.domain)
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, ok)
+			})
+		}
+	}
+	testDB(t, fn)
+}
+
+func TestC(t *testing.T) {
+	t.Parallel()
+
+	fn := func(t *testing.T, ctx context.Context, ts testService) {
+		t.Helper()
+		defer teardownCasbin(t, ts)
+		rbacRepo, err := gateway.NewRBACRepository(ctx, ts.db)
 		require.NoError(t, err)
+		e := rbacRepo.GetEnforcer()
+
+		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "alice", "domain:1,reader")
+
+		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:2", true)
+		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:4", false)
+
+		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:2", "domain:1,data:1")
+		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:3", "domain:1,data:2")
+		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:4", "domain:1,data:3")
+		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,data:5", "domain:1,data:4")
+		// 1/
+		// - 2/ <= alice can read
+		//   - 3/ <= alice also can read
+		//     - 4/ <= alice can't read
+		//	     - 5/ <= alice also can't read
+
+		tests := []test_sdoa{
+			{subject: "alice", domain: "domain1", object: "domain:1,data:1", action: "read", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:2", action: "read", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:3", action: "read", want: true},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:4", action: "read", want: false},
+			{subject: "alice", domain: "domain1", object: "domain:1,data:5", action: "read", want: false},
+		}
 		for _, tt := range tests {
 			t.Run(tt.String(), func(t *testing.T) {
 				t.Parallel()
@@ -202,51 +213,3 @@ func teardownCasbin(t *testing.T, ts testService) {
 	// db.Where("true").Delete(&appUserEntity{})
 	// db.Where("true").Delete(&organizationEntity{})
 }
-
-// func Test_rbac_model(t *testing.T) {
-// 	const conf = `
-// 	[request_definition]
-// 	r = sub, obj, act
-
-// 	[policy_definition]
-// 	p = sub, obj, act
-
-// 	[role_definition]
-// 	g = _, _
-
-// 	[policy_effect]
-// 	e = some(where (p.eft == allow))
-
-// 	[matchers]
-// 	m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
-// 	`
-
-// 	const policy = `
-// 	p, alice, data1, read
-// 	p, bob, data2, write
-// 	p, data2_admin, data2, read
-// 	p, data2_admin, data2, write
-
-// 	g, alice, data2_admin
-// 	`
-
-// 	e := NewEnforcer(t, conf, policy)
-// 	tests := []test_soa{
-// 		{subject: "alice", object: "data1", action: "read", want: true},
-// 		{subject: "alice", object: "data1", action: "write", want: false},
-// 		{subject: "alice", object: "data2", action: "read", want: true},
-// 		{subject: "alice", object: "data2", action: "write", want: true},
-
-// 		{subject: "bob", object: "data1", action: "read", want: false},
-// 		{subject: "bob", object: "data1", action: "write", want: false},
-// 		{subject: "bob", object: "data2", action: "read", want: false},
-// 		{subject: "bob", object: "data2", action: "write", want: true},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.String(), func(t *testing.T) {
-// 			ok, err := e.Enforce(tt.subject, tt.object, tt.action)
-// 			require.NoError(t, err)
-// 			assert.Equal(t, tt.want, ok)
-// 		})
-// 	}
-// }

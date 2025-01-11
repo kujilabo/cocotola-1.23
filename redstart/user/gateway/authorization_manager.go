@@ -3,11 +3,13 @@ package gateway
 import (
 	"context"
 
+	"gorm.io/gorm"
+
 	liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+
 	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 	"github.com/kujilabo/cocotola-1.23/redstart/user/service"
-	"gorm.io/gorm"
 )
 
 type authorizationManager struct {
@@ -47,11 +49,12 @@ func (m *authorizationManager) AddUserToGroupBySystemAdmin(ctx context.Context, 
 
 	// app-user belongs to user-role
 	if err := m.rbacRepo.AddSubjectGroupingPolicy(ctx, rbacDomain, rbacAppUser, rbacUserRole); err != nil {
-		return liberrors.Errorf("rbacRepo.AddNamedGroupingPolicy. err: %w", err)
+		return liberrors.Errorf("rbacRepo.AddSubjectGroupingPolicy. err: %w", err)
 	}
 
 	return nil
 }
+
 func (m *authorizationManager) AddUserToGroup(ctx context.Context, operator service.AppUserInterface, appUserID *domain.AppUserID, userGroupID *domain.UserGroupID) error {
 	pairOfUserAndGroupRepo := NewPairOfUserAndGroupRepository(ctx, m.dialect, m.db, m.rf)
 
@@ -104,13 +107,9 @@ func (m *authorizationManager) AddPolicyToGroup(ctx context.Context, operator se
 }
 
 func (m *authorizationManager) AddPolicyToGroupBySystemAdmin(ctx context.Context, operator service.SystemAdminInterface, organizationID *domain.OrganizationID, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error {
-	rbacRepo, err := newRBACRepository(ctx, m.db)
-	if err != nil {
-		return err
-	}
 	rbacDomain := service.NewRBACOrganization(organizationID)
 
-	if err := rbacRepo.AddPolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
+	if err := m.rbacRepo.AddPolicy(ctx, rbacDomain, subject, action, object, effect); err != nil {
 		return liberrors.Errorf("Failed to AddNamedPolicy. priv: read, err: %w", err)
 	}
 
@@ -141,9 +140,6 @@ func (m *authorizationManager) Authorize(ctx context.Context, operator service.A
 	if err != nil {
 		return false, err
 	}
-	if ok {
-		return true, nil
-	}
 
-	return false, nil
+	return ok, nil
 }
