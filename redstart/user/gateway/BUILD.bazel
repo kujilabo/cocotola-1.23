@@ -60,3 +60,28 @@ go_test(
         "@io_gorm_gorm//:gorm",
     ],
 )
+
+go_test(
+    name = "gateway_m_test",
+    size = "medium",
+    srcs = [
+        "export_test.go",
+        "gateway_test.go",
+        "init_test.go",
+        "rbac_repository_test.go",
+    ],
+    embed = [":gateway"],
+    gotags = ["medium"],
+    deps = [
+        "//redstart/lib/domain",
+        "//redstart/lib/gateway",
+        "//redstart/sqls",
+        "//redstart/testlib/gateway",
+        "//redstart/user/domain",
+        "//redstart/user/service",
+        "@com_github_casbin_casbin_v2//:casbin",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@io_gorm_gorm//:gorm",
+    ],
+)

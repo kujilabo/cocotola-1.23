@@ -54,7 +54,7 @@ func MigrateSQLite3DB(db *gorm.DB, sqlFS fs.FS) error {
 	driverName := "sqlite3"
 	sourceDriver, err := iofs.New(sqlFS, driverName)
 	if err != nil {
-		return err
+		return liberrors.Errorf("iofs.New err: %w", err)
 	}
 
 	var _ = sourceDriver

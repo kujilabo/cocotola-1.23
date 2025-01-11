@@ -9,13 +9,13 @@ import (
 func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 	list := make(map[libgateway.DialectRDBMS]*gorm.DB)
 
-	// mysql
-	m, err := openMySQLForTest()
-	if err != nil {
-		panic(err)
-	}
-	mysql := libgateway.DialectMySQL{}
-	list[&mysql] = m
+	// // mysql
+	// m, err := openMySQLForTest()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// mysql := libgateway.DialectMySQL{}
+	// list[&mysql] = m
 
 	// // postgres
 	// p, err := openPostgresForTest()
@@ -25,13 +25,13 @@ func ListDB() map[libgateway.DialectRDBMS]*gorm.DB {
 	// postgres := libgateway.DialectPostgres{}
 	// list[&postgres] = p
 
-	// // sqlite3
-	// s, err := openSQLiteForTest()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// sqlite3 := libgateway.DialectPostgres{}
-	// list[&sqlite3] = s
+	// sqlite3
+	s, err := openSQLiteForTest()
+	if err != nil {
+		panic(err)
+	}
+	sqlite3 := libgateway.DialectPostgres{}
+	list[&sqlite3] = s
 
 	return list
 }

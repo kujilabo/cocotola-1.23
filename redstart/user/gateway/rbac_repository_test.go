@@ -57,22 +57,23 @@ func (t *test_sdoa) String() string {
 // 	return e
 // }
 
-func addPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, act, obj string) {
+func addPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, act, obj string, allowed bool) {
 	t.Helper()
-	err := rbacRepository.AddPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACAction(act), domain.NewRBACObject(obj), service.RBACAllowEffect)
+	effect := service.RBACAllowEffect
+	if !allowed {
+		effect = service.RBACDenyEffect
+	}
+
+	err := rbacRepository.AddPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACAction(act), domain.NewRBACObject(obj), effect)
 	require.NoError(t, err)
 }
 
-//	func addSubjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, obj string) {
-//		t.Helper()
-//		err := rbacRepository.AddSubjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACRole(obj))
-//		require.NoError(t, err)
-//	}
 func addObjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, child, parent string) {
 	t.Helper()
 	err := rbacRepository.AddObjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACObject(child), domain.NewRBACObject(parent))
 	require.NoError(t, err)
 }
+
 func addSubjectGroupingPolicy(t *testing.T, ctx context.Context, rbacRepository service.RBACRepository, dom, sub, obj string) {
 	t.Helper()
 	err := rbacRepository.AddSubjectGroupingPolicy(ctx, domain.NewRBACDomain(dom), domain.NewRBACUser(sub), domain.NewRBACRole(obj))
@@ -97,8 +98,8 @@ func TestA(t *testing.T) {
 
 		// err := initRBACRepository(t, ts.db, gateway.Conf)
 		// require.NoError(t, err)
-		addPolicy(t, ctx, rbacRepo, "domain1", "alice", "read", "domain:1,data:1")
-		addPolicy(t, ctx, rbacRepo, "domain1", "bob", "write", "domain:1,data:2")
+		addPolicy(t, ctx, rbacRepo, "domain1", "alice", "read", "domain:1,data:1", true)
+		addPolicy(t, ctx, rbacRepo, "domain1", "bob", "write", "domain:1,data:2", true)
 		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
 		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
 
@@ -144,25 +145,16 @@ func TestB(t *testing.T) {
 	fn := func(t *testing.T, ctx context.Context, ts testService) {
 		t.Helper()
 		defer teardownCasbin(t, ts)
-		// rbacRepo := gateway.RBACRepository{
-		// 	DB:   ts.db,
-		// 	Conf: gateway.Conf,
-		// }
 		rbacRepo, err := gateway.NewRBACRepository(ctx, ts.db)
 		require.NoError(t, err)
 		e := rbacRepo.GetEnforcer()
 
-		// rbacRepo.Init()
-
-		// err := initRBACRepository(t, ts.db, gateway.Conf)
-		// require.NoError(t, err)
 		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "alice", "domain:1,reader")
 		addSubjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "bob", "domain:1,writer")
-		// addPolicy(t, ctx, rbacRepo, "domain1", "alice", "read", "domain:1,data:1")
-		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:1")
-		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,writer", "write", "domain:1,data:2")
-		// addPolicy(t, ctx, rbacRepo, "domain1", "bob", "write", "domain:1,data:2")
-		// rbacRepo.AddPolicy(domain.NewRBACDomain("domain1"), domain.NewRBACUser("alice"), domain.NewRBACAction("write"), domain.NewRBACObject("data1"), service.RBACAllowEffect)
+
+		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,reader", "read", "domain:1,data:1", true)
+		addPolicy(t, ctx, rbacRepo, "domain1", "domain:1,writer", "write", "domain:1,data:2", true)
+
 		addObjectGroupingPolicy(t, ctx, rbacRepo, "domain1", "domain:1,child:1", "domain:1,data:1")
 
 		tests := []test_sdoa{
