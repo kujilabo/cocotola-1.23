@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class Keyboard extends StatefulWidget {
   final List<TextEditingController> controllers;
+  final void Function(String) inputText;
 
-  const Keyboard({super.key, required this.controllers});
+  const Keyboard(
+      {super.key, required this.controllers, required this.inputText});
 
   @override
   State<Keyboard> createState() => KeyboardState();
@@ -87,7 +89,7 @@ class KeyboardState extends State<Keyboard> {
   Widget _buildButton(String text, {VoidCallback? onPressed}) {
     return Expanded(
       child: TextButton(
-        onPressed: onPressed ?? () => _input(text),
+        onPressed: onPressed ?? () => widget.inputText(text),
         // style: TextButton.styleFrom(
         //   foregroundColor: Colors.white,
         //   backgroundColor: Colors.blue,

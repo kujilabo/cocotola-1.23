@@ -11,15 +11,29 @@ class WordStudyMain extends StatefulWidget {
 }
 
 class _WordStudyMainState extends State<WordStudyMain> {
+  late TextEditingController currentController;
   late TextEditingController controller0;
   late TextEditingController controller1;
   TextEditingController c = TextEditingController();
   void _inputText(String text) {
     print('input text');
+
+    var value = currentController.text + text;
+    print(value);
+    // and assigns to value
+    // 6) set our controller text to the gotten value
+    // setState(() {
+    currentController.text = value;
+    //   // 7) since this is the first input
+    //   // set position of cursor to 1, so the cursor is placed at the end
+    //   currentController.selection =
+    //       TextSelection.fromPosition(const TextPosition(offset: 1));
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('build main');
     final keyboardKey = GlobalObjectKey<KeyboardState>(context);
     controller0 = TextEditingController();
     var focusNode0 = FocusNode();
@@ -44,6 +58,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
         print('focusNode1 doesnt have focus');
       }
     });
+    currentController = controller0;
     var card = WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
@@ -81,7 +96,11 @@ class _WordStudyMainState extends State<WordStudyMain> {
               ),
             ),
             SizedBox(height: 40),
-            Keyboard(key: keyboardKey, controllers: [controller0, controller1]),
+            Keyboard(
+              key: keyboardKey,
+              controllers: [controller0, controller1],
+              inputText: _inputText,
+            ),
 
             TextField(
                 // controller: c,

@@ -39,14 +39,15 @@ class EnglishBlankTextWidget extends StatefulWidget {
   final String englishText;
   final TextEditingController? controller;
   final FocusNode? focusNode;
-  final void Function() onCompleted;
+  // final void Function() onCompleted;
 
-  const EnglishBlankTextWidget(
-      {super.key,
-      required this.englishText,
-      this.controller,
-      this.focusNode,
-      required this.onCompleted});
+  const EnglishBlankTextWidget({
+    super.key,
+    required this.englishText,
+    this.controller,
+    this.focusNode,
+    // required this.onCompleted,
+  });
 
   @override
   State<EnglishBlankTextWidget> createState() => _EnglishBlankTextWidgetState();
