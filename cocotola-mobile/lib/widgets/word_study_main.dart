@@ -11,24 +11,45 @@ class WordStudyMain extends StatefulWidget {
 }
 
 class _WordStudyMainState extends State<WordStudyMain> {
-  late TextEditingController currentController;
+  late TextEditingController currCtrl;
+  late TextSelection _selection;
   late TextEditingController controller0;
   late TextEditingController controller1;
-  TextEditingController c = TextEditingController();
-  void _inputText(String text) {
-    print('input text');
+  // TextEditingController c = TextEditingController();
 
-    var value = currentController.text + text;
-    print(value);
-    // and assigns to value
-    // 6) set our controller text to the gotten value
-    // setState(() {
-    currentController.text = value;
-    //   // 7) since this is the first input
-    //   // set position of cursor to 1, so the cursor is placed at the end
-    //   currentController.selection =
-    //       TextSelection.fromPosition(const TextPosition(offset: 1));
-    // });
+  void _inputText(String text) {
+    final value = currCtrl.text;
+    if (currCtrl.text.isEmpty) {
+      currCtrl.text = value + text;
+      currCtrl.selection =
+          TextSelection.fromPosition(const TextPosition(offset: 1));
+      return;
+    }
+
+    final position = _selection.base.offset;
+    final suffix = value.substring(position, value.length);
+    currCtrl.text = value.substring(0, position) + text + suffix;
+    currCtrl.selection =
+        TextSelection.fromPosition(TextPosition(offset: position + 1));
+  }
+
+  void _backspace() {
+    final value = currCtrl.text;
+    final position = _selection.base.offset;
+
+    if (value.isEmpty && position == 0) {
+      return;
+    }
+
+    var suffix = value.substring(position, value.length);
+    currCtrl.text = value.substring(0, position - 1) + suffix;
+    currCtrl.selection =
+        TextSelection.fromPosition(TextPosition(offset: position - 1));
+  }
+
+  void _onSelectionChanged() {
+    _selection = currCtrl.selection;
+    print('Cursor position: ${_selection.base.offset}');
   }
 
   @override
@@ -40,8 +61,11 @@ class _WordStudyMainState extends State<WordStudyMain> {
     focusNode0.addListener(() {
       if (focusNode0.hasFocus) {
         print('focusNode0 has focus');
-        final state = keyboardKey.currentState;
-        state!.setController(controller0);
+        // final state = keyboardKey.currentState;
+        // state!.setController(controller0);
+        currCtrl.removeListener(_onSelectionChanged);
+        currCtrl = controller0;
+        currCtrl.addListener(_onSelectionChanged);
       } else {
         print('focusNode0 doesnt have focus');
       }
@@ -52,13 +76,17 @@ class _WordStudyMainState extends State<WordStudyMain> {
     focusNode1.addListener(() {
       if (focusNode1.hasFocus) {
         print('focusNode1 has focus');
-        final state = keyboardKey.currentState;
-        state!.setController(controller1);
+        // final state = keyboardKey.currentState;
+        // state!.setController(controller1);
+        currCtrl.removeListener(_onSelectionChanged);
+        currCtrl = controller1;
+        currCtrl.addListener(_onSelectionChanged);
       } else {
         print('focusNode1 doesnt have focus');
       }
     });
-    currentController = controller0;
+    currCtrl = controller0;
+    _selection = currCtrl.selection;
     var card = WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
@@ -100,6 +128,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
               key: keyboardKey,
               controllers: [controller0, controller1],
               inputText: _inputText,
+              onPressBackspace: _backspace,
             ),
 
             TextField(

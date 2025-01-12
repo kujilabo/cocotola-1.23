@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class Keyboard extends StatefulWidget {
   final List<TextEditingController> controllers;
   final void Function(String) inputText;
+  final void Function() onPressBackspace;
 
   const Keyboard(
-      {super.key, required this.controllers, required this.inputText});
+      {super.key,
+      required this.controllers,
+      required this.inputText,
+      required this.onPressBackspace});
 
   @override
   State<Keyboard> createState() => KeyboardState();
@@ -78,7 +82,7 @@ class KeyboardState extends State<Keyboard> {
             children: [
               _buildButton('1'),
               _buildButton('1'),
-              _buildButton('⌫', onPressed: _backspace),
+              _buildButton('⌫', onPressed: widget.onPressBackspace),
             ],
           ),
         ],
