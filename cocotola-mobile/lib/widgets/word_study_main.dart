@@ -15,6 +15,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
   @override
   Widget build(BuildContext context) {
     var controller0 = TextEditingController();
+    var focusNode0 = FocusNode();
     var card = WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
@@ -23,7 +24,8 @@ class _WordStudyMainState extends State<WordStudyMain> {
         EnglishText('meeting'),
         EnglishText('in'),
         EnglishText('person'),
-        // EnglishText('over', isProblem: true, controller: controller0),
+        EnglishText('over',
+            isProblem: true, controller: controller0, focusNode: focusNode0),
         EnglishText('talking'),
         EnglishText('on'),
         EnglishText('the'),
@@ -48,7 +50,10 @@ class _WordStudyMainState extends State<WordStudyMain> {
                 child: card,
               ),
             ),
-            // Keyboard(controllers: [controller0]),
+            SizedBox(height: 40),
+            Keyboard(controllers: [controller0]),
+
+            TextField(),
             // Keyboard(controllers: []),
           ],
         ),

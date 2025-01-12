@@ -16,18 +16,18 @@ class _KeyboardState extends State<Keyboard> {
   @override
   void initState() {
     super.initState();
-    for (var controller in widget.controllers) {
-      controller.addListener(_onSelectionChanged);
-    }
+    // for (var controller in widget.controllers) {
+    //   controller.addListener(_onSelectionChanged);
+    // }
     // _controller = widget.controller.addListener(_onSelectionChanged);
     // _selection = _controller.selection;
   }
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
-      controller.removeListener(_onSelectionChanged);
-    }
+    // for (var controller in _controllers) {
+    //   controller.removeListener(_onSelectionChanged);
+    // }
 
     super.dispose();
   }
@@ -44,32 +44,35 @@ class _KeyboardState extends State<Keyboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 5,
-      children: [
-        Row(
-          spacing: 5,
-          children: [
-            _buildButton('1'),
-            _buildButton('2'),
-            _buildButton('3'),
-          ],
-        ),
-        Row(
-          children: [
-            _buildButton('1'),
-            _buildButton('1'),
-            _buildButton('1'),
-          ],
-        ),
-        Row(
-          children: [
-            _buildButton('1'),
-            _buildButton('1'),
-            _buildButton('⌫', onPressed: _backspace),
-          ],
-        ),
-      ],
+    return Container(
+      color: Colors.grey,
+      child: Column(
+        spacing: 5,
+        children: [
+          Row(
+            spacing: 5,
+            children: [
+              _buildButton('1'),
+              _buildButton('2'),
+              _buildButton('3'),
+            ],
+          ),
+          Row(
+            children: [
+              _buildButton('1'),
+              _buildButton('1'),
+              _buildButton('1'),
+            ],
+          ),
+          Row(
+            children: [
+              _buildButton('1'),
+              _buildButton('1'),
+              _buildButton('⌫', onPressed: _backspace),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

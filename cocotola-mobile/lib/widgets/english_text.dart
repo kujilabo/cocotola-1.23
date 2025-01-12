@@ -4,8 +4,10 @@ class EnglishText {
   final String text;
   final bool isProblem;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
 
-  EnglishText(this.text, {this.isProblem = false, this.controller});
+  EnglishText(this.text,
+      {this.isProblem = false, this.controller, this.focusNode});
 }
 
 class EnglishBlankText {
@@ -36,9 +38,10 @@ class EnglishPlainTextWidget extends StatelessWidget {
 class EnglishBlankTextWidget extends StatefulWidget {
   final String englishText;
   final TextEditingController? controller;
+  final FocusNode? focustNode;
 
   const EnglishBlankTextWidget(
-      {super.key, required this.englishText, this.controller});
+      {super.key, required this.englishText, this.controller, this.focustNode});
 
   @override
   State<EnglishBlankTextWidget> createState() => _EnglishBlankTextWidgetState();
@@ -75,11 +78,12 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
     return Container(
       width: 100,
       child: TextField(
-        controller: widget.controller,
-        decoration: InputDecoration(
-          hintText: widget.englishText,
-        ),
-      ),
+          // focusNode: widget.focustNode,
+          // controller: widget.controller,
+          // decoration: InputDecoration(
+          //   hintText: widget.englishText,
+          // ),
+          ),
     );
   }
 }

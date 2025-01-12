@@ -26,12 +26,14 @@ class _WordStudyProblemState extends State<WordStudyProblem> {
     return Card(
       child: Container(
         alignment: Alignment.topLeft,
-        height: 100.0,
+        // height: 100.0,
         width: double.infinity,
         // color: Colors.red,
         padding: EdgeInsets.all(15),
         child: Column(
           children: [
+            Wrap(children: englishTexts),
+            SizedBox(height: 10),
             Wrap(children: englishTexts),
 
             //     Container(
