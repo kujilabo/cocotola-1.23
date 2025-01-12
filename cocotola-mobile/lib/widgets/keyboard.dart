@@ -10,17 +10,19 @@ class Keyboard extends StatefulWidget {
 }
 
 class _KeyboardState extends State<Keyboard> {
-  late List<TextEditingController> _controllers;
+  // late List<TextEditingController> _controllers;
   late TextSelection _selection;
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    // for (var controller in widget.controllers) {
-    //   controller.addListener(_onSelectionChanged);
-    // }
+    for (var controller in widget.controllers) {
+      controller.addListener(_onSelectionChanged);
+    }
+    _controller = widget.controllers[0];
     // _controller = widget.controller.addListener(_onSelectionChanged);
-    // _selection = _controller.selection;
+    _selection = _controller.selection;
   }
 
   @override
@@ -91,10 +93,10 @@ class _KeyboardState extends State<Keyboard> {
 
 // 3
   void _input(String text) {
+    print('input');
+    // if (value.isNotEmpty) {
     // var position = _selection.base.offset; // gets position of cursor
     // var value = _controller.text; // text in our textfield
-
-    // if (value.isNotEmpty) {
     //   // 1) suffix: the string
     //   var suffix = value.substring(position, value.length);
     //   // from the position of the cursor to the end of the text in the controller
@@ -111,15 +113,18 @@ class _KeyboardState extends State<Keyboard> {
     //   _controller.selection =
     //       TextSelection.fromPosition(TextPosition(offset: position + 1));
     // } else {
-    //   // 5) appends controller text and new input
-    //   value = _controller.text + text;
-    //   // and assigns to value
-    //   // 6) set our controller text to the gotten value
-    //   _controller.text = value;
-    //   // 7) since this is the first input
-    //   // set position of cursor to 1, so the cursor is placed at the end
-    //   _controller.selection =
-    //       TextSelection.fromPosition(const TextPosition(offset: 1));
+    // 5) appends controller text and new input
+    var value = _controller.text + text;
+    print(value);
+    // and assigns to value
+    // 6) set our controller text to the gotten value
+    setState(() {
+      _controller.text = value;
+      // 7) since this is the first input
+      // set position of cursor to 1, so the cursor is placed at the end
+      _controller.selection =
+          TextSelection.fromPosition(const TextPosition(offset: 1));
+    });
     // }
   }
 

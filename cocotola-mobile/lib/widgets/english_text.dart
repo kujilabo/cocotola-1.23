@@ -78,12 +78,12 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
     return Container(
       width: 100,
       child: TextField(
-          // focusNode: widget.focustNode,
-          // controller: widget.controller,
-          // decoration: InputDecoration(
-          //   hintText: widget.englishText,
-          // ),
-          ),
+        // focusNode: widget.focustNode,
+        controller: widget.controller,
+        // decoration: InputDecoration(
+        //   hintText: widget.englishText,
+        // ),
+      ),
     );
   }
 }

@@ -19,7 +19,8 @@ class _WordStudyProblemState extends State<WordStudyProblem> {
   Widget build(BuildContext context) {
     englishTexts = widget.englishTexts.map((englishText) {
       if (englishText.isProblem) {
-        return EnglishBlankTextWidget(englishText: englishText.text);
+        return EnglishBlankTextWidget(
+            englishText: englishText.text, controller: englishText.controller);
       }
       return EnglishPlainTextWidget(englishText: englishText.text);
     }).toList();
