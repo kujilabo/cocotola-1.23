@@ -13,91 +13,73 @@ class WordStudyMain extends StatefulWidget {
 class _WordStudyMainState extends State<WordStudyMain> {
   late TextEditingController currCtrl;
   late TextSelection _selection;
-  late TextEditingController controller0;
-  late TextEditingController controller1;
-  // TextEditingController c = TextEditingController();
+  // late TextEditingController controller0;
+  // late TextEditingController controller1;
+  // late FocusNode focusNode0;
+  // late FocusNode focusNode1;
+  late List<TextEditingController> ctrls;
+  late List<FocusNode> focusNodes;
 
-  void _inputText(String text) {
-    final value = currCtrl.text;
-    if (currCtrl.text.isEmpty) {
-      currCtrl.text = value + text;
-      currCtrl.selection =
-          TextSelection.fromPosition(const TextPosition(offset: 1));
-      return;
-    }
-
-    final position = _selection.base.offset;
-    print('position: $position');
-    final suffix = value.substring(position, value.length);
-    currCtrl.text = value.substring(0, position) + text + suffix;
-    currCtrl.selection =
-        TextSelection.fromPosition(TextPosition(offset: position + 1));
-  }
-
-  void _backspace() {
-    final value = currCtrl.text;
-    final position = _selection.base.offset;
-
-    if (value.isEmpty || position == 0) {
-      return;
-    }
-
-    var suffix = value.substring(position, value.length);
-    currCtrl.text = value.substring(0, position - 1) + suffix;
-    currCtrl.selection =
-        TextSelection.fromPosition(TextPosition(offset: position - 1));
-  }
-
-  void _onSelectionChanged() {
-    _selection = currCtrl.selection;
-    print('Cursor position: ${_selection.base.offset}');
+  @override
+  void dispose() {
+    // _titleController.dispose();
+    // _amountController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('build main');
-    final keyboardKey = GlobalObjectKey<KeyboardState>(context);
-    controller0 = TextEditingController();
-    var focusNode0 = FocusNode();
-    focusNode0.addListener(() {
-      if (focusNode0.hasFocus) {
-        print('focusNode0 has focus');
-        // final state = keyboardKey.currentState;
-        // state!.setController(controller0);
-        currCtrl.removeListener(_onSelectionChanged);
-        currCtrl = controller0;
-        currCtrl.addListener(_onSelectionChanged);
-      } else {
-        print('focusNode0 doesnt have focus');
-      }
-    });
+    ctrls = [];
+    focusNodes = [];
+    for (var i = 0; i < 10; i++) {
+      ctrls.add(TextEditingController());
+      focusNodes.add(FocusNode());
+      focusNodes[i].addListener(() {
+        if (focusNodes[i].hasFocus) {
+          print('focusNode0 has focus');
+          currCtrl.removeListener(_onSelectionChanged);
+          currCtrl = ctrls[i];
+          currCtrl.addListener(_onSelectionChanged);
+        } else {
+          print('focusNode0 doesnt have focus');
+        }
+      });
+    }
 
-    controller1 = TextEditingController();
-    var focusNode1 = FocusNode();
-    focusNode1.addListener(() {
-      if (focusNode1.hasFocus) {
-        print('focusNode1 has focus');
-        // final state = keyboardKey.currentState;
-        // state!.setController(controller1);
-        currCtrl.removeListener(_onSelectionChanged);
-        currCtrl = controller1;
-        currCtrl.addListener(_onSelectionChanged);
-      } else {
-        print('focusNode1 doesnt have focus');
-      }
-    });
-    currCtrl = controller0;
+    // print('build main');
+    // controller0 = TextEditingController();
+    // focusNode0 = FocusNode();
+    // focusNode0.addListener(() {
+    //   if (focusNode0.hasFocus) {
+    //     print('focusNode0 has focus');
+    //     currCtrl.removeListener(_onSelectionChanged);
+    //     currCtrl = controller0;
+    //     currCtrl.addListener(_onSelectionChanged);
+    //   } else {
+    //     print('focusNode0 doesnt have focus');
+    //   }
+    // });
+
+    // controller1 = TextEditingController();
+    // focusNode1 = FocusNode();
+    // focusNode1.addListener(() {
+    //   if (focusNode1.hasFocus) {
+    //     print('focusNode1 has focus');
+    //     currCtrl.removeListener(_onSelectionChanged);
+    //     currCtrl = controller1;
+    //     currCtrl.addListener(_onSelectionChanged);
+    //   } else {
+    //     print('focusNode1 doesnt have focus');
+    //   }
+    // });
+    // currCtrl = controller0;
+    currCtrl = ctrls[0];
 
     // currCtrl.selection =
     //     TextSelection.fromPosition(const TextPosition(offset: 0));
 
     _selection = currCtrl.selection;
 
-    var englishText0 = EnglishText('123',
-        isProblem: true,
-        controller: controller0,
-        focusNode: focusNode0,
-        first: true);
     var card = WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
@@ -106,24 +88,30 @@ class _WordStudyMainState extends State<WordStudyMain> {
         EnglishText('meeting'),
         EnglishText('in'),
         EnglishText('person'),
-        englishText0,
+        EnglishText('over',
+            isProblem: true,
+            controller: ctrls[0],
+            focusNode: focusNodes[0],
+            first: true),
         EnglishText('talking'),
         EnglishText('on'),
         EnglishText('the',
-            isProblem: true, controller: controller1, focusNode: focusNode1),
+            isProblem: true, controller: ctrls[1], focusNode: focusNodes[1]),
         EnglishText('phone.'),
       ],
       japaneseTexts: ['JAPANESE TITLE 1'],
       onCompletedWord: (int index) {
         print('completed word $index');
-        if (index == 0) {
-          print('nextFocus');
-          // focusNode0.nextFocus();
-          focusNode1.requestFocus();
-        }
+        var nextIndex = (index + 1) % 10;
+        focusNodes[nextIndex].requestFocus();
+
+        // if (index == 0) {
+        //   print('nextFocus');
+        //   // focusNode0.nextFocus();
+        //   focusNode1.requestFocus();
+        // }
       },
     );
-    // focusNode0.requestFocus();
 
     return Scaffold(
       appBar: AppBar(
@@ -143,16 +131,10 @@ class _WordStudyMainState extends State<WordStudyMain> {
             ),
             SizedBox(height: 40),
             Keyboard(
-              key: keyboardKey,
-              controllers: [controller0, controller1],
-              inputText: _inputText,
-              onPressBackspace: _backspace,
+              // key: keyboardKey,
+              onPresskey: _onPressKey,
+              onPressBackspace: _onPressBackspace,
             ),
-
-            TextField(
-                // controller: c,
-                ),
-            // Keyboard(controllers: []),
             ElevatedButton(
                 onPressed: () {
                   print('pressed');
@@ -162,5 +144,41 @@ class _WordStudyMainState extends State<WordStudyMain> {
         ),
       ),
     );
+  }
+
+  void _onPressKey(String text) {
+    final value = currCtrl.text;
+    if (currCtrl.text.isEmpty) {
+      currCtrl.text = value + text;
+      currCtrl.selection =
+          TextSelection.fromPosition(const TextPosition(offset: 1));
+      return;
+    }
+
+    final position = _selection.base.offset;
+    print('position: $position');
+    final suffix = value.substring(position, value.length);
+    currCtrl.text = value.substring(0, position) + text + suffix;
+    currCtrl.selection =
+        TextSelection.fromPosition(TextPosition(offset: position + 1));
+  }
+
+  void _onPressBackspace() {
+    final value = currCtrl.text;
+    final position = _selection.base.offset;
+
+    if (value.isEmpty || position == 0) {
+      return;
+    }
+
+    var suffix = value.substring(position, value.length);
+    currCtrl.text = value.substring(0, position - 1) + suffix;
+    currCtrl.selection =
+        TextSelection.fromPosition(TextPosition(offset: position - 1));
+  }
+
+  void _onSelectionChanged() {
+    _selection = currCtrl.selection;
+    print('Cursor position: ${_selection.base.offset}');
   }
 }

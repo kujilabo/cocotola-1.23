@@ -64,8 +64,6 @@ class EnglishBlankTextWidget extends StatefulWidget {
 }
 
 class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
-  // late TextEditingController _controller;
-  // late TextSelection _selection;
   var readOnly = false;
   var color = Colors.black;
 
