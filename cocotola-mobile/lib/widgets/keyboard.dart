@@ -5,11 +5,12 @@ class Keyboard extends StatefulWidget {
   final void Function(String) inputText;
   final void Function() onPressBackspace;
 
-  const Keyboard(
-      {super.key,
-      required this.controllers,
-      required this.inputText,
-      required this.onPressBackspace});
+  const Keyboard({
+    super.key,
+    required this.controllers,
+    required this.inputText,
+    required this.onPressBackspace,
+  });
 
   @override
   State<Keyboard> createState() => KeyboardState();

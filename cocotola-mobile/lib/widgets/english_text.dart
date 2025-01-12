@@ -5,9 +5,15 @@ class EnglishText {
   final bool isProblem;
   final TextEditingController? controller;
   final FocusNode? focusNode;
+  final bool first;
 
-  EnglishText(this.text,
-      {this.isProblem = false, this.controller, this.focusNode});
+  EnglishText(
+    this.text, {
+    this.isProblem = false,
+    this.controller,
+    this.focusNode,
+    this.first = false,
+  });
 }
 
 class EnglishBlankText {
@@ -36,16 +42,20 @@ class EnglishPlainTextWidget extends StatelessWidget {
 }
 
 class EnglishBlankTextWidget extends StatefulWidget {
+  final int index;
   final String englishText;
   final TextEditingController? controller;
   final FocusNode? focusNode;
-  final void Function() onCompleted;
+  final bool first;
+  final void Function(int) onCompleted;
 
   const EnglishBlankTextWidget({
     super.key,
+    required this.index,
     required this.englishText,
     this.controller,
     this.focusNode,
+    this.first = false,
     required this.onCompleted,
   });
 
@@ -56,6 +66,8 @@ class EnglishBlankTextWidget extends StatefulWidget {
 class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
   // late TextEditingController _controller;
   // late TextSelection _selection;
+  var readOnly = false;
+  var color = Colors.black;
 
   @override
   void initState() {
@@ -80,18 +92,37 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print('readonly ' + readOnly.toString());
     if (widget.controller != null) {
       widget.controller!.addListener(() {
+        if (widget.controller!.text == widget.englishText) {
+          widget.onCompleted(widget.index);
+          setState(() {
+            readOnly = true;
+            color = Colors.red;
+          });
+        }
         print('zzzzzzzzzzzzzzzzzzz');
         print(widget.controller!.text);
       });
     }
-    print('xxxxxxxxxxxxxxxxxxxxxxx');
+    print('build EnglishText');
     return Container(
       width: 100,
       child: TextField(
+        autofocus: widget.first,
         focusNode: widget.focusNode,
         controller: widget.controller,
+        readOnly: readOnly,
+        style: TextStyle(color: color),
+        // onChanged: (text) {
+        //   if (text == widget.englishText) {
+        //     print('yyyyyyyyyyyyyyyyyyy');
+        //     setState(() {
+        //       readOnly = true;
+        //     });
+        //   }
+        // },
         // decoration: InputDecoration(
         //   hintText: widget.englishText,
         // ),

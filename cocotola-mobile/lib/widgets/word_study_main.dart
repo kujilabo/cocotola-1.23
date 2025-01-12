@@ -27,6 +27,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
     }
 
     final position = _selection.base.offset;
+    print('position: $position');
     final suffix = value.substring(position, value.length);
     currCtrl.text = value.substring(0, position) + text + suffix;
     currCtrl.selection =
@@ -37,7 +38,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
     final value = currCtrl.text;
     final position = _selection.base.offset;
 
-    if (value.isEmpty && position == 0) {
+    if (value.isEmpty || position == 0) {
       return;
     }
 
@@ -86,7 +87,17 @@ class _WordStudyMainState extends State<WordStudyMain> {
       }
     });
     currCtrl = controller0;
+
+    // currCtrl.selection =
+    //     TextSelection.fromPosition(const TextPosition(offset: 0));
+
     _selection = currCtrl.selection;
+
+    var englishText0 = EnglishText('123',
+        isProblem: true,
+        controller: controller0,
+        focusNode: focusNode0,
+        first: true);
     var card = WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
@@ -95,8 +106,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
         EnglishText('meeting'),
         EnglishText('in'),
         EnglishText('person'),
-        EnglishText('123',
-            isProblem: true, controller: controller0, focusNode: focusNode0),
+        englishText0,
         EnglishText('talking'),
         EnglishText('on'),
         EnglishText('the',
@@ -104,8 +114,13 @@ class _WordStudyMainState extends State<WordStudyMain> {
         EnglishText('phone.'),
       ],
       japaneseTexts: ['JAPANESE TITLE 1'],
-      onCompleteWord: () {
-        print('completed word');
+      onCompletedWord: (int index) {
+        print('completed word $index');
+        if (index == 0) {
+          print('nextFocus');
+          // focusNode0.nextFocus();
+          focusNode1.requestFocus();
+        }
       },
     );
     // focusNode0.requestFocus();
