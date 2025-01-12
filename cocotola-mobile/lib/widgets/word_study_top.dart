@@ -20,6 +20,9 @@ class _WordStudyTopState extends State<WordStudyTop> {
       body: SafeArea(
         child: Column(
           children: [
+            TextField(
+              controller: TextEditingController(),
+            ),
             const Center(
               child: Text(
                 'Word StudyTOP',

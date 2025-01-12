@@ -12,10 +12,38 @@ class WordStudyMain extends StatefulWidget {
 
 class _WordStudyMainState extends State<WordStudyMain> {
   late TextEditingController controller0;
+  late TextEditingController controller1;
+  TextEditingController c = TextEditingController();
+  void _inputText(String text) {
+    print('input text');
+  }
+
   @override
   Widget build(BuildContext context) {
-    var controller0 = TextEditingController();
+    final keyboardKey = GlobalObjectKey<KeyboardState>(context);
+    controller0 = TextEditingController();
     var focusNode0 = FocusNode();
+    focusNode0.addListener(() {
+      if (focusNode0.hasFocus) {
+        print('focusNode0 has focus');
+        final state = keyboardKey.currentState;
+        state!.setController(controller0);
+      } else {
+        print('focusNode0 doesnt have focus');
+      }
+    });
+
+    controller1 = TextEditingController();
+    var focusNode1 = FocusNode();
+    focusNode1.addListener(() {
+      if (focusNode1.hasFocus) {
+        print('focusNode1 has focus');
+        final state = keyboardKey.currentState;
+        state!.setController(controller1);
+      } else {
+        print('focusNode1 doesnt have focus');
+      }
+    });
     var card = WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
@@ -28,11 +56,13 @@ class _WordStudyMainState extends State<WordStudyMain> {
             isProblem: true, controller: controller0, focusNode: focusNode0),
         EnglishText('talking'),
         EnglishText('on'),
-        EnglishText('the'),
+        EnglishText('the',
+            isProblem: true, controller: controller1, focusNode: focusNode1),
         EnglishText('phone.'),
       ],
       japaneseTexts: ['JAPANESE TITLE 1'],
     );
+    // focusNode0.requestFocus();
 
     return Scaffold(
       appBar: AppBar(
@@ -51,10 +81,17 @@ class _WordStudyMainState extends State<WordStudyMain> {
               ),
             ),
             SizedBox(height: 40),
-            Keyboard(controllers: [controller0]),
+            Keyboard(key: keyboardKey, controllers: [controller0, controller1]),
 
-            TextField(),
+            TextField(
+                // controller: c,
+                ),
             // Keyboard(controllers: []),
+            ElevatedButton(
+                onPressed: () {
+                  print('pressed');
+                },
+                child: Text('aaa')),
           ],
         ),
       ),

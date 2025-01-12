@@ -6,10 +6,10 @@ class Keyboard extends StatefulWidget {
   const Keyboard({super.key, required this.controllers});
 
   @override
-  State<Keyboard> createState() => _KeyboardState();
+  State<Keyboard> createState() => KeyboardState();
 }
 
-class _KeyboardState extends State<Keyboard> {
+class KeyboardState extends State<Keyboard> {
   // late List<TextEditingController> _controllers;
   late TextSelection _selection;
   late TextEditingController _controller;
@@ -32,6 +32,12 @@ class _KeyboardState extends State<Keyboard> {
     // }
 
     super.dispose();
+  }
+
+  void setController(TextEditingController controller) {
+    _controller = controller;
+    // _controller.addListener(_onSelectionChanged);
+    _selection = _controller.selection;
   }
 
   void _onSelectionChanged() {

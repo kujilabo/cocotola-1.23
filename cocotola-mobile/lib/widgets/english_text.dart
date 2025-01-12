@@ -38,10 +38,15 @@ class EnglishPlainTextWidget extends StatelessWidget {
 class EnglishBlankTextWidget extends StatefulWidget {
   final String englishText;
   final TextEditingController? controller;
-  final FocusNode? focustNode;
+  final FocusNode? focusNode;
+  final void Function() onCompleted;
 
   const EnglishBlankTextWidget(
-      {super.key, required this.englishText, this.controller, this.focustNode});
+      {super.key,
+      required this.englishText,
+      this.controller,
+      this.focusNode,
+      required this.onCompleted});
 
   @override
   State<EnglishBlankTextWidget> createState() => _EnglishBlankTextWidgetState();
@@ -78,7 +83,7 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
     return Container(
       width: 100,
       child: TextField(
-        // focusNode: widget.focustNode,
+        focusNode: widget.focusNode,
         controller: widget.controller,
         // decoration: InputDecoration(
         //   hintText: widget.englishText,

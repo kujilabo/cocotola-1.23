@@ -20,7 +20,9 @@ class _WordStudyProblemState extends State<WordStudyProblem> {
     englishTexts = widget.englishTexts.map((englishText) {
       if (englishText.isProblem) {
         return EnglishBlankTextWidget(
-            englishText: englishText.text, controller: englishText.controller);
+            englishText: englishText.text,
+            controller: englishText.controller,
+            focusNode: englishText.focusNode);
       }
       return EnglishPlainTextWidget(englishText: englishText.text);
     }).toList();
@@ -36,12 +38,6 @@ class _WordStudyProblemState extends State<WordStudyProblem> {
             Wrap(children: englishTexts),
             SizedBox(height: 10),
             Wrap(children: englishTexts),
-
-            //     Container(
-            //       child: Wrap(
-            //         children: englishTexts,
-            //       ),
-            //     ),
           ],
         ),
       ),
