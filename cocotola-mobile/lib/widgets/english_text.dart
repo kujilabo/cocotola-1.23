@@ -39,14 +39,14 @@ class EnglishBlankTextWidget extends StatefulWidget {
   final String englishText;
   final TextEditingController? controller;
   final FocusNode? focusNode;
-  // final void Function() onCompleted;
+  final void Function() onCompleted;
 
   const EnglishBlankTextWidget({
     super.key,
     required this.englishText,
     this.controller,
     this.focusNode,
-    // required this.onCompleted,
+    required this.onCompleted,
   });
 
   @override
@@ -80,6 +80,12 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.controller != null) {
+      widget.controller!.addListener(() {
+        print('zzzzzzzzzzzzzzzzzzz');
+        print(widget.controller!.text);
+      });
+    }
     print('xxxxxxxxxxxxxxxxxxxxxxx');
     return Container(
       width: 100,

@@ -4,9 +4,14 @@ import 'package:mobile/widgets/english_text.dart';
 class WordStudyProblem extends StatefulWidget {
   final List<EnglishText> englishTexts;
   final List<String> japaneseTexts;
+  final void Function() onCompleteWord;
 
-  const WordStudyProblem(
-      {super.key, required this.englishTexts, required this.japaneseTexts});
+  const WordStudyProblem({
+    super.key,
+    required this.englishTexts,
+    required this.japaneseTexts,
+    required this.onCompleteWord,
+  });
 
   @override
   State<WordStudyProblem> createState() => _WordStudyProblemState();
@@ -20,9 +25,11 @@ class _WordStudyProblemState extends State<WordStudyProblem> {
     englishTexts = widget.englishTexts.map((englishText) {
       if (englishText.isProblem) {
         return EnglishBlankTextWidget(
-            englishText: englishText.text,
-            controller: englishText.controller,
-            focusNode: englishText.focusNode);
+          englishText: englishText.text,
+          controller: englishText.controller,
+          focusNode: englishText.focusNode,
+          onCompleted: widget.onCompleteWord,
+        );
       }
       return EnglishPlainTextWidget(englishText: englishText.text);
     }).toList();

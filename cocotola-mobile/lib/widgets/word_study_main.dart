@@ -95,7 +95,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
         EnglishText('meeting'),
         EnglishText('in'),
         EnglishText('person'),
-        EnglishText('over',
+        EnglishText('123',
             isProblem: true, controller: controller0, focusNode: focusNode0),
         EnglishText('talking'),
         EnglishText('on'),
@@ -104,6 +104,9 @@ class _WordStudyMainState extends State<WordStudyMain> {
         EnglishText('phone.'),
       ],
       japaneseTexts: ['JAPANESE TITLE 1'],
+      onCompleteWord: () {
+        print('completed word');
+      },
     );
     // focusNode0.requestFocus();
 
