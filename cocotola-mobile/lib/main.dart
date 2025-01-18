@@ -6,7 +6,7 @@ void main() {
   runApp(
     MaterialApp(
       // home: const WordStudyTop(),
-      home: const WordStudyMain(),
+      home: WordStudyMain(),
     ),
   );
 }

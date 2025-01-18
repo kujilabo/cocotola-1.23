@@ -68,27 +68,6 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
   var color = Colors.black;
 
   @override
-  void initState() {
-    super.initState();
-    // _controller = TextEditingController()..addListener(_onSelectionChanged);
-    // _selection = _controller.selection;
-  }
-
-  @override
-  void dispose() {
-    // _controller.removeListener(_onSelectionChanged);
-    super.dispose();
-  }
-
-  // void _onSelectionChanged() {
-  //   setState(() {
-  //     // update selection on change (updating position too)
-  //     _selection = _controller.selection;
-  //   });
-  //   print('Cursor position: ${_selection.base.offset}'); // print position
-  // }
-
-  @override
   Widget build(BuildContext context) {
     print('readonly ' + readOnly.toString());
     if (widget.controller != null) {
@@ -100,12 +79,11 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
             color = Colors.red;
           });
         }
-        print('zzzzzzzzzzzzzzzzzzz');
         print(widget.controller!.text);
       });
     }
     print('build EnglishText');
-    return Container(
+    return SizedBox(
       width: 100,
       child: TextField(
         autofocus: widget.first,
@@ -113,17 +91,6 @@ class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
         controller: widget.controller,
         readOnly: readOnly,
         style: TextStyle(color: color),
-        // onChanged: (text) {
-        //   if (text == widget.englishText) {
-        //     print('yyyyyyyyyyyyyyyyyyy');
-        //     setState(() {
-        //       readOnly = true;
-        //     });
-        //   }
-        // },
-        // decoration: InputDecoration(
-        //   hintText: widget.englishText,
-        // ),
       ),
     );
   }

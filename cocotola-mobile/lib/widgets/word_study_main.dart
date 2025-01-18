@@ -2,9 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:mobile/widgets/keyboard.dart';
 import 'package:mobile/widgets/english_text.dart';
 import 'package:mobile/widgets/word_study_problem.dart';
+import 'package:mobile/models/english_word_problem.dart';
 
 class WordStudyMain extends StatefulWidget {
-  const WordStudyMain({super.key});
+  List<EnglishWordProblem> problems;
+  WordStudyMain({Key? key}) : this.init(key: key);
+  WordStudyMain.init({
+    super.key,
+    this.problems = const [
+      EnglishWordProblem(
+        translationWords: [
+          TranslationWord(text: '私は', isProblem: false),
+          TranslationWord(text: 'いつも', isProblem: false),
+          TranslationWord(text: '電話で話すより', isProblem: true),
+          TranslationWord(text: '会って話すことを好む。', isProblem: false),
+        ],
+        englishWords: [
+          EnglishWord(text: 'I', isProblem: false),
+          EnglishWord(text: 'always', isProblem: false),
+          EnglishWord(text: 'prefer', isProblem: false),
+          EnglishWord(text: 'meeting', isProblem: false),
+          EnglishWord(text: 'in', isProblem: false),
+          EnglishWord(text: 'person', isProblem: false),
+          EnglishWord(text: 'over', isProblem: true),
+          EnglishWord(text: 'talking', isProblem: false),
+          EnglishWord(text: 'on', isProblem: false),
+          EnglishWord(text: 'the', isProblem: true),
+          EnglishWord(text: 'phone.', isProblem: false),
+        ],
+      ),
+    ],
+  });
 
   @override
   State<WordStudyMain> createState() => _WordStudyMainState();
@@ -13,22 +41,22 @@ class WordStudyMain extends StatefulWidget {
 class _WordStudyMainState extends State<WordStudyMain> {
   late TextEditingController currCtrl;
   late TextSelection _selection;
-  // late TextEditingController controller0;
-  // late TextEditingController controller1;
-  // late FocusNode focusNode0;
-  // late FocusNode focusNode1;
   late List<TextEditingController> ctrls;
   late List<FocusNode> focusNodes;
 
   @override
   void dispose() {
-    // _titleController.dispose();
-    // _amountController.dispose();
+    currCtrl.addListener(_onSelectionChanged);
+    for (var i = 0; i < 10; i++) {
+      ctrls[i].dispose();
+      focusNodes[i].dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('build main');
     ctrls = [];
     focusNodes = [];
     for (var i = 0; i < 10; i++) {
@@ -46,41 +74,46 @@ class _WordStudyMainState extends State<WordStudyMain> {
       });
     }
 
-    // print('build main');
-    // controller0 = TextEditingController();
-    // focusNode0 = FocusNode();
-    // focusNode0.addListener(() {
-    //   if (focusNode0.hasFocus) {
-    //     print('focusNode0 has focus');
-    //     currCtrl.removeListener(_onSelectionChanged);
-    //     currCtrl = controller0;
-    //     currCtrl.addListener(_onSelectionChanged);
-    //   } else {
-    //     print('focusNode0 doesnt have focus');
-    //   }
-    // });
-
-    // controller1 = TextEditingController();
-    // focusNode1 = FocusNode();
-    // focusNode1.addListener(() {
-    //   if (focusNode1.hasFocus) {
-    //     print('focusNode1 has focus');
-    //     currCtrl.removeListener(_onSelectionChanged);
-    //     currCtrl = controller1;
-    //     currCtrl.addListener(_onSelectionChanged);
-    //   } else {
-    //     print('focusNode1 doesnt have focus');
-    //   }
-    // });
-    // currCtrl = controller0;
     currCtrl = ctrls[0];
-
-    // currCtrl.selection =
-    //     TextSelection.fromPosition(const TextPosition(offset: 0));
 
     _selection = currCtrl.selection;
 
-    var card = WordStudyProblem(
+    var card = buildProblem(widget.problems[0]);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Word Study'),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              // height: 100.0,
+              width: double.infinity,
+              // color: Colors.red,
+              child: Padding(
+                padding: EdgeInsets.all(15),
+                child: card,
+              ),
+            ),
+            SizedBox(height: 40),
+            Keyboard(
+              onPresskey: _onPressKey,
+              onPressBackspace: _onPressBackspace,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  print('pressed');
+                },
+                child: Text('aaa')),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildProblem(EnglishWordProblem problem) {
+    problems
+    return WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
         EnglishText('always'),
@@ -104,45 +137,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
         print('completed word $index');
         var nextIndex = (index + 1) % 10;
         focusNodes[nextIndex].requestFocus();
-
-        // if (index == 0) {
-        //   print('nextFocus');
-        //   // focusNode0.nextFocus();
-        //   focusNode1.requestFocus();
-        // }
       },
-    );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Word Study'),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              // height: 100.0,
-              width: double.infinity,
-              // color: Colors.red,
-              child: Padding(
-                padding: EdgeInsets.all(15),
-                child: card,
-              ),
-            ),
-            SizedBox(height: 40),
-            Keyboard(
-              // key: keyboardKey,
-              onPresskey: _onPressKey,
-              onPressBackspace: _onPressBackspace,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  print('pressed');
-                },
-                child: Text('aaa')),
-          ],
-        ),
-      ),
     );
   }
 
