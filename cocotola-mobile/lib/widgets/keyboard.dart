@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Keyboard extends StatefulWidget {
+class Keyboard extends StatelessWidget {
   final void Function(String) onPresskey;
   final void Function() onPressBackspace;
 
@@ -10,11 +10,6 @@ class Keyboard extends StatefulWidget {
     required this.onPressBackspace,
   });
 
-  @override
-  State<Keyboard> createState() => KeyboardState();
-}
-
-class KeyboardState extends State<Keyboard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,7 +37,7 @@ class KeyboardState extends State<Keyboard> {
             children: _buildButtons(
                   ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
                 ) +
-                [_buildButton('⌫', onPressed: widget.onPressBackspace)],
+                [_buildButton('⌫', onPressed: onPressBackspace)],
           ),
         ],
       ),
@@ -60,7 +55,7 @@ class KeyboardState extends State<Keyboard> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,
       ),
-      onPressed: onPressed ?? () => widget.onPresskey(text),
+      onPressed: onPressed ?? () => onPresskey(text),
       child: Text(text),
     );
   }

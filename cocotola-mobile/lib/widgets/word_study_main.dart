@@ -112,7 +112,6 @@ class _WordStudyMainState extends State<WordStudyMain> {
   }
 
   Widget buildProblem(EnglishWordProblem problem) {
-    problems
     return WordStudyProblem(
       englishTexts: [
         EnglishText('I'),
