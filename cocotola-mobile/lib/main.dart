@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/widgets/word_study_top.dart';
 import 'package:mobile/widgets/word_study_main.dart';
+import 'package:mobile/widgets/editor.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   runApp(
-    MaterialApp(
-      // home: const WordStudyTop(),
-      home: WordStudyMain(),
+    ProviderScope(
+      child: MaterialApp(
+        // home: const WordStudyTop(),
+        // home: WordStudyMain(),
+        home: Editor(),
+      ),
     ),
   );
 }

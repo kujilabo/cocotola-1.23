@@ -7,6 +7,7 @@ import 'package:mobile/models/english_word_problem.dart';
 class WordStudyMain extends StatefulWidget {
   List<EnglishWordProblem> problems;
   WordStudyMain({Key? key}) : this.init(key: key);
+
   WordStudyMain.init({
     super.key,
     this.problems = const [
