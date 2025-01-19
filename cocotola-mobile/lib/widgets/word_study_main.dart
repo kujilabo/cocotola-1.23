@@ -94,6 +94,10 @@ class WordStudyMain extends ConsumerWidget {
             Keyboard(
               onPresskey: (String text) {
                 textFieldListNotifier.addText(text);
+                var index = textFieldValueList.index;
+                if ("over" == textFieldValueList.texts[index].text) {
+                  textFieldListNotifier.setComplete(index);
+                }
               },
               onPressBackspace: () {
                 textFieldListNotifier.backspace();

@@ -4,10 +4,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 class TextFieldValue {
   final String text;
+  final String answer;
   final int position;
   final bool completed;
   const TextFieldValue(
-      {required this.text, required this.position, required this.completed});
+      {required this.text,
+      required this.answer,
+      required this.position,
+      required this.completed});
 }
 
 class TextFieldValueList {
@@ -20,10 +24,13 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
   @override
   TextFieldValueList build() {
     final texts = List.generate(
-        10, (index) => TextFieldValue(text: '', position: 0, completed: false));
+        10,
+        (index) => TextFieldValue(
+            text: '', answer: '', position: 0, completed: false));
     return TextFieldValueList(texts: texts, index: 0);
   }
 
+  void setAnswer(int index, String answer) {}
   void addText(String text) {
     final index = state.index;
     final currTextField = state.texts[index];
@@ -46,12 +53,14 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
       newPosition = currTextField.position + 1;
     }
 
+    var completed = newText == "over";
     final texts = [
       ...state.texts.sublist(0, index),
       TextFieldValue(
           text: newText,
+          answer: currTextField.answer,
           position: newPosition,
-          completed: currTextField.completed),
+          completed: completed),
       ...state.texts.sublist(index + 1),
     ];
     state = TextFieldValueList(texts: texts, index: state.index);
@@ -59,14 +68,18 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
 
   void setPosition(int index, int position) {
     print('position: $position');
-    final currText = state.texts[index];
+    final currTextField = state.texts[index];
+    if (currTextField.completed) {
+      return;
+    }
 
     final texts = [
       ...state.texts.sublist(0, index),
       TextFieldValue(
-          text: currText.text,
+          text: currTextField.text,
+          answer: currTextField.answer,
           position: position,
-          completed: currText.completed),
+          completed: currTextField.completed),
       ...state.texts.sublist(index + 1),
     ];
     state = TextFieldValueList(texts: texts, index: state.index);
@@ -92,6 +105,7 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
       ...state.texts.sublist(0, index),
       TextFieldValue(
           text: newText,
+          answer: currTextField.answer,
           position: currPosition - 1,
           completed: currTextField.completed),
       ...state.texts.sublist(index + 1),
@@ -109,6 +123,7 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
       ...state.texts.sublist(0, index),
       TextFieldValue(
           text: currTextField.text,
+          answer: currTextField.answer,
           position: currTextField.position,
           completed: true),
       ...state.texts.sublist(index + 1),
