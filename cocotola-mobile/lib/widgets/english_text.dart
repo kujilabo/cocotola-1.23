@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 class EnglishText {
   final String text;
   final bool isProblem;
@@ -41,7 +43,7 @@ class EnglishPlainTextWidget extends StatelessWidget {
   }
 }
 
-class EnglishBlankTextWidget extends StatefulWidget {
+class EnglishBlankTextWidget extends ConsumerWidget {
   final int index;
   final String englishText;
   final TextEditingController? controller;
@@ -59,39 +61,34 @@ class EnglishBlankTextWidget extends StatefulWidget {
     required this.onCompleted,
   });
 
-  @override
-  State<EnglishBlankTextWidget> createState() => _EnglishBlankTextWidgetState();
-}
-
-class _EnglishBlankTextWidgetState extends State<EnglishBlankTextWidget> {
-  var readOnly = false;
-  var color = Colors.black;
+  // var readOnly = false;
+  // var color = Colors.black;
 
   @override
-  Widget build(BuildContext context) {
-    print('readonly ' + readOnly.toString());
-    if (widget.controller != null) {
-      widget.controller!.addListener(() {
-        if (widget.controller!.text == widget.englishText) {
-          widget.onCompleted(widget.index);
-          setState(() {
-            readOnly = true;
-            color = Colors.red;
-          });
-        }
-        print(widget.controller!.text);
-      });
-    }
-    print('build EnglishText');
+  Widget build(BuildContext context, WidgetRef ref) {
+    // print('readonly ' + readOnly.toString());
+    // if (widget.controller != null) {
+    //   widget.controller!.addListener(() {
+    //     if (widget.controller!.text == widget.englishText) {
+    //       widget.onCompleted(widget.index);
+    //       // setState(() {
+    //       //   readOnly = true;
+    //       //   color = Colors.red;
+    //       // });
+    //     }
+    //     print(widget.controller!.text);
+    //   });
+    // }
+    // print('build EnglishText');
     return SizedBox(
       width: 100,
       child: TextField(
-        autofocus: widget.first,
-        focusNode: widget.focusNode,
-        controller: widget.controller,
-        readOnly: readOnly,
-        style: TextStyle(color: color),
-      ),
+          autofocus: first,
+          focusNode: focusNode,
+          controller: controller,
+          readOnly: false //readOnly,
+          // style: TextStyle(color: color),
+          ),
     );
   }
 }

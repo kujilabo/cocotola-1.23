@@ -6,9 +6,6 @@ import 'package:mobile/widgets/text_list_provider.dart';
 import 'package:mobile/widgets/editor_screen.dart';
 
 class Editor extends ConsumerWidget {
-  final _focusNode = FocusNode();
-  final _controller = TextEditingController();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print('Editor build');

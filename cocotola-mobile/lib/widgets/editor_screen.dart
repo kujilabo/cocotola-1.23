@@ -1,64 +1,103 @@
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/models/problem_word_study.dart';
 import 'package:mobile/widgets/text_list_provider.dart';
+import 'package:mobile/widgets/english_text.dart';
+import 'package:mobile/widgets/word_study_problem.dart';
 
 class EditorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _focusNode0 = FocusNode();
-    final _focusNode1 = FocusNode();
-    final _controller0 = TextEditingController();
-    final _controller1 = TextEditingController();
-    final textFieldValueList = ref.watch(textFieldValueListProvider);
-    final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
-
-    _focusNode0.addListener(() {
-      if (_focusNode0.hasFocus) {
-        textFieldListNotifier.setIndex(0);
-        print('_focusNode0 has focus $_controller0.selection');
-        textFieldListNotifier.setPosition(0, _controller0.selection.baseOffset);
-      } else {
-        print('_focusNode0 doen\'t have focus');
-      }
-    });
-    _focusNode1.addListener(() {
-      if (_focusNode1.hasFocus) {
-        textFieldListNotifier.setIndex(1);
-        print('_focusNode1 has focus $_controller1.selection');
-      } else {
-        print('_focusNode1 doen\'t have focus');
-      }
-    });
-
     print('EditorScreen build');
-    _controller0.text = textFieldValueList.texts[0].text;
-    _controller1.text = textFieldValueList.texts[1].text;
-    final index = textFieldValueList.index;
-    if (index == 0) {
-      _controller0.selection = TextSelection.fromPosition(
-          TextPosition(offset: textFieldValueList.texts[index].position));
-    } else if (index == 1) {
-      _controller1.selection = TextSelection.fromPosition(
-          TextPosition(offset: textFieldValueList.texts[index].position));
-    }
-    return Column(
-      children: [
-        TextField(
-          autofocus: true,
-          focusNode: _focusNode0,
-          controller: _controller0,
-          readOnly: false,
-          style: TextStyle(color: Colors.black),
-        ),
-        TextField(
-          autofocus: true,
-          focusNode: _focusNode1,
-          controller: _controller1,
-          readOnly: false,
-          style: TextStyle(color: Colors.black),
-        ),
+    final problem = ProblemWordStudy(
+      englishList: [
+        ProblemWordStudyEnglish('I'),
+        ProblemWordStudyEnglish('always'),
+        ProblemWordStudyEnglish('prefer'),
+        ProblemWordStudyEnglish('meeting'),
+        ProblemWordStudyEnglish('in'),
+        ProblemWordStudyEnglish('person'),
+        ProblemWordStudyEnglish('over', isProblem: true),
+        ProblemWordStudyEnglish('talking'),
+        ProblemWordStudyEnglish('on'),
+        ProblemWordStudyEnglish('the', isProblem: true),
+        ProblemWordStudyEnglish('phone.'),
+      ],
+      translationList: [
+        ProblemWordStudyTranslation('aaa'),
+        ProblemWordStudyTranslation('bbb'),
+        ProblemWordStudyTranslation('ccc'),
       ],
     );
+
+    final focusNodeList = List.generate(10, (index) => FocusNode());
+    final controllerList =
+        List.generate(10, (index) => TextEditingController());
+
+    var wordSturyProblem = WordStudyProblem(
+      problem: problem,
+      focusNodeList: focusNodeList,
+      controllerList: controllerList,
+    );
+
+    final textFieldValueList = ref.watch(textFieldValueListProvider);
+    final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
+    focusNodeList.asMap().forEach((index, focusNode) {
+      focusNode.addListener(() {
+        if (focusNode.hasFocus) {
+          print('focusNode ${index} has focus');
+          textFieldListNotifier.setIndex(index);
+          textFieldListNotifier.setPosition(
+              index, controllerList[index].selection.baseOffset);
+        } else {
+          print('focusNode ${index} doesnt have focus');
+        }
+      });
+    });
+    controllerList.asMap().forEach((index, focusNode) {
+      controllerList[index].text = textFieldValueList.texts[index].text;
+    });
+
+    final index = textFieldValueList.index;
+    controllerList[index].selection = TextSelection.fromPosition(
+        TextPosition(offset: textFieldValueList.texts[index].position));
+    print(
+        'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
+
+    return wordSturyProblem;
+    // return Column(
+    //   children: List.generate(10, (index) {
+    //     return TextField(
+    //       autofocus: true,
+    //       focusNode: focusNodeList[index],
+    //       controller: controllerList[index],
+    //       readOnly: false,
+    //       style: TextStyle(color: Colors.black),
+    //     );
+    //   }),
+    // );
   }
 }
+
+    // final _focusNode0 = FocusNode();
+    // final _focusNode1 = FocusNode();
+    // final _controller0 = TextEditingController();
+    // final _controller1 = TextEditingController();
+    // _focusNode0.addListener(() {
+    //   if (_focusNode0.hasFocus) {
+    //     textFieldListNotifier.setIndex(0);
+    //     print('_focusNode0 has focus $_controller0.selection');
+    //     textFieldListNotifier.setPosition(0, _controller0.selection.baseOffset);
+    //   } else {
+    //     print('_focusNode0 doen\'t have focus');
+    //   }
+    // });
+    // _focusNode1.addListener(() {
+    //   if (_focusNode1.hasFocus) {
+    //     textFieldListNotifier.setIndex(1);
+    //     print('_focusNode1 has focus $_controller1.selection');
+    //   } else {
+    //     print('_focusNode1 doen\'t have focus');
+    //   }
+    // });

@@ -79,7 +79,7 @@ class _WordStudyMainState extends State<WordStudyMain> {
 
     _selection = currCtrl.selection;
 
-    var card = buildProblem(widget.problems[0]);
+    // var card = buildProblem(widget.problems[0]);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Word Study'),
@@ -87,15 +87,15 @@ class _WordStudyMainState extends State<WordStudyMain> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              // height: 100.0,
-              width: double.infinity,
-              // color: Colors.red,
-              child: Padding(
-                padding: EdgeInsets.all(15),
-                child: card,
-              ),
-            ),
+            // Container(
+            //   // height: 100.0,
+            //   width: double.infinity,
+            //   // color: Colors.red,
+            //   child: Padding(
+            //     padding: EdgeInsets.all(15),
+            //     child: card,
+            //   ),
+            // ),
             SizedBox(height: 40),
             Keyboard(
               onPresskey: _onPressKey,
@@ -112,34 +112,34 @@ class _WordStudyMainState extends State<WordStudyMain> {
     );
   }
 
-  Widget buildProblem(EnglishWordProblem problem) {
-    return WordStudyProblem(
-      englishTexts: [
-        EnglishText('I'),
-        EnglishText('always'),
-        EnglishText('prefer'),
-        EnglishText('meeting'),
-        EnglishText('in'),
-        EnglishText('person'),
-        EnglishText('over',
-            isProblem: true,
-            controller: ctrls[0],
-            focusNode: focusNodes[0],
-            first: true),
-        EnglishText('talking'),
-        EnglishText('on'),
-        EnglishText('the',
-            isProblem: true, controller: ctrls[1], focusNode: focusNodes[1]),
-        EnglishText('phone.'),
-      ],
-      japaneseTexts: ['JAPANESE TITLE 1'],
-      onCompletedWord: (int index) {
-        print('completed word $index');
-        var nextIndex = (index + 1) % 10;
-        focusNodes[nextIndex].requestFocus();
-      },
-    );
-  }
+  // Widget buildProblem(EnglishWordProblem problem) {
+  //   return WordStudyProblem(
+  //     englishTexts: [
+  //       EnglishText('I'),
+  //       EnglishText('always'),
+  //       EnglishText('prefer'),
+  //       EnglishText('meeting'),
+  //       EnglishText('in'),
+  //       EnglishText('person'),
+  //       EnglishText('over',
+  //           isProblem: true,
+  //           controller: ctrls[0],
+  //           focusNode: focusNodes[0],
+  //           first: true),
+  //       EnglishText('talking'),
+  //       EnglishText('on'),
+  //       EnglishText('the',
+  //           isProblem: true, controller: ctrls[1], focusNode: focusNodes[1]),
+  //       EnglishText('phone.'),
+  //     ],
+  //     japaneseTexts: ['JAPANESE TITLE 1'],
+  //     onCompletedWord: (int index) {
+  //       print('completed word $index');
+  //       var nextIndex = (index + 1) % 10;
+  //       focusNodes[nextIndex].requestFocus();
+  //     },
+  //   );
+  // }
 
   void _onPressKey(String text) {
     final value = currCtrl.text;

@@ -1,52 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/widgets/english_text.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/models/problem_word_study.dart';
 
-class WordStudyProblem extends StatefulWidget {
-  final List<EnglishText> englishTexts;
-  final List<String> japaneseTexts;
-  final void Function(int) onCompletedWord;
+class WordStudyProblem extends ConsumerWidget {
+  late void Function(int) onCompletedWord;
+  final ProblemWordStudy problem;
+  final List<FocusNode> focusNodeList;
+  final List<TextEditingController> controllerList;
 
-  const WordStudyProblem({
+  WordStudyProblem({
     super.key,
-    required this.englishTexts,
-    required this.japaneseTexts,
-    required this.onCompletedWord,
-  });
-
-  @override
-  State<WordStudyProblem> createState() => _WordStudyProblemState();
-}
-
-class _WordStudyProblemState extends State<WordStudyProblem> {
-  late List<Widget> englishTexts;
-
-  @override
-  void initState() {
-    super.initState();
+    required this.problem,
+    required this.focusNodeList,
+    required this.controllerList,
+  }) {
+    onCompletedWord = (int index) => {};
   }
 
   @override
-  Widget build(BuildContext context) {
-    englishTexts = [];
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<Widget> englishTexts = [];
     var index = 0;
-    var length = widget.englishTexts.length;
+    var length = problem.englishList.length;
     print('length: $length');
+
+    var firstProblem = true;
+
     for (var i = 0; i < length; i++) {
       print('i: $i');
-      final englishText = widget.englishTexts[i];
-      if (englishText.isProblem) {
+      final english = problem.englishList[i];
+      if (english.isProblem) {
         englishTexts.add(EnglishBlankTextWidget(
           index: index,
-          englishText: englishText.text,
-          controller: englishText.controller,
-          focusNode: englishText.focusNode,
-          onCompleted: widget.onCompletedWord,
-          first: englishText.first,
+          englishText: english.text,
+          controller: controllerList[index],
+          focusNode: focusNodeList[index],
+          onCompleted: onCompletedWord,
+          first: firstProblem,
         ));
+        firstProblem = false;
         index++;
       } else {
         englishTexts.add(EnglishPlainTextWidget(
-          englishText: englishText.text,
+          englishText: english.text,
         ));
       }
     }
@@ -61,7 +58,7 @@ class _WordStudyProblemState extends State<WordStudyProblem> {
           children: [
             Wrap(children: englishTexts),
             SizedBox(height: 10),
-            Wrap(children: englishTexts),
+            // Wrap(children: englishTexts),
           ],
         ),
       ),
