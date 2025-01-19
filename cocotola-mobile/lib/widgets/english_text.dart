@@ -49,7 +49,8 @@ class EnglishBlankTextWidget extends ConsumerWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final bool first;
-  final void Function(int) onCompleted;
+  final bool completed;
+  final void Function() onCompleted;
 
   const EnglishBlankTextWidget({
     super.key,
@@ -58,8 +59,22 @@ class EnglishBlankTextWidget extends ConsumerWidget {
     this.controller,
     this.focusNode,
     this.first = false,
+    this.completed = false,
     required this.onCompleted,
   });
+  //    if (controller != null) {
+  //     controller!.addListener(() {
+  //       if (controller!.text ==englishText) {
+  //         onCompleted(index);
+  //         // setState(() {
+  //         //   readOnly = true;
+  //         //   color = Colors.red;
+  //         // });
+  //       }
+  //       print(controller!.text);
+  //     });
+  //   }
+  // }
 
   // var readOnly = false;
   // var color = Colors.black;
@@ -67,18 +82,7 @@ class EnglishBlankTextWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // print('readonly ' + readOnly.toString());
-    // if (widget.controller != null) {
-    //   widget.controller!.addListener(() {
-    //     if (widget.controller!.text == widget.englishText) {
-    //       widget.onCompleted(widget.index);
-    //       // setState(() {
-    //       //   readOnly = true;
-    //       //   color = Colors.red;
-    //       // });
-    //     }
-    //     print(widget.controller!.text);
-    //   });
-    // }
+
     // print('build EnglishText');
     return SizedBox(
       width: 100,
@@ -86,7 +90,7 @@ class EnglishBlankTextWidget extends ConsumerWidget {
           autofocus: first,
           focusNode: focusNode,
           controller: controller,
-          readOnly: false //readOnly,
+          readOnly: completed //readOnly,
           // style: TextStyle(color: color),
           ),
     );

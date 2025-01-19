@@ -5,7 +5,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 class TextFieldValue {
   final String text;
   final int position;
-  const TextFieldValue({required this.text, this.position = 0});
+  final bool completed;
+  const TextFieldValue(
+      {required this.text, required this.position, required this.completed});
 }
 
 class TextFieldValueList {
@@ -17,13 +19,17 @@ class TextFieldValueList {
 class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
   @override
   TextFieldValueList build() {
-    final texts = List.generate(10, (index) => TextFieldValue(text: ''));
+    final texts = List.generate(
+        10, (index) => TextFieldValue(text: '', position: 0, completed: false));
     return TextFieldValueList(texts: texts, index: 0);
   }
 
   void addText(String text) {
     final index = state.index;
     final currTextField = state.texts[index];
+    if (currTextField.completed) {
+      return;
+    }
 
     String newText;
     int newPosition;
@@ -42,7 +48,10 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
 
     final texts = [
       ...state.texts.sublist(0, index),
-      TextFieldValue(text: newText, position: newPosition),
+      TextFieldValue(
+          text: newText,
+          position: newPosition,
+          completed: currTextField.completed),
       ...state.texts.sublist(index + 1),
     ];
     state = TextFieldValueList(texts: texts, index: state.index);
@@ -54,7 +63,10 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
 
     final texts = [
       ...state.texts.sublist(0, index),
-      TextFieldValue(text: currText.text, position: position),
+      TextFieldValue(
+          text: currText.text,
+          position: position,
+          completed: currText.completed),
       ...state.texts.sublist(index + 1),
     ];
     state = TextFieldValueList(texts: texts, index: state.index);
@@ -63,6 +75,9 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
   void backspace() {
     final index = state.index;
     final currTextField = state.texts[index];
+    if (currTextField.completed) {
+      return;
+    }
     if (currTextField.text.isEmpty || currTextField.position == 0) {
       return;
     }
@@ -75,7 +90,10 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
 
     final texts = [
       ...state.texts.sublist(0, index),
-      TextFieldValue(text: newText, position: currPosition - 1),
+      TextFieldValue(
+          text: newText,
+          position: currPosition - 1,
+          completed: currTextField.completed),
       ...state.texts.sublist(index + 1),
     ];
     state = TextFieldValueList(texts: texts, index: state.index);
@@ -83,6 +101,19 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
 
   void setIndex(int index) {
     state = TextFieldValueList(texts: state.texts, index: index);
+  }
+
+  void setComplete(int index) {
+    final currTextField = state.texts[index];
+    final texts = [
+      ...state.texts.sublist(0, index),
+      TextFieldValue(
+          text: currTextField.text,
+          position: currTextField.position,
+          completed: true),
+      ...state.texts.sublist(index + 1),
+    ];
+    state = TextFieldValueList(texts: texts, index: index);
   }
 }
 

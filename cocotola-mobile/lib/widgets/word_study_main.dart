@@ -1,179 +1,109 @@
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/widgets/keyboard.dart';
+import 'package:mobile/widgets/text_list_provider.dart';
+// import 'package:mobile/widgets/editor_screen.dart';
+import 'package:mobile/models/problem_word_study.dart';
+import 'package:mobile/widgets/text_list_provider.dart';
 import 'package:mobile/widgets/english_text.dart';
 import 'package:mobile/widgets/word_study_problem.dart';
-import 'package:mobile/models/english_word_problem.dart';
 
-class WordStudyMain extends StatefulWidget {
-  List<EnglishWordProblem> problems;
-  WordStudyMain({Key? key}) : this.init(key: key);
-
-  WordStudyMain.init({
-    super.key,
-    this.problems = const [
-      EnglishWordProblem(
-        translationWords: [
-          TranslationWord(text: '私は', isProblem: false),
-          TranslationWord(text: 'いつも', isProblem: false),
-          TranslationWord(text: '電話で話すより', isProblem: true),
-          TranslationWord(text: '会って話すことを好む。', isProblem: false),
-        ],
-        englishWords: [
-          EnglishWord(text: 'I', isProblem: false),
-          EnglishWord(text: 'always', isProblem: false),
-          EnglishWord(text: 'prefer', isProblem: false),
-          EnglishWord(text: 'meeting', isProblem: false),
-          EnglishWord(text: 'in', isProblem: false),
-          EnglishWord(text: 'person', isProblem: false),
-          EnglishWord(text: 'over', isProblem: true),
-          EnglishWord(text: 'talking', isProblem: false),
-          EnglishWord(text: 'on', isProblem: false),
-          EnglishWord(text: 'the', isProblem: true),
-          EnglishWord(text: 'phone.', isProblem: false),
-        ],
-      ),
-    ],
-  });
-
+class WordStudyMain extends ConsumerWidget {
   @override
-  State<WordStudyMain> createState() => _WordStudyMainState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    print('WordStudyMain build');
+    final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
+    final textFieldValueList = ref.watch(textFieldValueListProvider);
 
-class _WordStudyMainState extends State<WordStudyMain> {
-  late TextEditingController currCtrl;
-  late TextSelection _selection;
-  late List<TextEditingController> ctrls;
-  late List<FocusNode> focusNodes;
+    final problem = ProblemWordStudy(
+      englishList: [
+        ProblemWordStudyEnglish('I'),
+        ProblemWordStudyEnglish('always'),
+        ProblemWordStudyEnglish('prefer'),
+        ProblemWordStudyEnglish('meeting'),
+        ProblemWordStudyEnglish('in'),
+        ProblemWordStudyEnglish('person'),
+        ProblemWordStudyEnglish('over', isProblem: true),
+        ProblemWordStudyEnglish('talking'),
+        ProblemWordStudyEnglish('on'),
+        ProblemWordStudyEnglish('the', isProblem: true),
+        ProblemWordStudyEnglish('phone.'),
+      ],
+      translationList: [
+        ProblemWordStudyTranslation('aaa'),
+        ProblemWordStudyTranslation('bbb'),
+        ProblemWordStudyTranslation('ccc'),
+      ],
+    );
 
-  @override
-  void dispose() {
-    currCtrl.addListener(_onSelectionChanged);
-    for (var i = 0; i < 10; i++) {
-      ctrls[i].dispose();
-      focusNodes[i].dispose();
-    }
-    super.dispose();
-  }
+    final focusNodeList = List.generate(10, (index) => FocusNode());
+    final controllerList =
+        List.generate(10, (index) => TextEditingController());
+    final completedList =
+        textFieldValueList.texts.map((e) => e.completed).toList();
 
-  @override
-  Widget build(BuildContext context) {
-    print('build main');
-    ctrls = [];
-    focusNodes = [];
-    for (var i = 0; i < 10; i++) {
-      ctrls.add(TextEditingController());
-      focusNodes.add(FocusNode());
-      focusNodes[i].addListener(() {
-        if (focusNodes[i].hasFocus) {
-          print('focusNode0 has focus');
-          currCtrl.removeListener(_onSelectionChanged);
-          currCtrl = ctrls[i];
-          currCtrl.addListener(_onSelectionChanged);
+    var wordSturyProblem = WordStudyProblem(
+      problem: problem,
+      focusNodeList: focusNodeList,
+      controllerList: controllerList,
+      completedList: completedList,
+    );
+
+    focusNodeList.asMap().forEach((index, focusNode) {
+      focusNode.addListener(() {
+        if (focusNode.hasFocus) {
+          print('focusNode ${index} has focus');
+          textFieldListNotifier.setIndex(index);
+          textFieldListNotifier.setPosition(
+              index, controllerList[index].selection.baseOffset);
         } else {
-          print('focusNode0 doesnt have focus');
+          print('focusNode ${index} doesnt have focus');
         }
       });
-    }
+    });
+    controllerList.asMap().forEach((index, controller) {
+      controller.text = textFieldValueList.texts[index].text;
+      controller.addListener(() {
+        print('over == ${controllerList[index].text}');
+        if (completedList[index]) {
+          return;
+        }
+        if ("over" == controllerList[index].text) {
+          print("SET COMPLETESSSSS");
+          // textFieldListNotifier.setComplete(index);
+        }
+      });
+    });
 
-    currCtrl = ctrls[0];
+    final index = textFieldValueList.index;
+    controllerList[index].selection = TextSelection.fromPosition(
+        TextPosition(offset: textFieldValueList.texts[index].position));
+    print(
+        'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
 
-    _selection = currCtrl.selection;
-
-    // var card = buildProblem(widget.problems[0]);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Word Study'),
+        title: Text('WordStudyMain'),
       ),
-      body: SafeArea(
+      body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Container(
-            //   // height: 100.0,
-            //   width: double.infinity,
-            //   // color: Colors.red,
-            //   child: Padding(
-            //     padding: EdgeInsets.all(15),
-            //     child: card,
-            //   ),
-            // ),
-            SizedBox(height: 40),
+            wordSturyProblem,
             Keyboard(
-              onPresskey: _onPressKey,
-              onPressBackspace: _onPressBackspace,
+              onPresskey: (String text) {
+                textFieldListNotifier.addText(text);
+              },
+              onPressBackspace: () {
+                textFieldListNotifier.backspace();
+              },
             ),
-            ElevatedButton(
-                onPressed: () {
-                  print('pressed');
-                },
-                child: Text('aaa')),
           ],
         ),
       ),
     );
   }
 
-  // Widget buildProblem(EnglishWordProblem problem) {
-  //   return WordStudyProblem(
-  //     englishTexts: [
-  //       EnglishText('I'),
-  //       EnglishText('always'),
-  //       EnglishText('prefer'),
-  //       EnglishText('meeting'),
-  //       EnglishText('in'),
-  //       EnglishText('person'),
-  //       EnglishText('over',
-  //           isProblem: true,
-  //           controller: ctrls[0],
-  //           focusNode: focusNodes[0],
-  //           first: true),
-  //       EnglishText('talking'),
-  //       EnglishText('on'),
-  //       EnglishText('the',
-  //           isProblem: true, controller: ctrls[1], focusNode: focusNodes[1]),
-  //       EnglishText('phone.'),
-  //     ],
-  //     japaneseTexts: ['JAPANESE TITLE 1'],
-  //     onCompletedWord: (int index) {
-  //       print('completed word $index');
-  //       var nextIndex = (index + 1) % 10;
-  //       focusNodes[nextIndex].requestFocus();
-  //     },
-  //   );
-  // }
-
-  void _onPressKey(String text) {
-    final value = currCtrl.text;
-    if (currCtrl.text.isEmpty) {
-      currCtrl.text = value + text;
-      currCtrl.selection =
-          TextSelection.fromPosition(const TextPosition(offset: 1));
-      return;
-    }
-
-    final position = _selection.base.offset;
-    print('position: $position');
-    final suffix = value.substring(position, value.length);
-    currCtrl.text = value.substring(0, position) + text + suffix;
-    currCtrl.selection =
-        TextSelection.fromPosition(TextPosition(offset: position + 1));
-  }
-
-  void _onPressBackspace() {
-    final value = currCtrl.text;
-    final position = _selection.base.offset;
-
-    if (value.isEmpty || position == 0) {
-      return;
-    }
-
-    var suffix = value.substring(position, value.length);
-    currCtrl.text = value.substring(0, position - 1) + suffix;
-    currCtrl.selection =
-        TextSelection.fromPosition(TextPosition(offset: position - 1));
-  }
-
-  void _onSelectionChanged() {
-    _selection = currCtrl.selection;
-    print('Cursor position: ${_selection.base.offset}');
-  }
+  void _onPressBackspace() {}
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/widgets/word_study_main.dart';
+// import 'package:mobile/widgets/word_study_main.dart';
 // import 'package:mobile/widgets/word_study_top.dart';
 // import 'package:mobile/widgets/keyboard.dart';
 
@@ -29,15 +29,15 @@ class _WordStudyTopState extends State<WordStudyTop> {
                 style: TextStyle(fontSize: 24),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return WordStudyMain();
-                }));
-              },
-              child: const Text('Save Expense'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context)
+            //         .push(MaterialPageRoute(builder: (context) {
+            //       return WordStudyMain();
+            //     }));
+            //   },
+            //   child: const Text('Save Expense'),
+            // ),
           ],
         ),
       ),

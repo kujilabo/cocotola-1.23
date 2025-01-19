@@ -43,6 +43,7 @@ class EditorScreen extends ConsumerWidget {
 
     final textFieldValueList = ref.watch(textFieldValueListProvider);
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
+
     focusNodeList.asMap().forEach((index, focusNode) {
       focusNode.addListener(() {
         if (focusNode.hasFocus) {
@@ -55,6 +56,8 @@ class EditorScreen extends ConsumerWidget {
         }
       });
     });
+
+    // set text
     controllerList.asMap().forEach((index, focusNode) {
       controllerList[index].text = textFieldValueList.texts[index].text;
     });
