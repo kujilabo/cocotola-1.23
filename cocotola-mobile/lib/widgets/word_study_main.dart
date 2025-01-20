@@ -77,7 +77,13 @@ class WordStudyMain extends ConsumerWidget {
               onPressed: () {
                 problemNotifier.fetchProblem(0);
               },
-              child: Text('Editor'),
+              child: Text('---0---'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                problemNotifier.fetchProblem(1);
+              },
+              child: Text('---1---'),
             ),
             wordSturyProblem,
             Keyboard(

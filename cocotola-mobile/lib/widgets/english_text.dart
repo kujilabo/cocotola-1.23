@@ -77,22 +77,25 @@ class EnglishBlankTextWidget extends ConsumerWidget {
   // }
 
   // var readOnly = false;
-  // var color = Colors.black;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // print('readonly ' + readOnly.toString());
 
+    var color = completed ? Colors.red : Colors.black;
     // print('build EnglishText');
     return SizedBox(
       width: 100,
-      child: TextField(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+        child: TextField(
           autofocus: first,
           focusNode: focusNode,
           controller: controller,
-          readOnly: completed //readOnly,
-          // style: TextStyle(color: color),
-          ),
+          readOnly: completed,
+          style: TextStyle(color: color),
+        ),
+      ),
     );
   }
 }

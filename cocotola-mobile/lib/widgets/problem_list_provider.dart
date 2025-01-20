@@ -9,26 +9,42 @@ class ProblemRepository extends Notifier<ProblemWordStudy> {
   }
 
   void fetchProblem(int index) {
-    state = ProblemWordStudy(
-      englishList: [
-        ProblemWordStudyEnglish('I'),
-        ProblemWordStudyEnglish('always'),
-        ProblemWordStudyEnglish('prefer'),
-        ProblemWordStudyEnglish('meeting'),
-        ProblemWordStudyEnglish('in'),
-        ProblemWordStudyEnglish('person'),
-        ProblemWordStudyEnglish('over', isProblem: true),
-        ProblemWordStudyEnglish('talking'),
-        ProblemWordStudyEnglish('on'),
-        ProblemWordStudyEnglish('the', isProblem: true),
-        ProblemWordStudyEnglish('phone.'),
-      ],
-      translationList: [
-        ProblemWordStudyTranslation('aaa'),
-        ProblemWordStudyTranslation('bbb'),
-        ProblemWordStudyTranslation('ccc'),
-      ],
-    );
+    if (index == 0) {
+      state = ProblemWordStudy(
+        englishList: [
+          ProblemWordStudyEnglish('I'),
+          ProblemWordStudyEnglish('always'),
+          ProblemWordStudyEnglish('prefer'),
+          ProblemWordStudyEnglish('meeting'),
+          ProblemWordStudyEnglish('in'),
+          ProblemWordStudyEnglish('person'),
+          ProblemWordStudyEnglish('over', isProblem: true),
+          ProblemWordStudyEnglish('talking'),
+          ProblemWordStudyEnglish('on'),
+          ProblemWordStudyEnglish('the', isProblem: true),
+          ProblemWordStudyEnglish('phone.'),
+        ],
+        translationList: [
+          ProblemWordStudyTranslation('aaa'),
+          ProblemWordStudyTranslation('bbb'),
+          ProblemWordStudyTranslation('ccc'),
+        ],
+      );
+    } else {
+      state = ProblemWordStudy(
+        englishList: [
+          ProblemWordStudyEnglish('I'),
+          ProblemWordStudyEnglish('died', isProblem: true),
+          ProblemWordStudyEnglish('of', isProblem: true),
+          ProblemWordStudyEnglish('cancer.'),
+        ],
+        translationList: [
+          ProblemWordStudyTranslation('aaa'),
+          ProblemWordStudyTranslation('bbb'),
+          ProblemWordStudyTranslation('ccc'),
+        ],
+      );
+    }
   }
 }
 
