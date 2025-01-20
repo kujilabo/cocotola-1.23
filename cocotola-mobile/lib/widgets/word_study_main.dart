@@ -8,6 +8,7 @@ import 'package:mobile/models/problem_word_study.dart';
 import 'package:mobile/widgets/text_list_provider.dart';
 import 'package:mobile/widgets/english_text.dart';
 import 'package:mobile/widgets/word_study_problem.dart';
+import 'package:mobile/widgets/problem_list_provider.dart';
 
 class WordStudyMain extends ConsumerWidget {
   @override
@@ -15,27 +16,8 @@ class WordStudyMain extends ConsumerWidget {
     print('WordStudyMain build');
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
     final textFieldValueList = ref.watch(textFieldValueListProvider);
-
-    final problem = ProblemWordStudy(
-      englishList: [
-        ProblemWordStudyEnglish('I'),
-        ProblemWordStudyEnglish('always'),
-        ProblemWordStudyEnglish('prefer'),
-        ProblemWordStudyEnglish('meeting'),
-        ProblemWordStudyEnglish('in'),
-        ProblemWordStudyEnglish('person'),
-        ProblemWordStudyEnglish('over', isProblem: true),
-        ProblemWordStudyEnglish('talking'),
-        ProblemWordStudyEnglish('on'),
-        ProblemWordStudyEnglish('the', isProblem: true),
-        ProblemWordStudyEnglish('phone.'),
-      ],
-      translationList: [
-        ProblemWordStudyTranslation('aaa'),
-        ProblemWordStudyTranslation('bbb'),
-        ProblemWordStudyTranslation('ccc'),
-      ],
-    );
+    final problemNotifier = ref.read(problemProvider.notifier);
+    final problem = ref.watch(problemProvider);
 
     final focusNodeList = List.generate(10, (index) => FocusNode());
     final controllerList =
@@ -65,14 +47,14 @@ class WordStudyMain extends ConsumerWidget {
     controllerList.asMap().forEach((index, controller) {
       controller.text = textFieldValueList.texts[index].text;
       controller.addListener(() {
-        print('over == ${controllerList[index].text}');
+        // print('over == ${controllerList[index].text}');
         if (completedList[index]) {
           return;
         }
-        if ("over" == controllerList[index].text) {
-          print("SET COMPLETESSSSS");
-          // textFieldListNotifier.setComplete(index);
-        }
+        // if ("over" == controllerList[index].text) {
+        //   print("SET COMPLETESSSSS");
+        //   // textFieldListNotifier.setComplete(index);
+        // }
       });
     });
 
@@ -90,14 +72,21 @@ class WordStudyMain extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(textFieldValueList.allCompleted.toString()),
+            ElevatedButton(
+              onPressed: () {
+                problemNotifier.fetchProblem(0);
+              },
+              child: Text('Editor'),
+            ),
             wordSturyProblem,
             Keyboard(
               onPresskey: (String text) {
                 textFieldListNotifier.addText(text);
-                var index = textFieldValueList.index;
-                if ("over" == textFieldValueList.texts[index].text) {
-                  textFieldListNotifier.setComplete(index);
-                }
+                // var index = textFieldValueList.index;
+                // if ("over" == textFieldValueList.texts[index].text) {
+                //   textFieldListNotifier.setComplete(index);
+                // }
               },
               onPressBackspace: () {
                 textFieldListNotifier.backspace();

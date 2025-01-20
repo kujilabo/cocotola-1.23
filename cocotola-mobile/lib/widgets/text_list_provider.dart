@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:mobile/widgets/problem_list_provider.dart';
+import 'package:mobile/models/problem_word_study.dart';
 
 class TextFieldValue {
   final String text;
@@ -17,20 +20,53 @@ class TextFieldValue {
 class TextFieldValueList {
   final List<TextFieldValue> texts;
   final int index;
-  const TextFieldValueList({required this.texts, required this.index});
+  final int numProblems;
+  final bool allCompleted;
+  const TextFieldValueList({
+    required this.texts,
+    required this.index,
+    required this.numProblems,
+    required this.allCompleted,
+  });
 }
 
 class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
+  // final ProblemWordStudy problemRepository;
+  // TextFieldValueListNotifier(this.problemRepository);
   @override
   TextFieldValueList build() {
-    final texts = List.generate(
-        10,
-        (index) => TextFieldValue(
-            text: '', answer: '', position: 0, completed: false));
-    return TextFieldValueList(texts: texts, index: 0);
+    final problem = ref.watch(problemProvider);
+
+    List<TextFieldValue> texts = [];
+    var numProblems = 0;
+    for (var i = 0; i < problem.englishList.length; i++) {
+      final english = problem.englishList[i];
+      if (english.isProblem) {
+        texts.add(TextFieldValue(
+            text: '', answer: english.text, position: 0, completed: false));
+        print('problem: ${english.text}');
+        numProblems++;
+      }
+    }
+    final numEmpty = 10 - texts.length;
+    for (var i = 0; i < numEmpty; i++) {
+      texts.add(
+          TextFieldValue(text: '', answer: '', position: 0, completed: false));
+    }
+
+    // final texts = List.generate(
+    //     10,
+    //     (index) => TextFieldValue(
+    //         text: '', answer: '', position: 0, completed: false));
+    return TextFieldValueList(
+      texts: texts,
+      index: 0,
+      numProblems: numProblems,
+      allCompleted: false,
+    );
   }
 
-  void setAnswer(int index, String answer) {}
+  // void setAnswer(int index, String answer) {}
   void addText(String text) {
     final index = state.index;
     final currTextField = state.texts[index];
@@ -53,7 +89,24 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
       newPosition = currTextField.position + 1;
     }
 
-    var completed = newText == "over";
+    var allCompleted = false;
+    var completed = newText == currTextField.answer;
+    var newIndex = state.index;
+    if (completed) {
+      var numCorrect = 1;
+      for (var i = 0; i < state.numProblems; i++) {
+        newIndex = (i + index + 1) % state.numProblems;
+        if (state.texts[newIndex].completed) {
+          numCorrect++;
+        } else {
+          break;
+        }
+      }
+      if (numCorrect == state.numProblems) {
+        allCompleted = true;
+      }
+    }
+    print('completed: $completed, ${currTextField.answer}, ${newIndex}');
     final texts = [
       ...state.texts.sublist(0, index),
       TextFieldValue(
@@ -63,7 +116,12 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
           completed: completed),
       ...state.texts.sublist(index + 1),
     ];
-    state = TextFieldValueList(texts: texts, index: state.index);
+    state = TextFieldValueList(
+      texts: texts,
+      index: newIndex,
+      numProblems: state.numProblems,
+      allCompleted: allCompleted,
+    );
   }
 
   void setPosition(int index, int position) {
@@ -82,7 +140,12 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
           completed: currTextField.completed),
       ...state.texts.sublist(index + 1),
     ];
-    state = TextFieldValueList(texts: texts, index: state.index);
+    state = TextFieldValueList(
+      texts: texts,
+      index: state.index,
+      numProblems: state.numProblems,
+      allCompleted: state.allCompleted,
+    );
   }
 
   void backspace() {
@@ -101,37 +164,60 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
     final text1 = currText.substring(currPosition, currText.length);
     final newText = text0 + text1;
 
+    var completed = newText == currTextField.answer;
     final texts = [
       ...state.texts.sublist(0, index),
       TextFieldValue(
           text: newText,
           answer: currTextField.answer,
           position: currPosition - 1,
-          completed: currTextField.completed),
+          completed: completed),
       ...state.texts.sublist(index + 1),
     ];
-    state = TextFieldValueList(texts: texts, index: state.index);
+    state = TextFieldValueList(
+      texts: texts,
+      index: state.index,
+      numProblems: state.numProblems,
+      allCompleted: state.allCompleted,
+    );
   }
 
   void setIndex(int index) {
-    state = TextFieldValueList(texts: state.texts, index: index);
+    state = TextFieldValueList(
+      texts: state.texts,
+      index: index,
+      numProblems: state.numProblems,
+      allCompleted: state.allCompleted,
+    );
   }
 
-  void setComplete(int index) {
-    final currTextField = state.texts[index];
-    final texts = [
-      ...state.texts.sublist(0, index),
-      TextFieldValue(
-          text: currTextField.text,
-          answer: currTextField.answer,
-          position: currTextField.position,
-          completed: true),
-      ...state.texts.sublist(index + 1),
-    ];
-    state = TextFieldValueList(texts: texts, index: index);
-  }
+  // void setComplete(int index) {
+  //   final currTextField = state.texts[index];
+  //   final texts = [
+  //     ...state.texts.sublist(0, index),
+  //     TextFieldValue(
+  //         text: currTextField.text,
+  //         answer: currTextField.answer,
+  //         position: currTextField.position,
+  //         completed: true),
+  //     ...state.texts.sublist(index + 1),
+  //   ];
+  //   state = TextFieldValueList(
+  //       texts: texts, index: index, numProblems: state.numProblems);
+  // }
 }
 
 final textFieldValueListProvider =
     NotifierProvider<TextFieldValueListNotifier, TextFieldValueList>(
         TextFieldValueListNotifier.new);
+// final textFieldValueListProvider =
+//     NotifierProvider<TextFieldValueListNotifier, TextFieldValueList>((Ref ref) {
+//   final problem = ref.read(problemProvider);
+//   return TextFieldValueListNotifier(problem);
+// });
+
+// @riverpod
+// TextFieldValueList textFieldValueList(Ref ref){
+//   final problem =ref.watch(problemProvider);
+//   return 
+// }
