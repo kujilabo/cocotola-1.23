@@ -1,14 +1,14 @@
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/widgets/keyboard.dart';
-import 'package:mobile/widgets/text_list_provider.dart';
+import 'package:mobile/widget/keyboard.dart';
+import 'package:mobile/provider/text_list_provider.dart';
 // import 'package:mobile/widgets/editor_screen.dart';
 import 'package:mobile/model/word_problem.dart';
-import 'package:mobile/widgets/text_list_provider.dart';
-import 'package:mobile/widgets/english_text.dart';
-import 'package:mobile/widgets/word_study_problem.dart';
-import 'package:mobile/widgets/problem_list_provider.dart';
+import 'package:mobile/provider/text_list_provider.dart';
+import 'package:mobile/widget/english_text.dart';
+import 'package:mobile/widget/word_study_problem.dart';
+import 'package:mobile/gateway/problem_repository.dart';
 
 class WordStudyMain extends ConsumerWidget {
   @override
@@ -19,9 +19,10 @@ class WordStudyMain extends ConsumerWidget {
     final problemNotifier = ref.read(problemProvider.notifier);
     final problem = ref.watch(problemProvider);
 
-    final focusNodeList = List.generate(10, (index) => FocusNode());
+    final numProblems = problem.getNumProblems();
+    final focusNodeList = List.generate(numProblems, (index) => FocusNode());
     final controllerList =
-        List.generate(10, (index) => TextEditingController());
+        List.generate(numProblems, (index) => TextEditingController());
     final completedList =
         textFieldValueList.texts.map((e) => e.completed).toList();
 
@@ -44,25 +45,19 @@ class WordStudyMain extends ConsumerWidget {
         }
       });
     });
-    controllerList.asMap().forEach((index, controller) {
-      controller.text = textFieldValueList.texts[index].text;
-      controller.addListener(() {
-        // print('over == ${controllerList[index].text}');
-        if (completedList[index]) {
-          return;
-        }
-        // if ("over" == controllerList[index].text) {
-        //   print("SET COMPLETESSSSS");
-        //   // textFieldListNotifier.setComplete(index);
-        // }
-      });
-    });
 
     final index = textFieldValueList.index;
-    controllerList[index].selection = TextSelection.fromPosition(
-        TextPosition(offset: textFieldValueList.texts[index].position));
-    print(
-        'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
+    if (numProblems > 0) {
+      print('index: $index');
+      print(
+          ' textFieldValueList.texts[index].position ${textFieldValueList.texts[index].position}');
+      controllerList[index].selection = TextSelection.fromPosition(
+          TextPosition(offset: textFieldValueList.texts[index].position));
+      print(
+          'textFieldValueList.texts.length: ${textFieldValueList.texts.length}');
+      print(
+          'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -89,10 +84,6 @@ class WordStudyMain extends ConsumerWidget {
             Keyboard(
               onPresskey: (String text) {
                 textFieldListNotifier.addText(text);
-                // var index = textFieldValueList.index;
-                // if ("over" == textFieldValueList.texts[index].text) {
-                //   textFieldListNotifier.setComplete(index);
-                // }
               },
               onPressBackspace: () {
                 textFieldListNotifier.backspace();
@@ -103,6 +94,4 @@ class WordStudyMain extends ConsumerWidget {
       ),
     );
   }
-
-  void _onPressBackspace() {}
 }

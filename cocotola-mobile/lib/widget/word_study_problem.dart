@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/widgets/english_text.dart';
+import 'package:mobile/widget/english_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
-import 'package:mobile/widgets/text_list_provider.dart';
+import 'package:mobile/provider/text_list_provider.dart';
 
 class WordStudyProblem extends ConsumerWidget {
   late void Function(int) onCompletedWord;

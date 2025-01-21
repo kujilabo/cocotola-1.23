@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:mobile/widgets/problem_list_provider.dart';
+import 'package:mobile/gateway/problem_repository.dart';
 import 'package:mobile/model/word_problem.dart';
 
 class TextFieldValue {
@@ -31,37 +31,31 @@ class TextFieldValueList {
 }
 
 class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
-  // final ProblemWordStudy problemRepository;
-  // TextFieldValueListNotifier(this.problemRepository);
   @override
   TextFieldValueList build() {
     final problem = ref.watch(problemProvider);
 
     List<TextFieldValue> texts = [];
-    var numProblems = 0;
+    // var numProblems = 0;
     for (var i = 0; i < problem.englishList.length; i++) {
       final english = problem.englishList[i];
       if (english.isProblem) {
         texts.add(TextFieldValue(
             text: '', answer: english.text, position: 0, completed: false));
         print('problem: ${english.text}');
-        numProblems++;
+        // numProblems++;
       }
     }
-    final numEmpty = 10 - texts.length;
-    for (var i = 0; i < numEmpty; i++) {
-      texts.add(
-          TextFieldValue(text: '', answer: '', position: 0, completed: false));
-    }
+    // final numEmpty = 10 - texts.length;
+    // for (var i = 0; i < numEmpty; i++) {
+    //   texts.add(
+    //       TextFieldValue(text: '', answer: '', position: 0, completed: false));
+    // }
 
-    // final texts = List.generate(
-    //     10,
-    //     (index) => TextFieldValue(
-    //         text: '', answer: '', position: 0, completed: false));
     return TextFieldValueList(
       texts: texts,
       index: 0,
-      numProblems: numProblems,
+      numProblems: problem.getNumProblems(),
       allCompleted: false,
     );
   }
