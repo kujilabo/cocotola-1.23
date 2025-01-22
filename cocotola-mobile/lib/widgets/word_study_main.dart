@@ -1,12 +1,12 @@
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/widgets/keyboard.dart';
+import 'package:mobile/widget/keyboard.dart';
 import 'package:mobile/widgets/text_list_provider.dart';
 // import 'package:mobile/widgets/editor_screen.dart';
 import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/widgets/text_list_provider.dart';
-import 'package:mobile/widgets/english_text.dart';
+import 'package:mobile/widget/english_text.dart';
 import 'package:mobile/widgets/word_study_problem.dart';
 import 'package:mobile/widgets/problem_list_provider.dart';
 
@@ -89,10 +89,6 @@ class WordStudyMain extends ConsumerWidget {
             Keyboard(
               onPresskey: (String text) {
                 textFieldListNotifier.addText(text);
-                // var index = textFieldValueList.index;
-                // if ("over" == textFieldValueList.texts[index].text) {
-                //   textFieldListNotifier.setComplete(index);
-                // }
               },
               onPressBackspace: () {
                 textFieldListNotifier.backspace();
@@ -103,6 +99,4 @@ class WordStudyMain extends ConsumerWidget {
       ),
     );
   }
-
-  void _onPressBackspace() {}
 }

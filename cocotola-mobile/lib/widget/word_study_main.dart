@@ -45,6 +45,19 @@ class WordStudyMain extends ConsumerWidget {
         }
       });
     });
+    controllerList.asMap().forEach((index, controller) {
+      controller.text = textFieldValueList.texts[index].text;
+      controller.addListener(() {
+        // print('over == ${controllerList[index].text}');
+        if (completedList[index]) {
+          return;
+        }
+        // if ("over" == controllerList[index].text) {
+        //   print("SET COMPLETESSSSS");
+        //   // textFieldListNotifier.setComplete(index);
+        // }
+      });
+    });
 
     final index = textFieldValueList.index;
     if (numProblems > 0) {
