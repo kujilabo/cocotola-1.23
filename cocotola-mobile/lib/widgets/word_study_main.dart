@@ -8,7 +8,7 @@ import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/widgets/text_list_provider.dart';
 import 'package:mobile/widget/english_text.dart';
 import 'package:mobile/widgets/word_study_problem.dart';
-import 'package:mobile/widgets/problem_list_provider.dart';
+import 'package:mobile/provider/problem_provider.dart';
 
 class WordStudyMain extends ConsumerWidget {
   @override
