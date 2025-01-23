@@ -2,13 +2,14 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/widget/keyboard.dart';
-import 'package:mobile/widgets/text_list_provider.dart.txt';
+import 'package:mobile/provider/text_list_provider.dart';
 // import 'package:mobile/widgets/editor_screen.dart';
 import 'package:mobile/model/word_problem.dart';
-import 'package:mobile/widgets/text_list_provider.dart.txt';
-import 'package:mobile/widget/english_text.dart';
-import 'package:mobile/widget/word_study_problem.dart';
-import 'package:mobile/provider/problem_provider.dart';
+import 'package:mobile/provider/text_list_provider.dart';
+import 'package:mobile/widget/word_study/english_text.dart';
+import 'package:mobile/widget/word_study/word_study_answer.dart';
+import 'package:mobile/widget/word_study/word_study_problem.dart';
+import 'package:mobile/gateway/problem_repository.dart';
 
 class WordStudyMain extends ConsumerWidget {
   @override
@@ -19,9 +20,10 @@ class WordStudyMain extends ConsumerWidget {
     final problemNotifier = ref.read(problemProvider.notifier);
     final problem = ref.watch(problemProvider);
 
-    final focusNodeList = List.generate(10, (index) => FocusNode());
+    final numProblems = problem.getNumProblems();
+    final focusNodeList = List.generate(numProblems, (index) => FocusNode());
     final controllerList =
-        List.generate(10, (index) => TextEditingController());
+        List.generate(numProblems, (index) => TextEditingController());
     final completedList =
         textFieldValueList.texts.map((e) => e.completed).toList();
 
@@ -59,11 +61,24 @@ class WordStudyMain extends ConsumerWidget {
     });
 
     final index = textFieldValueList.index;
-    controllerList[index].selection = TextSelection.fromPosition(
-        TextPosition(offset: textFieldValueList.texts[index].position));
-    print(
-        'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
+    if (numProblems > 0) {
+      print('index: $index');
+      print(
+          ' textFieldValueList.texts[index].position ${textFieldValueList.texts[index].position}');
+      controllerList[index].selection = TextSelection.fromPosition(
+          TextPosition(offset: textFieldValueList.texts[index].position));
+      print(
+          'textFieldValueList.texts.length: ${textFieldValueList.texts.length}');
+      print(
+          'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
+    }
 
+    final bottom = textFieldValueList.allCompleted
+        ? WordStudyButtons()
+        : Keyboard(
+            onPresskey: (String text) => textFieldListNotifier.addText(text),
+            onPressBackspace: () => textFieldListNotifier.backspace(),
+          );
     return Scaffold(
       appBar: AppBar(
         title: Text('WordStudyMain'),
@@ -86,14 +101,7 @@ class WordStudyMain extends ConsumerWidget {
               child: Text('---1---'),
             ),
             wordSturyProblem,
-            Keyboard(
-              onPresskey: (String text) {
-                textFieldListNotifier.addText(text);
-              },
-              onPressBackspace: () {
-                textFieldListNotifier.backspace();
-              },
-            ),
+            bottom,
           ],
         ),
       ),
