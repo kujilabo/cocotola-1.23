@@ -1,17 +1,14 @@
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/widget/keyboard.dart';
 import 'package:mobile/provider/text_list_provider.dart';
-// import 'package:mobile/widgets/editor_screen.dart';
-import 'package:mobile/model/word_problem.dart';
-import 'package:mobile/provider/text_list_provider.dart';
-import 'package:mobile/widget/word_study/english_text.dart';
 import 'package:mobile/widget/word_study/word_study_answer.dart';
 import 'package:mobile/widget/word_study/word_study_problem.dart';
 import 'package:mobile/gateway/problem_repository.dart';
 
 class WordStudyMain extends ConsumerWidget {
+  const WordStudyMain({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print('WordStudyMain build');
@@ -46,18 +43,9 @@ class WordStudyMain extends ConsumerWidget {
         }
       });
     });
+
     controllerList.asMap().forEach((index, controller) {
       controller.text = textFieldValueList.texts[index].text;
-      controller.addListener(() {
-        // print('over == ${controllerList[index].text}');
-        if (completedList[index]) {
-          return;
-        }
-        // if ("over" == controllerList[index].text) {
-        //   print("SET COMPLETESSSSS");
-        //   // textFieldListNotifier.setComplete(index);
-        // }
-      });
     });
 
     final index = textFieldValueList.index;
@@ -74,7 +62,7 @@ class WordStudyMain extends ConsumerWidget {
     }
 
     final bottom = textFieldValueList.allCompleted
-        ? WordStudyButtons()
+        ? WordStudyAnswer()
         : Keyboard(
             onPresskey: (String text) => textFieldListNotifier.addText(text),
             onPressBackspace: () => textFieldListNotifier.backspace(),

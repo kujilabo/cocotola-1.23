@@ -1,88 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/widget/word_study/english_text.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
-import 'package:mobile/provider/text_list_provider.dart';
+import 'package:mobile/widget/word_study/plain_text.dart';
+import 'package:mobile/widget/word_study/problem_text_field.dart';
 
 class WordStudyProblem extends ConsumerWidget {
-  late void Function(int) onCompletedWord;
   final WordProblem problem;
   final List<FocusNode> focusNodeList;
   final List<TextEditingController> controllerList;
   final List<bool> completedList;
 
-  WordStudyProblem({
+  const WordStudyProblem({
     super.key,
     required this.problem,
     required this.focusNodeList,
     required this.controllerList,
     required this.completedList,
-  }) {
-    onCompletedWord = (int index) => {};
-  }
+  });
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  List<Widget> _buildEnglishTexts() {
     List<Widget> englishTexts = [];
-
-    final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
-    {
-      var index = 0;
-      for (var i = 0; i < problem.englishList.length; i++) {
-        if (problem.englishList[i].isProblem) {
-          // print("SET COMPLETE");
-          // textFieldListNotifier.setComplete(index);
-          index++;
-        }
-      }
-    }
-    // controllerList.asMap().forEach((index, controller) {
-    //   // controller.addListener(() {
-    //   if (controller.text == problem.englishList[index].text) {
-    //     // onCompleted(index);
-    //     // setState(() {
-    //     //   readOnly = true;
-    //     //   color = Colors.red;
-    //   }
-    //   print("${controller.text} : ${problem.englishList[index].text}");
-    //   // });
-    // });
     var index = 0;
-    var length = problem.englishList.length;
-    print('length: $length');
-
     var firstProblem = true;
-
-    for (var i = 0; i < length; i++) {
-      print('i: $i');
-      final english = problem.englishList[i];
+    for (final english in problem.englishList) {
       if (english.isProblem) {
-        // final completed = english.text == controllerList[index].text;
-        print('${english.text} == ${controllerList[index].text}');
-        englishTexts.add(EnglishBlankTextWidget(
+        // print('${english.text} == ${controllerList[index].text}');
+        englishTexts.add(ProblemTextField(
           index: index,
           englishText: english.text,
           controller: controllerList[index],
           focusNode: focusNodeList[index],
           completed: completedList[index],
-          onCompleted: () {
-            // print('${english.text} == ${controllerList[index].text}');
-            // if (english.text == controllerList[index].text) {
-            //   print("SET COMPLETESSSSS");
-            //   textFieldListNotifier.setComplete(index);
-            // }
-          },
           first: firstProblem,
         ));
         firstProblem = false;
         index++;
       } else {
-        englishTexts.add(EnglishPlainTextWidget(
-          englishText: english.text,
+        englishTexts.add(PlainText(
+          text: english.text,
         ));
       }
     }
+
+    return englishTexts;
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<Widget> englishTexts = _buildEnglishTexts();
+
     return Card(
       child: Container(
         alignment: Alignment.topLeft,

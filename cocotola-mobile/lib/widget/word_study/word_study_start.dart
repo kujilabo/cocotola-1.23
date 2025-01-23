@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
-// import 'package:mobile/widgets/word_study_main.dart';
-// import 'package:mobile/widgets/word_study_top.dart';
-// import 'package:mobile/widgets/keyboard.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class WordStudyTop extends StatefulWidget {
-  const WordStudyTop({super.key});
+class WordStudyStart extends ConsumerWidget {
+  const WordStudyStart({super.key});
 
   @override
-  State<WordStudyTop> createState() => _WordStudyTopState();
-}
-
-class _WordStudyTopState extends State<WordStudyTop> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Word Study'),

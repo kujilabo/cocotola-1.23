@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/widget/word_study/word_study_problem.dart';
 import 'package:mobile/model/word_problem.dart';
 
 class ProblemRepository extends Notifier<WordProblem> {
