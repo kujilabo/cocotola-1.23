@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
 FLUTTER_ROOT=/opt/flutter
-FLUTTER_APPLICATION_PATH=/home/hiroto/pecolynx/cocotola-1.23/.github/mobile
+FLUTTER_APPLICATION_PATH=/home/hiroto/ghq/github.com/kujilabo/cocotola-1.23/cocotola-mobile
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0

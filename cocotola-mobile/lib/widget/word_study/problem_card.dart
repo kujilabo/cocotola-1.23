@@ -45,22 +45,34 @@ class ProblemCard extends ConsumerWidget {
     return englishTexts;
   }
 
+  List<Widget> _buildTranslationTexts() {
+    List<Widget> translationTexts = [];
+    for (final translation in problem.translationList) {
+      translationTexts.add(PlainText(
+        text: translation.text,
+      ));
+    }
+    return translationTexts;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     List<Widget> englishTexts = _buildEnglishTexts();
+    List<Widget> translationTexts = _buildTranslationTexts();
 
     return Card(
       child: Container(
         alignment: Alignment.topLeft,
         // height: 100.0,
         width: double.infinity,
+        color: Colors.blueGrey[50],
         // color: Colors.red,
         padding: EdgeInsets.all(15),
         child: Column(
           children: [
             Wrap(children: englishTexts),
             SizedBox(height: 10),
-            // Wrap(children: englishTexts),
+            Wrap(children: translationTexts),
           ],
         ),
       ),

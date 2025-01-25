@@ -20,9 +20,9 @@ class ProblemSetRepository extends Notifier<List<WordProblem>> {
           WordProblemEnglish('phone.'),
         ],
         translationList: [
-          WordProblemTranslation('aaa'),
+          WordProblemTranslation('aaa', isProblem: true),
           WordProblemTranslation('bbb'),
-          WordProblemTranslation('ccc'),
+          WordProblemTranslation('ccc', isProblem: true),
         ],
       ),
       WordProblem(

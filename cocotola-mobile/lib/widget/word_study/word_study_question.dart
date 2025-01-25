@@ -81,20 +81,10 @@ class WordStudyQuestion extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(textFieldValueList.allCompleted.toString()),
-          ElevatedButton(
-            onPressed: () {
-              problemNotifier.next();
-            },
-            child: Text('---0---'),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: problemCard,
           ),
-          ElevatedButton(
-            onPressed: () {
-              problemNotifier.next();
-            },
-            child: Text('---1---'),
-          ),
-          problemCard,
           bottom,
         ],
       ),
