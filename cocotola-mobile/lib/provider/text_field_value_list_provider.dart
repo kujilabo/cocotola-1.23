@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:mobile/gateway/problem_repository.dart';
 import 'package:mobile/model/word_problem.dart';
+import 'package:mobile/provider/problem_provider.dart';
 
 class TextFieldValue {
   final String text;
@@ -33,25 +33,18 @@ class TextFieldValueList {
 class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
   @override
   TextFieldValueList build() {
-    final problem = ref.watch(problemProvider);
-
+    final problemWithStatus = ref.watch(problemProvider);
+    final problem = problemWithStatus.currentProblem;
     List<TextFieldValue> texts = [];
-    // var numProblems = 0;
+
     for (var i = 0; i < problem.englishList.length; i++) {
       final english = problem.englishList[i];
       if (english.isProblem) {
         texts.add(TextFieldValue(
             text: '', answer: english.text, position: 0, completed: false));
         print('problem: ${english.text}');
-        // numProblems++;
       }
     }
-    // final numEmpty = 10 - texts.length;
-    // for (var i = 0; i < numEmpty; i++) {
-    //   texts.add(
-    //       TextFieldValue(text: '', answer: '', position: 0, completed: false));
-    // }
-
     return TextFieldValueList(
       texts: texts,
       index: 0,
@@ -60,7 +53,6 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
     );
   }
 
-  // void setAnswer(int index, String answer) {}
   void addText(String text) {
     final index = state.index;
     final currTextField = state.texts[index];
@@ -184,34 +176,8 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
       allCompleted: state.allCompleted,
     );
   }
-
-  // void setComplete(int index) {
-  //   final currTextField = state.texts[index];
-  //   final texts = [
-  //     ...state.texts.sublist(0, index),
-  //     TextFieldValue(
-  //         text: currTextField.text,
-  //         answer: currTextField.answer,
-  //         position: currTextField.position,
-  //         completed: true),
-  //     ...state.texts.sublist(index + 1),
-  //   ];
-  //   state = TextFieldValueList(
-  //       texts: texts, index: index, numProblems: state.numProblems);
-  // }
 }
 
 final textFieldValueListProvider =
     NotifierProvider<TextFieldValueListNotifier, TextFieldValueList>(
         TextFieldValueListNotifier.new);
-// final textFieldValueListProvider =
-//     NotifierProvider<TextFieldValueListNotifier, TextFieldValueList>((Ref ref) {
-//   final problem = ref.read(problemProvider);
-//   return TextFieldValueListNotifier(problem);
-// });
-
-// @riverpod
-// TextFieldValueList textFieldValueList(Ref ref){
-//   final problem =ref.watch(problemProvider);
-//   return 
-// }

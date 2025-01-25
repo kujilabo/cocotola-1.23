@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/widget/word_study_top.dart';
-import 'package:mobile/widget/word_study_main.dart';
+import 'package:mobile/widget/word_study/menu_word_study.dart';
+import 'package:mobile/widget/word_study/word_study.dart';
 // import 'package:mobile/widgets/editor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,9 +8,9 @@ void main() {
   runApp(
     ProviderScope(
       child: MaterialApp(
-        // home: const WordStudyTop(),
+        home: const MenuWordStudy(),
         // home: WordStudyMain(),
-        home: WordStudyMain(),
+        // home: WordStudyMain(),
       ),
     ),
   );

@@ -1,23 +1,33 @@
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/widget/keyboard.dart';
-import 'package:mobile/provider/text_list_provider.dart';
-// import 'package:mobile/widgets/editor_screen.dart';
-import 'package:mobile/model/word_problem.dart';
-import 'package:mobile/provider/text_list_provider.dart';
-import 'package:mobile/widget/english_text.dart';
-import 'package:mobile/widget/word_study_problem.dart';
-import 'package:mobile/gateway/problem_repository.dart';
+import 'package:mobile/provider/text_field_value_list_provider.dart';
+import 'package:mobile/provider/word_study_status.dart';
+import 'package:mobile/widget/word_study/word_study_answer.dart';
+import 'package:mobile/widget/word_study/problem_card.dart';
+import 'package:mobile/provider/problem_provider.dart';
 
-class WordStudyMain extends ConsumerWidget {
+class WordStudyQuestion extends ConsumerWidget {
+  const WordStudyQuestion({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('WordStudyMain build');
+    print('WordStudyQuestion build');
+    final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
+
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
     final textFieldValueList = ref.watch(textFieldValueListProvider);
+
     final problemNotifier = ref.read(problemProvider.notifier);
-    final problem = ref.watch(problemProvider);
+    final problemWithStatus = ref.watch(problemProvider);
+
+    final problem = problemWithStatus.currentProblem;
+
+    ref.listen(textFieldValueListProvider, (prev, next) {
+      if (next.allCompleted) {
+        wordStudyStatusNotifier.setAnswerStatus();
+      }
+    });
 
     final numProblems = problem.getNumProblems();
     final focusNodeList = List.generate(numProblems, (index) => FocusNode());
@@ -26,7 +36,7 @@ class WordStudyMain extends ConsumerWidget {
     final completedList =
         textFieldValueList.texts.map((e) => e.completed).toList();
 
-    var wordSturyProblem = WordStudyProblem(
+    var problemCard = ProblemCard(
       problem: problem,
       focusNodeList: focusNodeList,
       controllerList: controllerList,
@@ -45,18 +55,9 @@ class WordStudyMain extends ConsumerWidget {
         }
       });
     });
+
     controllerList.asMap().forEach((index, controller) {
       controller.text = textFieldValueList.texts[index].text;
-      controller.addListener(() {
-        // print('over == ${controllerList[index].text}');
-        if (completedList[index]) {
-          return;
-        }
-        // if ("over" == controllerList[index].text) {
-        //   print("SET COMPLETESSSSS");
-        //   // textFieldListNotifier.setComplete(index);
-        // }
-      });
     });
 
     final index = textFieldValueList.index;
@@ -72,38 +73,20 @@ class WordStudyMain extends ConsumerWidget {
           'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('WordStudyMain'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(textFieldValueList.allCompleted.toString()),
-            ElevatedButton(
-              onPressed: () {
-                problemNotifier.fetchProblem(0);
-              },
-              child: Text('---0---'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                problemNotifier.fetchProblem(1);
-              },
-              child: Text('---1---'),
-            ),
-            wordSturyProblem,
-            Keyboard(
-              onPresskey: (String text) {
-                textFieldListNotifier.addText(text);
-              },
-              onPressBackspace: () {
-                textFieldListNotifier.backspace();
-              },
-            ),
-          ],
-        ),
+    final bottom = Keyboard(
+      onPresskey: (String text) => textFieldListNotifier.addText(text),
+      onPressBackspace: () => textFieldListNotifier.backspace(),
+    );
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: problemCard,
+          ),
+          bottom,
+        ],
       ),
     );
   }

@@ -1,16 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/widget/word_study_problem.dart';
 import 'package:mobile/model/word_problem.dart';
 
-class ProblemRepository extends Notifier<WordProblem> {
+class ProblemSetRepository extends Notifier<List<WordProblem>> {
   @override
-  WordProblem build() {
-    return WordProblem(englishList: [], translationList: []);
-  }
-
-  void fetchProblem(int index) {
-    if (index == 0) {
-      state = WordProblem(
+  List<WordProblem> build() {
+    return [
+      WordProblem(
         englishList: [
           WordProblemEnglish('I'),
           WordProblemEnglish('always'),
@@ -25,13 +20,12 @@ class ProblemRepository extends Notifier<WordProblem> {
           WordProblemEnglish('phone.'),
         ],
         translationList: [
-          WordProblemTranslation('aaa'),
+          WordProblemTranslation('aaa', isProblem: true),
           WordProblemTranslation('bbb'),
-          WordProblemTranslation('ccc'),
+          WordProblemTranslation('ccc', isProblem: true),
         ],
-      );
-    } else {
-      state = WordProblem(
+      ),
+      WordProblem(
         englishList: [
           WordProblemEnglish('I'),
           WordProblemEnglish('died', isProblem: true),
@@ -43,10 +37,15 @@ class ProblemRepository extends Notifier<WordProblem> {
           WordProblemTranslation('bbb'),
           WordProblemTranslation('ccc'),
         ],
-      );
-    }
+      )
+    ];
+  }
+
+  void fetch() {
+    state = [];
   }
 }
 
-final problemProvider =
-    NotifierProvider<ProblemRepository, WordProblem>(ProblemRepository.new);
+final problemSetProvider =
+    NotifierProvider<ProblemSetRepository, List<WordProblem>>(
+        ProblemSetRepository.new);
