@@ -92,7 +92,7 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
         allCompleted = true;
       }
     }
-    print('completed: $completed, ${currTextField.answer}, ${newIndex}');
+    print('completed: $completed, ${currTextField.answer}, $newIndex');
     final texts = [
       ...state.texts.sublist(0, index),
       TextFieldValue(

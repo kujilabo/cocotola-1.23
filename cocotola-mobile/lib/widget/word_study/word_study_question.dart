@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/widget/always_disabled_focus_node.dart';
 import 'package:mobile/widget/keyboard.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/word_study_status.dart';
 import 'package:mobile/widget/word_study/word_study_answer.dart';
 import 'package:mobile/widget/word_study/problem_card.dart';
 import 'package:mobile/provider/problem_provider.dart';
+import 'package:mobile/widget/always_disabled_focus_node.dart';
 
 class WordStudyQuestion extends ConsumerWidget {
   const WordStudyQuestion({super.key});
@@ -31,6 +33,8 @@ class WordStudyQuestion extends ConsumerWidget {
 
     final numProblems = problem.getNumProblems();
     final focusNodeList = List.generate(numProblems, (index) => FocusNode());
+    // final focusNodeList =
+    // List.generate(numProblems, (index) => AlwaysDisabledFocusNode());
     final controllerList =
         List.generate(numProblems, (index) => TextEditingController());
     final completedList =
@@ -46,12 +50,12 @@ class WordStudyQuestion extends ConsumerWidget {
     focusNodeList.asMap().forEach((index, focusNode) {
       focusNode.addListener(() {
         if (focusNode.hasFocus) {
-          print('focusNode ${index} has focus');
+          print('focusNode $index has focus');
           textFieldListNotifier.setIndex(index);
           textFieldListNotifier.setPosition(
               index, controllerList[index].selection.baseOffset);
         } else {
-          print('focusNode ${index} doesnt have focus');
+          print('focusNode $index doesnt have focus');
         }
       });
     });
@@ -70,7 +74,7 @@ class WordStudyQuestion extends ConsumerWidget {
       print(
           'textFieldValueList.texts.length: ${textFieldValueList.texts.length}');
       print(
-          'textFieldValueList.texts[${index}].position: ${textFieldValueList.texts[index].position}');
+          'textFieldValueList.texts[$index].position: ${textFieldValueList.texts[index].position}');
     }
 
     final bottom = Keyboard(
