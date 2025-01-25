@@ -1,9 +1,9 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/opt/flutter"
-export "FLUTTER_APPLICATION_PATH=/home/hiroto/ghq/github.com/kujilabo/cocotola-1.23/cocotola-mobile"
+export "FLUTTER_ROOT=C:\Users\hiroto\AppData\Local\dev\flutter"
+export "FLUTTER_APPLICATION_PATH=D:\Programs\pecolynx\cocotola-1.23\cocotola-mobile"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
-export "FLUTTER_TARGET=lib/main.dart"
+export "FLUTTER_TARGET=lib\main.dart"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"
 export "FLUTTER_BUILD_NUMBER=1"
