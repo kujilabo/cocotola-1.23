@@ -4,13 +4,13 @@ import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/widget/word_study/plain_text.dart';
 import 'package:mobile/widget/word_study/problem_text_field.dart';
 
-class WordStudyProblem extends ConsumerWidget {
+class ProblemCard extends ConsumerWidget {
   final WordProblem problem;
   final List<FocusNode> focusNodeList;
   final List<TextEditingController> controllerList;
   final List<bool> completedList;
 
-  const WordStudyProblem({
+  const ProblemCard({
     super.key,
     required this.problem,
     required this.focusNodeList,

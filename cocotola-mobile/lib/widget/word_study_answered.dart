@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/widget/word_study/problem_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
-import 'package:mobile/provider/text_list_provider.dart';
+import 'package:mobile/provider/text_field_value_list_provider.dart';
 
 class WordStudyButtons extends ConsumerWidget {
   @override

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:mobile/gateway/problem_repository.dart';
 import 'package:mobile/model/word_problem.dart';
+import 'package:mobile/provider/problem_provider.dart';
 
 class TextFieldValue {
   final String text;
@@ -33,7 +33,8 @@ class TextFieldValueList {
 class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
   @override
   TextFieldValueList build() {
-    final problem = ref.watch(problemProvider);
+    final problemWithStatus = ref.watch(problemProvider);
+    final problem = problemWithStatus.currentProblem;
     List<TextFieldValue> texts = [];
 
     for (var i = 0; i < problem.englishList.length; i++) {
