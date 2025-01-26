@@ -17,36 +17,39 @@ class Keyboard extends StatelessWidget {
     final size = Size(screenWidth / 12, screenHeight / 15);
     return Container(
       color: Colors.white,
-      child: Column(
-        spacing: 5,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 5,
-            children: _buildButtons(
-              ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-              size,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          spacing: 5,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 5,
+              children: _buildButtons(
+                ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+                size,
+              ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 5,
-            children: _buildButtons(
-              ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-              size,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 5,
+              children: _buildButtons(
+                ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+                size,
+              ),
             ),
-          ),
-          Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 5,
-            children: _buildButtons(
-                  ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
-                  size,
-                ) +
-                [_buildButton('⌫', size, onPressed: onPressBackspace)],
-          ),
-        ],
+            Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 5,
+              children: _buildButtons(
+                    ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+                    size,
+                  ) +
+                  [_buildButton('⌫', size, onPressed: onPressBackspace)],
+            ),
+          ],
+        ),
       ),
     );
   }

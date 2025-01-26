@@ -88,12 +88,17 @@ class WordStudyQuestion extends ConsumerWidget {
     );
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: problemCard,
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: problemCard,
+              ),
+            ),
           ),
+          // Spacer(), // 余
           bottom,
         ],
       ),

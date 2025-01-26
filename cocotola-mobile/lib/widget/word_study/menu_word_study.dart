@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/word_study_status.dart';
 import 'package:mobile/widget/word_study/word_study.dart';
+import 'package:mobile/provider/text_field_value_list_provider.dart';
 
 class MenuWordStudy extends ConsumerWidget {
   const MenuWordStudy({super.key});
@@ -9,6 +10,8 @@ class MenuWordStudy extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wordStudyStatusNotifier = ref.watch(wordStudyStatusProvider.notifier);
+
+    // final textFieldValueListProvider = ref.watch(textFieldValueListProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Word Study'),
@@ -28,10 +31,11 @@ class MenuWordStudy extends ConsumerWidget {
             ElevatedButton(
               onPressed: () {
                 wordStudyStatusNotifier.setQuestionStatus();
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return WordStudy();
-                }));
+                ref.invalidate(textFieldValueListProvider);
+
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => WordStudy(),
+                ));
               },
               child: const Text('Save Expense'),
             ),

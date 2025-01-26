@@ -16,6 +16,7 @@ class ProblemSetRepository extends Notifier<List<WordProblem>> {
           WordProblemEnglish('over', isProblem: true),
           WordProblemEnglish('talking'),
           WordProblemEnglish('on'),
+          WordProblemEnglish('on'),
           WordProblemEnglish('the', isProblem: true),
           WordProblemEnglish('phone.'),
         ],

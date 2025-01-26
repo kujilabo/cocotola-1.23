@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +8,7 @@ import 'package:mobile/widget/word_study/plain_text.dart';
 import 'package:mobile/widget/word_study/problem_text_field.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'dart:async';
+import 'package:mobile/provider/custom_theme_data_provider.dart';
 
 class TimerState {
   final bool flag;
@@ -69,14 +72,64 @@ class CustomTextField extends ConsumerWidget {
     this.completed = false,
   });
 
+  double _calcWidth(String text, TextStyle style) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    // textPainter.layout();
+    return textPainter.size.width;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final customThemeData = ref.watch(customThemDataProvider);
+    final customTheme = customThemeData.problemCard;
     final textFieldList = ref.watch(textFieldValueListProvider);
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
-    final color = completed ? Colors.red : Colors.black;
+    final style = completed
+        ? customTheme.englishAnswerTextStyle
+        : customTheme.englishProblemTextStyle;
+    final decoration = completed
+        ? customTheme.englishAnswerDecoration
+        : customTheme.englishProblemDecoration;
 
-    final hasFocus = textFieldList.index;
+    final hasFocus = index == textFieldList.index;
     // print('build EnglishText');
+
+    final textWidth = _calcWidth(text, style);
+    final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);
+    print('textWidth: $textWidth');
+    final width =
+        completed ? textWidth + 12 : max(50.0, textWidth + curosrWidth + 12);
+    final widget = completed
+        ? Container(
+            padding: EdgeInsets.only(left: 0, right: 10),
+            child: DecoratedBox(
+                decoration: decoration, child: Text(text, style: style)),
+          )
+        : Container(
+            width: width,
+            padding: EdgeInsets.only(left: 0, right: 10),
+            child: DecoratedBox(
+              decoration: decoration,
+              child: Row(
+                children: [
+                  Text(text, style: style),
+                  Opacity(
+                    opacity: hasFocus && !completed ? 1.0 : 0.0,
+                    child: BlinkText(
+                      text: Text(
+                        '|',
+                        style: customThemeData.problemCard.cusrotTextStyle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
     return GestureDetector(
       onTap: () {
         print('ontap');
@@ -84,30 +137,7 @@ class CustomTextField extends ConsumerWidget {
         // textFieldListNotifier.setPosition(
         //     index, controllerList[index].selection.baseOffset);
       },
-      child: SizedBox(
-        width: 100,
-        child: Container(
-          decoration: BoxDecoration(color: Colors.white),
-          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-          child: Row(
-            children: [
-              Text(
-                text,
-                style: TextStyle(color: color),
-              ),
-              Opacity(
-                opacity: hasFocus == index ? 1.0 : 0.0,
-                child: BlinkText(
-                  text: Text(
-                    '|',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      child: widget,
     );
   }
 }
@@ -126,7 +156,7 @@ class ProblemCard extends ConsumerWidget {
     required this.completedList,
   });
 
-  List<Widget> _buildEnglishTexts() {
+  List<Widget> _buildEnglishTexts(TextStyle plainTextStyle) {
     List<Widget> englishTexts = [];
     var index = 0;
     var firstProblem = true;
@@ -153,6 +183,7 @@ class ProblemCard extends ConsumerWidget {
       } else {
         englishTexts.add(PlainText(
           text: english.text,
+          style: plainTextStyle,
         ));
       }
     }
@@ -160,37 +191,106 @@ class ProblemCard extends ConsumerWidget {
     return englishTexts;
   }
 
-  List<Widget> _buildTranslationTexts() {
+  List<Widget> _buildTranslationTexts(
+    TextStyle plainTextStyle,
+    TextStyle problemTextStyle,
+  ) {
     List<Widget> translationTexts = [];
     for (final translation in problem.translationList) {
-      translationTexts.add(PlainText(
-        text: translation.text,
-      ));
+      final style = translation.isProblem ? problemTextStyle : plainTextStyle;
+      translationTexts.add(PlainText(text: translation.text, style: style));
     }
     return translationTexts;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<Widget> englishTexts = _buildEnglishTexts();
-    List<Widget> translationTexts = _buildTranslationTexts();
+    final customThemeData = ref.watch(customThemDataProvider);
+
+    List<Widget> englishTexts = _buildEnglishTexts(
+      customThemeData.problemCard.englishPlainTextStyle,
+    );
+    List<Widget> translationTexts = _buildTranslationTexts(
+      customThemeData.problemCard.translationPlainTextStyle,
+      customThemeData.problemCard.translationProblemTextStyle,
+    );
 
     return Card(
-      child: Container(
-        alignment: Alignment.topLeft,
-        // height: 100.0,
-        width: double.infinity,
-        color: Colors.blueGrey[50],
-        // color: Colors.red,
-        padding: EdgeInsets.all(15),
-        child: Column(
-          children: [
-            Wrap(children: englishTexts),
-            SizedBox(height: 10),
-            Wrap(children: translationTexts),
-          ],
-        ),
+      // color: Colors.red,
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        // mainAxisSize: MainAxisSize.min, //
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.green,
+              borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(16.0)), // 上部の角を丸く設定
+            ),
+            // color: Colors.green,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 150,
+                width: double.infinity,
+                child: Wrap(children: translationTexts),
+              ),
+            ),
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(16.0)), // 上部の角を丸く設定
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 150,
+                // color: Colors.green,
+                child: Wrap(children: englishTexts),
+              ),
+            ),
+          ),
+        ],
       ),
+      // ),
+      // child: Container(
+      //   alignment: Alignment.topLeft,
+      //   // height: 100.0,
+      //   width: double.infinity,
+      //   color: Colors.blueGrey[50],
+      //   // color: Colors.red,
+      //   // padding: EdgeInsets.all(15),
+      //   child: Column(
+      //     children: [
+      //       Container(color: Colors.white, child: ),
+      //       SizedBox(height: 10),
+      //       Wrap(children: translationTexts),
+      //     ],
+      //   ),
+      // ),
     );
+
+    // return Card(
+
+    //   child: Container(
+    //     alignment: Alignment.topLeft,
+    //     // height: 100.0,
+    //     width: double.infinity,
+    //     color: Colors.blueGrey[50],
+    //     // color: Colors.red,
+    //     // padding: EdgeInsets.all(15),
+    //     child: Column(
+    //       children: [
+    //         Container(color: Colors.white, child: Wrap(children: englishTexts)),
+    //         SizedBox(height: 10),
+    //         Wrap(children: translationTexts),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }
