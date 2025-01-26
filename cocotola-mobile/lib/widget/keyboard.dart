@@ -16,7 +16,7 @@ class Keyboard extends StatelessWidget {
     final double screenHeight = MediaQuery.of(context).size.height;
     final size = Size(screenWidth / 12, screenHeight / 15);
     return Container(
-      color: Colors.white,
+      color: Colors.lightGreenAccent,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

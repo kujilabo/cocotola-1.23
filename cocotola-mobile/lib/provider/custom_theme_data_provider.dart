@@ -9,7 +9,7 @@ class ThemeDataRepository extends Notifier<CustomThemeData> {
   CustomThemeData build() {
     return CustomThemeData(
       problemCard: ThemeProblemCard(
-        translationBackgroundColor: Colors.white,
+        translationBackgroundColor: Colors.lightBlue,
         translationPlainTextStyle: TextStyle(
           fontSize: 20,
           color: Colors.black,
@@ -18,7 +18,7 @@ class ThemeDataRepository extends Notifier<CustomThemeData> {
           fontSize: 20,
           color: Colors.red,
         ),
-        englishBackgroundColor: Colors.white,
+        englishBackgroundColor: Colors.green,
         englishProblemDecoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.vertical(
@@ -39,7 +39,7 @@ class ThemeDataRepository extends Notifier<CustomThemeData> {
         ),
         englishProblemTextStyle: TextStyle(
           fontSize: 20,
-          color: Colors.white,
+          color: Colors.grey,
         ),
         englishAnswerTextStyle: TextStyle(
           fontSize: 20,

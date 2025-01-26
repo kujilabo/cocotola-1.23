@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/word_study_status.dart';
-import 'package:mobile/widget/word_study/word_study.dart';
+import 'package:mobile/provider/problem_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
+import 'package:mobile/widget/word_study/word_study.dart';
 
 class MenuWordStudy extends ConsumerWidget {
   const MenuWordStudy({super.key});
@@ -51,6 +52,7 @@ class MenuWordStudy extends ConsumerWidget {
               onPressed: () {
                 wordStudyStatusNotifier.setQuestionStatus();
                 ref.invalidate(textFieldValueListProvider);
+                ref.invalidate(problemProvider);
 
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => WordStudy(),

@@ -1,13 +1,10 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/widget/always_disabled_focus_node.dart';
-import 'package:mobile/widget/keyboard.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/word_study_status.dart';
-import 'package:mobile/widget/word_study/word_study_answer.dart';
-import 'package:mobile/widget/word_study/problem_card.dart';
 import 'package:mobile/provider/problem_provider.dart';
-import 'package:mobile/widget/always_disabled_focus_node.dart';
+import 'package:mobile/widget/keyboard.dart';
+import 'package:mobile/widget/word_study/problem_card.dart';
 
 class WordStudyQuestion extends ConsumerWidget {
   const WordStudyQuestion({super.key});
@@ -25,7 +22,6 @@ class WordStudyQuestion extends ConsumerWidget {
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
     final textFieldValueList = ref.watch(textFieldValueListProvider);
 
-    final problemNotifier = ref.read(problemProvider.notifier);
     final problemWithStatus = ref.watch(problemProvider);
 
     final problem = problemWithStatus.currentProblem;
@@ -36,56 +32,64 @@ class WordStudyQuestion extends ConsumerWidget {
       }
     });
 
-    final numProblems = problem.getNumProblems();
-    final focusNodeList = List.generate(numProblems, (index) => FocusNode());
-    // final focusNodeList =
-    // List.generate(numProblems, (index) => AlwaysDisabledFocusNode());
-    final controllerList =
-        List.generate(numProblems, (index) => TextEditingController());
+    // final numProblems = problem.getNumProblems();
+    // final focusNodeList = List.generate(numProblems, (index) => FocusNode());
+    // final controllerList =
+    //     List.generate(numProblems, (index) => TextEditingController());
     final completedList =
         textFieldValueList.texts.map((e) => e.completed).toList();
+    final texts = textFieldValueList.texts.map((e) => e.text).toList();
 
     var problemCard = ProblemCard(
       problem: problem,
-      focusNodeList: focusNodeList,
-      controllerList: controllerList,
+      texts: texts,
       completedList: completedList,
     );
 
-    focusNodeList.asMap().forEach((index, focusNode) {
-      focusNode.addListener(() {
-        if (focusNode.hasFocus) {
-          print('focusNode $index has focus');
-          textFieldListNotifier.setIndex(index);
-          textFieldListNotifier.setPosition(
-              index, controllerList[index].selection.baseOffset);
-        } else {
-          print('focusNode $index doesnt have focus');
-        }
-      });
-    });
+    // focusNodeList.asMap().forEach((index, focusNode) {
+    //   focusNode.addListener(() {
+    //     if (focusNode.hasFocus) {
+    //       print('focusNode $index has focus');
+    //       textFieldListNotifier.setIndex(index);
+    //       textFieldListNotifier.setPosition(
+    //           index, controllerList[index].selection.baseOffset);
+    //     } else {
+    //       print('focusNode $index doesnt have focus');
+    //     }
+    //   });
+    // });
 
-    controllerList.asMap().forEach((index, controller) {
-      controller.text = textFieldValueList.texts[index].text;
-    });
+    // controllerList.asMap().forEach((index, controller) {
+    //   controller.text = textFieldValueList.texts[index].text;
+    // });
 
-    final index = textFieldValueList.index;
-    if (numProblems > 0) {
-      print('index: $index');
-      print(
-          ' textFieldValueList.texts[index].position ${textFieldValueList.texts[index].position}');
-      controllerList[index].selection = TextSelection.fromPosition(
-          TextPosition(offset: textFieldValueList.texts[index].position));
-      print(
-          'textFieldValueList.texts.length: ${textFieldValueList.texts.length}');
-      print(
-          'textFieldValueList.texts[$index].position: ${textFieldValueList.texts[index].position}');
-    }
+    // final index = textFieldValueList.index;
+    // if (numProblems > 0) {
+    //   print('index: $index');
+    //   print(
+    //       ' textFieldValueList.texts[index].position ${textFieldValueList.texts[index].position}');
+    //   controllerList[index].selection = TextSelection.fromPosition(
+    //       TextPosition(offset: textFieldValueList.texts[index].position));
+    //   print(
+    //       'textFieldValueList.texts.length: ${textFieldValueList.texts.length}');
+    //   print(
+    //       'textFieldValueList.texts[$index].position: ${textFieldValueList.texts[index].position}');
+    // }
 
-    final bottom = Keyboard(
-      onPresskey: (String text) => textFieldListNotifier.addText(text),
-      onPressBackspace: () => textFieldListNotifier.backspace(),
+    final bottomHeight = screenHeight * 0.3;
+    final bottom = SizedBox(
+      height: bottomHeight,
+      child: Column(
+        children: [
+          Spacer(),
+          Keyboard(
+            onPresskey: (String text) => textFieldListNotifier.addText(text),
+            onPressBackspace: () => textFieldListNotifier.backspace(),
+          ),
+        ],
+      ),
     );
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,7 +102,6 @@ class WordStudyQuestion extends ConsumerWidget {
               ),
             ),
           ),
-          // Spacer(), // 余
           bottom,
         ],
       ),
