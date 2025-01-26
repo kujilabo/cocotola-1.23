@@ -77,7 +77,7 @@ class CustomTextField extends ConsumerWidget {
       text: TextSpan(text: text, style: style),
       maxLines: 1,
       textDirection: TextDirection.ltr,
-    )..layout();
+    )..layout(minWidth: 0);
     // textPainter.layout();
     return textPainter.size.width;
   }
@@ -98,7 +98,7 @@ class CustomTextField extends ConsumerWidget {
     final hasFocus = index == textFieldList.index;
     // print('build EnglishText');
 
-    final textWidth = _calcWidth(text, style);
+    final textWidth = _calcWidth(text, style) * 1.06;
     final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);
     print('textWidth: $textWidth');
     final width =
