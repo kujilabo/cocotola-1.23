@@ -15,6 +15,11 @@ class WordStudyQuestion extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print('WordStudyQuestion build');
+    final double screenWidth = MediaQuery.of(context).size.width;
+    print('Screen width: $screenWidth');
+    final double screenHeight = MediaQuery.of(context).size.height;
+    print('Screen height: $screenHeight');
+
     final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
 
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
