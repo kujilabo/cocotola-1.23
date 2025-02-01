@@ -41,13 +41,8 @@ class WordStudyQuestion extends ConsumerWidget {
     print('Screen height: $screenHeight');
 
     final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
-
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
     final textFieldValueList = ref.watch(textFieldValueListProvider);
-
-    // final problemWithStatus = ref.watch(problemProvider);
-
-    // final problem = problemWithStatus.currentProblem;
 
     ref.listen(textFieldValueListProvider, (prev, next) {
       switch (next) {
@@ -66,36 +61,6 @@ class WordStudyQuestion extends ConsumerWidget {
     });
 
     var problemCard = _buidProblemCard(textFieldValueList);
-
-    // focusNodeList.asMap().forEach((index, focusNode) {
-    //   focusNode.addListener(() {
-    //     if (focusNode.hasFocus) {
-    //       print('focusNode $index has focus');
-    //       textFieldListNotifier.setIndex(index);
-    //       textFieldListNotifier.setPosition(
-    //           index, controllerList[index].selection.baseOffset);
-    //     } else {
-    //       print('focusNode $index doesnt have focus');
-    //     }
-    //   });
-    // });
-
-    // controllerList.asMap().forEach((index, controller) {
-    //   controller.text = textFieldValueList.texts[index].text;
-    // });
-
-    // final index = textFieldValueList.index;
-    // if (numProblems > 0) {
-    //   print('index: $index');
-    //   print(
-    //       ' textFieldValueList.texts[index].position ${textFieldValueList.texts[index].position}');
-    //   controllerList[index].selection = TextSelection.fromPosition(
-    //       TextPosition(offset: textFieldValueList.texts[index].position));
-    //   print(
-    //       'textFieldValueList.texts.length: ${textFieldValueList.texts.length}');
-    //   print(
-    //       'textFieldValueList.texts[$index].position: ${textFieldValueList.texts[index].position}');
-    // }
 
     final bottomHeight = screenHeight * 0.3;
     final bottom = SizedBox(

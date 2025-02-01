@@ -31,59 +31,104 @@ class WordStudyAnswer extends ConsumerWidget {
     }
   }
 
+  Widget _buildBottom(
+    BuildContext context,
+    ProblemRepository problemNotifier,
+    WordStudyStatusNotifier wordStudyStatusNotifier,
+    AsyncValue<ProblemWithStatus> problemWithStatus,
+    double bottomHeight,
+  ) {
+    switch (problemWithStatus) {
+      case AsyncData(:final value):
+        if (value.hasNext()) {
+          return SizedBox(
+            height: bottomHeight,
+            child: Column(
+              children: [
+                Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          problemNotifier.next();
+                          wordStudyStatusNotifier.setQuestionStatus();
+                        },
+                        child: Text('Check'),
+                      ),
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          problemNotifier.next();
+                          wordStudyStatusNotifier.setQuestionStatus();
+                        },
+                        child: Text('Next'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        } else {
+          return SizedBox(
+            height: bottomHeight,
+            child: Column(
+              children: [
+                Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          problemNotifier.next();
+                          wordStudyStatusNotifier.setQuestionStatus();
+                        },
+                        child: Text('Check'),
+                      ),
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Finish'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+      case AsyncError(:final error):
+        return Text('Error: $error');
+
+      case AsyncLoading():
+        return const CircularProgressIndicator();
+
+      default:
+        return const CircularProgressIndicator();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final problemNotifier = ref.read(problemProvider.notifier);
     final problemWithStatus = ref.watch(problemProvider);
     final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
+    final bottomHeight = screenHeight * 0.3;
     final textFieldValueList = ref.watch(textFieldValueListProvider);
 
-    // final problem = await problemWithStatus.then((value) => value.currentProblem);
-    // final problem = problemWithStatus.then((value) => value.currentProblem);
-    // final problem = problemWithStatus.currentProblem;
-
-    // final texts = textFieldValueList.texts.map((e) => e.text).toList();
-    // final texts =  textFieldValueList
-    //     .then((value) => value.texts.map((e) => e.text).toList());
-    // final completedList =
-    //     textFieldValueList.texts.map((e) => e.completed).toList();
-    // final completedList = textFieldValueList
-    //     .then((value) => value.texts.map((e) => e.completed).toList());
-
     var problemCard = _buidProblemCard(textFieldValueList);
-
-    final bottomHeight = screenHeight * 0.3;
-
-    final bottom = SizedBox(
-      height: bottomHeight,
-      child: Column(
-        children: [
-          Spacer(),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    problemNotifier.next();
-                    wordStudyStatusNotifier.setQuestionStatus();
-                  },
-                  child: Text('Check'),
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    problemNotifier.next();
-                    wordStudyStatusNotifier.setQuestionStatus();
-                  },
-                  child: Text('Next'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+    var bottom = _buildBottom(
+      context,
+      problemNotifier,
+      wordStudyStatusNotifier,
+      problemWithStatus,
+      bottomHeight,
     );
 
     return Center(
@@ -98,7 +143,6 @@ class WordStudyAnswer extends ConsumerWidget {
               ),
             ),
           ),
-          // Spacer(), // 余
           bottom,
         ],
       ),

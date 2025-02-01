@@ -65,6 +65,22 @@ class CustomProblemTextField extends ConsumerWidget {
     return textPainter.size.width;
   }
 
+  Widget _buildFocus(AsyncValue<bool> hasFocus, TextStyle style) {
+    switch (hasFocus) {
+      case AsyncData(:final value):
+        return Opacity(
+          opacity: value ? 1.0 : 0.0,
+          child: BlinkText(text: Text('|', style: style)),
+        );
+      case AsyncError(:final error):
+        return Text('Error: $error');
+      case AsyncLoading():
+        return CircularProgressIndicator();
+      default:
+        return CircularProgressIndicator();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final customThemeData = ref.watch(customThemDataProvider);
@@ -73,9 +89,7 @@ class CustomProblemTextField extends ConsumerWidget {
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
     final style = customTheme.englishProblemTextStyle;
     final decoration = customTheme.englishProblemDecoration;
-
-    // final hasFocus = index == textFieldList.index;
-    final hasFocus = true;
+    final hasFocus = textFieldList.whenData((v) => index == v.index);
 
     final textWidth = _calcWidth(text, style) * 1.06;
     final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);
@@ -97,15 +111,7 @@ class CustomProblemTextField extends ConsumerWidget {
           child: Row(
             children: [
               Text(text, style: style),
-              Opacity(
-                opacity: hasFocus ? 1.0 : 0.0,
-                child: BlinkText(
-                  text: Text(
-                    '|',
-                    style: customThemeData.problemCard.cusrotTextStyle,
-                  ),
-                ),
-              ),
+              _buildFocus(hasFocus, customTheme.cusrotTextStyle),
             ],
           ),
         ),

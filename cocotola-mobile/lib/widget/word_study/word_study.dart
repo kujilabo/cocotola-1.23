@@ -42,32 +42,6 @@ class WordStudy extends ConsumerWidget {
           ],
         ),
       ),
-      // body: Column(
-      //   children: [
-      //     main,
-      //   ],
-      // ),
-      // body: Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       TextButton(
-      //         style: TextButton.styleFrom(
-      //           minimumSize: Size(20, 20), // 最小サイズを設定
-      //           padding: EdgeInsets.zero, // パディングをゼロ
-      //           // fixedSize: const Size(20, 20),
-      //           fixedSize: const Size(5, 5),
-      //           foregroundColor: Colors.white,
-      //           backgroundColor: Colors.blue,
-      //         ),
-      //         onPressed: () => print('a'),
-      //         child: Text('a'),
-      //       ),
-      //       Text('WordStudy'),
-      //       SingleChildScrollView(child: main),
-      //     ],
-      //   ),
-      // ),
     );
   }
 }
