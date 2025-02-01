@@ -18,11 +18,13 @@ class TextFieldValue {
 }
 
 class TextFieldValueList {
+  final WordProblem problem;
   final List<TextFieldValue> texts;
   final int index;
   final int numProblems;
   final bool allCompleted;
   const TextFieldValueList({
+    required this.problem,
     required this.texts,
     required this.index,
     required this.numProblems,
@@ -30,10 +32,10 @@ class TextFieldValueList {
   });
 }
 
-class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
+class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
   @override
-  TextFieldValueList build() {
-    final problemWithStatus = ref.watch(problemProvider);
+  Future<TextFieldValueList> build() async {
+    final problemWithStatus = await ref.watch(problemProvider.future);
     final problem = problemWithStatus.currentProblem;
     List<TextFieldValue> texts = [];
 
@@ -46,6 +48,7 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
       }
     }
     return TextFieldValueList(
+      problem: problem,
       texts: texts,
       index: 0,
       numProblems: problem.getNumProblems(),
@@ -54,8 +57,9 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
   }
 
   void addText(String text) {
-    final index = state.index;
-    final currTextField = state.texts[index];
+    final currentState = state.value!;
+    final index = currentState.index;
+    final currTextField = currentState.texts[index];
     if (currTextField.completed) {
       return;
     }
@@ -77,66 +81,74 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
 
     var allCompleted = false;
     var completed = newText == currTextField.answer;
-    var newIndex = state.index;
+    var newIndex = currentState.index;
     if (completed) {
       var numCorrect = 1;
-      for (var i = 0; i < state.numProblems; i++) {
-        newIndex = (i + index + 1) % state.numProblems;
-        if (state.texts[newIndex].completed) {
+      for (var i = 0; i < currentState.numProblems; i++) {
+        newIndex = (i + index + 1) % currentState.numProblems;
+        if (currentState.texts[newIndex].completed) {
           numCorrect++;
         } else {
           break;
         }
       }
-      if (numCorrect == state.numProblems) {
+      if (numCorrect == currentState.numProblems) {
         allCompleted = true;
       }
     }
     print('completed: $completed, ${currTextField.answer}, $newIndex');
     final texts = [
-      ...state.texts.sublist(0, index),
+      ...currentState.texts.sublist(0, index),
       TextFieldValue(
           text: newText,
           answer: currTextField.answer,
           position: newPosition,
           completed: completed),
-      ...state.texts.sublist(index + 1),
+      ...currentState.texts.sublist(index + 1),
     ];
-    state = TextFieldValueList(
-      texts: texts,
-      index: newIndex,
-      numProblems: state.numProblems,
-      allCompleted: allCompleted,
+    state = AsyncValue.data(
+      TextFieldValueList(
+        problem: currentState.problem,
+        texts: texts,
+        index: newIndex,
+        numProblems: currentState.numProblems,
+        allCompleted: allCompleted,
+      ),
     );
   }
 
   void setPosition(int index, int position) {
+    final currentState = state.value!;
     print('position: $position');
-    final currTextField = state.texts[index];
+    final currTextField = currentState.texts[index];
     if (currTextField.completed) {
       return;
     }
 
     final texts = [
-      ...state.texts.sublist(0, index),
+      ...currentState.texts.sublist(0, index),
       TextFieldValue(
           text: currTextField.text,
           answer: currTextField.answer,
           position: position,
           completed: currTextField.completed),
-      ...state.texts.sublist(index + 1),
+      ...currentState.texts.sublist(index + 1),
     ];
-    state = TextFieldValueList(
-      texts: texts,
-      index: state.index,
-      numProblems: state.numProblems,
-      allCompleted: state.allCompleted,
+    state = AsyncValue.data(
+      TextFieldValueList(
+        problem: currentState.problem,
+        texts: texts,
+        index: currentState.index,
+        numProblems: currentState.numProblems,
+        allCompleted: currentState.allCompleted,
+      ),
     );
   }
 
   void backspace() {
-    final index = state.index;
-    final currTextField = state.texts[index];
+    final currentState = state.value!;
+    final index = currentState.index;
+    final currTextField = currentState.texts[index];
     if (currTextField.completed) {
       return;
     }
@@ -152,32 +164,39 @@ class TextFieldValueListNotifier extends Notifier<TextFieldValueList> {
 
     var completed = newText == currTextField.answer;
     final texts = [
-      ...state.texts.sublist(0, index),
+      ...currentState.texts.sublist(0, index),
       TextFieldValue(
           text: newText,
           answer: currTextField.answer,
           position: currPosition - 1,
           completed: completed),
-      ...state.texts.sublist(index + 1),
+      ...currentState.texts.sublist(index + 1),
     ];
-    state = TextFieldValueList(
-      texts: texts,
-      index: state.index,
-      numProblems: state.numProblems,
-      allCompleted: state.allCompleted,
+    state = AsyncValue.data(
+      TextFieldValueList(
+        problem: currentState.problem,
+        texts: texts,
+        index: currentState.index,
+        numProblems: currentState.numProblems,
+        allCompleted: currentState.allCompleted,
+      ),
     );
   }
 
   void setIndex(int index) {
-    state = TextFieldValueList(
-      texts: state.texts,
-      index: index,
-      numProblems: state.numProblems,
-      allCompleted: state.allCompleted,
+    final currentState = state.value!;
+    state = AsyncValue.data(
+      TextFieldValueList(
+        problem: currentState.problem,
+        texts: currentState.texts,
+        index: index,
+        numProblems: currentState.numProblems,
+        allCompleted: currentState.allCompleted,
+      ),
     );
   }
 }
 
 final textFieldValueListProvider =
-    NotifierProvider<TextFieldValueListNotifier, TextFieldValueList>(
+    AsyncNotifierProvider<TextFieldValueListNotifier, TextFieldValueList>(
         TextFieldValueListNotifier.new);

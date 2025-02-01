@@ -9,6 +9,29 @@ import 'package:mobile/widget/word_study/problem_card.dart';
 class WordStudyQuestion extends ConsumerWidget {
   const WordStudyQuestion({super.key});
 
+  Widget _buidProblemCard(AsyncValue<TextFieldValueList> textFieldValueList) {
+    switch (textFieldValueList) {
+      case AsyncData(:final value):
+        final problem = value.problem;
+        final texts = value.texts.map((e) => e.text).toList();
+        final completedList = value.texts.map((e) => e.completed).toList();
+        return ProblemCard(
+          problem: problem,
+          texts: texts,
+          completedList: completedList,
+        );
+
+      case AsyncError(:final error):
+        return Text('Error: $error');
+
+      case AsyncLoading():
+        return const CircularProgressIndicator();
+
+      default:
+        return const CircularProgressIndicator();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print('WordStudyQuestion build');
@@ -22,29 +45,27 @@ class WordStudyQuestion extends ConsumerWidget {
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
     final textFieldValueList = ref.watch(textFieldValueListProvider);
 
-    final problemWithStatus = ref.watch(problemProvider);
+    // final problemWithStatus = ref.watch(problemProvider);
 
-    final problem = problemWithStatus.currentProblem;
+    // final problem = problemWithStatus.currentProblem;
 
     ref.listen(textFieldValueListProvider, (prev, next) {
-      if (next.allCompleted) {
-        wordStudyStatusNotifier.setAnswerStatus();
+      switch (next) {
+        case AsyncData(:final value):
+          if (value.allCompleted) {
+            wordStudyStatusNotifier.setAnswerStatus();
+          }
+          break;
+        case AsyncError(:final error):
+          break;
+        case AsyncLoading():
+          break;
+        default:
+          break;
       }
     });
 
-    // final numProblems = problem.getNumProblems();
-    // final focusNodeList = List.generate(numProblems, (index) => FocusNode());
-    // final controllerList =
-    //     List.generate(numProblems, (index) => TextEditingController());
-    final completedList =
-        textFieldValueList.texts.map((e) => e.completed).toList();
-    final texts = textFieldValueList.texts.map((e) => e.text).toList();
-
-    var problemCard = ProblemCard(
-      problem: problem,
-      texts: texts,
-      completedList: completedList,
-    );
+    var problemCard = _buidProblemCard(textFieldValueList);
 
     // focusNodeList.asMap().forEach((index, focusNode) {
     //   focusNode.addListener(() {

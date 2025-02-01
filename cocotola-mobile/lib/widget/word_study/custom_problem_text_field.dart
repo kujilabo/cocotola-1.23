@@ -74,7 +74,8 @@ class CustomProblemTextField extends ConsumerWidget {
     final style = customTheme.englishProblemTextStyle;
     final decoration = customTheme.englishProblemDecoration;
 
-    final hasFocus = index == textFieldList.index;
+    // final hasFocus = index == textFieldList.index;
+    final hasFocus = true;
 
     final textWidth = _calcWidth(text, style) * 1.06;
     final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);

@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
 
-class ProblemSetRepository extends Notifier<List<WordProblem>> {
+class ProblemSetRepository extends AsyncNotifier<List<WordProblem>> {
   @override
-  List<WordProblem> build() {
+  Future<List<WordProblem>> build() async {
     return [
       WordProblem(
         englishList: [
@@ -42,11 +42,12 @@ class ProblemSetRepository extends Notifier<List<WordProblem>> {
     ];
   }
 
-  void fetch() {
-    state = [];
+  void fetch() async {
+    'https://jsonplaceholder.typicode.com/post';
+    state = AsyncValue.data([]);
   }
 }
 
 final problemSetProvider =
-    NotifierProvider<ProblemSetRepository, List<WordProblem>>(
+    AsyncNotifierProvider<ProblemSetRepository, List<WordProblem>>(
         ProblemSetRepository.new);
