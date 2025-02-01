@@ -37,3 +37,4 @@ coverage.lcov
 results.json
 
 **/node_modules
+google-services.json
