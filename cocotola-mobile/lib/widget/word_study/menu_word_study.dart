@@ -4,6 +4,7 @@ import 'package:mobile/provider/word_study_status.dart';
 import 'package:mobile/provider/problem_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/widget/word_study/word_study.dart';
+import 'package:mobile/provider/auth_repository.dart';
 
 class MenuWordStudy extends ConsumerWidget {
   const MenuWordStudy({super.key});
@@ -23,6 +24,24 @@ class MenuWordStudy extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wordStudyStatusNotifier = ref.watch(wordStudyStatusProvider.notifier);
+    final authRepositoryNotifier = ref.watch(authRepositoryProvider.notifier);
+    final authRepository = ref.watch(authRepositoryProvider);
+
+    final user = authRepository.whenData((value) => value.user);
+
+    switch (user) {
+      case AsyncData(:final value):
+        print('user: $value');
+        break;
+      case AsyncLoading():
+        print('user: loading');
+        break;
+      case AsyncError(:final error):
+        print('user: error $error');
+        break;
+      default:
+        print('user: default');
+    }
 
     final width = _calcWidth('aaaaa', TextStyle(fontSize: 24));
     print('width: $width');
@@ -47,6 +66,12 @@ class MenuWordStudy extends ConsumerWidget {
                 'Word StudyTOP',
                 style: TextStyle(fontSize: 24),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                authRepositoryNotifier.signInAnonymously();
+              },
+              child: const Text('Sign In Anonymously'),
             ),
             ElevatedButton(
               onPressed: () {
