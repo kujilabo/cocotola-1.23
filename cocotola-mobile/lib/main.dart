@@ -4,19 +4,19 @@ import 'package:mobile/widget/word_study/word_study.dart';
 // import 'package:mobile/widgets/editor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'firebase_options.dart';
 
-Future<void> main() async {
-  print('aaa');
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  print('bbb');
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  print('ccc');
-// void main() {
+// Future<void> main() async {
+// print('aaa');
+// WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+// print('bbb');
+// await Firebase.initializeApp(
+//   options: DefaultFirebaseOptions.currentPlatform,
+// );
+// print('ccc');
+void main() {
   runApp(
     ProviderScope(
       child: MaterialApp(
