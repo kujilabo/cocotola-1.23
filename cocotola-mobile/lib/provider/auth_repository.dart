@@ -15,19 +15,33 @@ class AuthRepository extends AsyncNotifier<UserState> {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   @override
   Future<UserState> build() async {
-    return UserState(user: null, isSignedIn: false);
+    return _signInAnonymously();
+    // return UserState(user: null, isSignedIn: false);
+  }
+
+  Future<UserState> _signInAnonymously() async {
+    await firebaseAuth.signInAnonymously();
+    return UserState(user: firebaseAuth.currentUser, isSignedIn: true);
   }
 
   Future<void> signInAnonymously() async {
     state = await AsyncValue.guard(() async {
-      print('bbbb');
-      await firebaseAuth.signInAnonymously();
-      print('aaaaaa');
-      return UserState(user: firebaseAuth.currentUser, isSignedIn: true);
+      return _signInAnonymously();
+      // print('bbbb');
+      // await firebaseAuth.signInAnonymously();
+      // print('aaaaaa');
+      // return UserState(user: firebaseAuth.currentUser, isSignedIn: true);
     });
     // state = AsyncValue.data(
     //   UserState(user: firebaseAuth.currentUser, isSignedIn: true),
     // );
+  }
+
+  Future<void> signOut() async {
+    state = await AsyncValue.guard(() async {
+      await firebaseAuth.signOut();
+      return UserState(user: null, isSignedIn: false);
+    });
   }
 }
 

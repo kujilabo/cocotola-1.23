@@ -16,7 +16,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   print('ccc');
-  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   print('ddd');
 // void main() {
   runApp(
