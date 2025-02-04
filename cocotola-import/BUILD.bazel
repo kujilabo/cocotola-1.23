@@ -7,7 +7,10 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import",
     visibility = ["//visibility:private"],
-    deps = ["//cocotola-import/tatoeba"],
+    deps = [
+        "//cocotola-import/firestore",
+        "//cocotola-import/tatoeba",
+    ],
 )
 
 go_binary(

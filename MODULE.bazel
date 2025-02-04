@@ -47,6 +47,8 @@ use_repo(
     "org_golang_x_sync",
     "org_golang_x_xerrors",
     "org_uber_go_atomic",
+    "org_golang_google_api",
+    "com_google_firebase_go_v4",
 )
 
 # pkg
