@@ -12,6 +12,7 @@ go_library(
     deps = [
         "//cocotola-tatoeba/config",
         "//cocotola-tatoeba/controller/gin/helper",
+        "//cocotola-tatoeba/domain",
         "//cocotola-tatoeba/gateway",
         "//cocotola-tatoeba/service",
         "//cocotola-tatoeba/usecase",

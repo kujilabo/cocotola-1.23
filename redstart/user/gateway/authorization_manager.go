@@ -19,22 +19,27 @@ type authorizationManager struct {
 	rbacRepo service.RBACRepository
 }
 
-func NewAuthorizationManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) service.AuthorizationManager {
-	return &authorizationManager{
-		dialect: dialect,
-		db:      db,
-		rf:      rf,
+func NewAuthorizationManager(ctx context.Context, dialect libgateway.DialectRDBMS, db *gorm.DB, rf service.RepositoryFactory) (service.AuthorizationManager, error) {
+	rbacRepo, err := newRBACRepository(ctx, db)
+	if err != nil {
+		return nil, err
 	}
+	return &authorizationManager{
+		dialect:  dialect,
+		db:       db,
+		rf:       rf,
+		rbacRepo: rbacRepo,
+	}, nil
 }
 
-func (m *authorizationManager) Init(ctx context.Context) error {
-	rbacRepo, err := newRBACRepository(ctx, m.db)
-	if err != nil {
-		return err
-	}
-	m.rbacRepo = rbacRepo
-	return m.rbacRepo.Init()
-}
+// func (m *authorizationManager) Init(ctx context.Context) error {
+// 	rbacRepo, err := newRBACRepository(ctx, m.db)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	m.rbacRepo = rbacRepo
+// 	return m.rbacRepo.Init()
+// }
 
 func (m *authorizationManager) AddUserToGroupBySystemAdmin(ctx context.Context, operator service.SystemAdminInterface, organizationID *domain.OrganizationID, appUserID *domain.AppUserID, userGroupID *domain.UserGroupID) error {
 	pairOfUserAndGroupRepo := NewPairOfUserAndGroupRepository(ctx, m.dialect, m.db, m.rf)

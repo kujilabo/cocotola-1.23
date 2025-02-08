@@ -130,7 +130,8 @@ func setupOrganization(ctx context.Context, t *testing.T, ts testService) (*doma
 	orgRepo := gateway.NewOrganizationRepository(ctx, ts.db)
 	appUserRepo := gateway.NewAppUserRepository(ctx, ts.dialect, ts.db, ts.rf)
 	userGorupRepo := gateway.NewUserGroupRepository(ctx, ts.dialect, ts.db)
-	authorizationManager := gateway.NewAuthorizationManager(ctx, ts.dialect, ts.db, ts.rf)
+	authorizationManager, err := gateway.NewAuthorizationManager(ctx, ts.dialect, ts.db, ts.rf)
+	require.NoError(t, err)
 
 	// 1. add organization
 	orgID, err := orgRepo.AddOrganization(ctx, sysAd, orgAddParam)

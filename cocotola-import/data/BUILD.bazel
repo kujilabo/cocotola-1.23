@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "data",
+    srcs = ["data.go"],
+    embedsrcs = [
+        "eng_sentences_CC0.tsv",
+        "eng_sentences_detailed.tsv",
+        "eng_sentences_detailed_lite.tsv",
+        "english-word-problem-001.csv",
+        "jpn_sentences_CC0.tsv",
+        "jpn_sentences_detailed.tsv",
+        "jpn_sentences_detailed_lite.tsv",
+        "links.csv",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/data",
+    visibility = ["//visibility:public"],
+)

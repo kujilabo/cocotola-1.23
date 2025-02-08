@@ -12,10 +12,10 @@ import (
 	"gorm.io/gorm"
 
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
-	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )

@@ -15,7 +15,7 @@ type RepositoryFactory interface {
 
 	// NewRBACRepository(ctx context.Context) RBACRepository
 
-	NewAuthorizationManager(ctx context.Context) AuthorizationManager
+	NewAuthorizationManager(ctx context.Context) (AuthorizationManager, error)
 }
 
 type TransactionManager rslibservice.TransactionManagerT[RepositoryFactory]

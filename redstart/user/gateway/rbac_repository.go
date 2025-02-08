@@ -64,23 +64,23 @@ func newRBACRepository(ctx context.Context, db *gorm.DB) (service.RBACRepository
 	}, nil
 }
 
-func (r *rbacRepository) Init() error {
-	a, err := gormadapter.NewAdapterByDB(r.DB)
-	if err != nil {
-		return liberrors.Errorf("gormadapter.NewAdapterByDB. err: %w", err)
-	}
+// func (r *rbacRepository) Init() error {
+// 	a, err := gormadapter.NewAdapterByDB(r.DB)
+// 	if err != nil {
+// 		return liberrors.Errorf("gormadapter.NewAdapterByDB. err: %w", err)
+// 	}
 
-	m, err := model.NewModelFromString(r.Conf)
-	if err != nil {
-		return liberrors.Errorf("model.NewModelFromString. err: %w", err)
-	}
+// 	m, err := model.NewModelFromString(r.Conf)
+// 	if err != nil {
+// 		return liberrors.Errorf("model.NewModelFromString. err: %w", err)
+// 	}
 
-	if err := a.SavePolicy(m); err != nil {
-		return liberrors.Errorf(". err: %w", err)
-	}
+// 	if err := a.SavePolicy(m); err != nil {
+// 		return liberrors.Errorf(". err: %w", err)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (r *rbacRepository) initEnforcer(ctx context.Context) (casbin.IEnforcer, error) {
 	return r.enforcer, nil

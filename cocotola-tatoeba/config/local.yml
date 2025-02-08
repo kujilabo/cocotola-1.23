@@ -31,11 +31,11 @@ shutdown:
   timeSec1: 1
   timeSec2: 1
 log:
-  level: debug
+  level: info
 swagger:
   enabled: true
   host: localhost:8040
   schema: http
 debug:
-  ginMode: true
+  gin: true
   wait: false

@@ -102,9 +102,9 @@ func (r *TatoebaSentenceAddParameterReader) Next(ctx context.Context) (*service.
 	time2 := line[5]
 	updatedAt := time.Now()
 
-	if len(text) > textLimitLength {
+	if len(([]rune(text))) > textLimitLength {
 		// skip
-		r.logger.DebugContext(ctx, fmt.Sprintf("skip long text. rowNumber: %d, text: %s", r.num, text))
+		r.logger.DebugContext(ctx, fmt.Sprintf("skip long text. rowNumber: %d, text: %s, len: %d", r.num, text, len(text)))
 		r.num++
 		return nil, nil
 	}

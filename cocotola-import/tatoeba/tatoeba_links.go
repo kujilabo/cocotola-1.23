@@ -5,33 +5,30 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/fs"
 	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"os"
-	"path"
 	"time"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/config"
 )
 
-var timeoutImportMin = 30
-
-func ImportTatoebaEngSentences() error {
-	ctx := context.Background()
+func ImportTatoebaLinks(ctx context.Context, dir fs.FS, filename string) error {
 	logger := slog.Default()
+	logger.InfoContext(ctx, "ImportTatoebaLinks")
 	cfg, err := config.LoadConfig("local")
 	if err != nil {
 		return err
 	}
 
-	endpoint, err := url.JoinPath(cfg.TatoebaAPI.Endpoint, "v1", "admin", "sentence", "import")
+	endpoint, err := url.JoinPath(cfg.TatoebaAPI.Endpoint, "api", "v1", "admin", "link", "import")
 	if err != nil {
 		return err
 	}
 
-	file, err := os.Open(path.Join(cfg.DataSource.TatoebaDataSource.Dir, cfg.DataSource.TatoebaDataSource.EngSentencesFile))
+	file, err := dir.Open(filename)
 	if err != nil {
 		return err
 	}
@@ -39,15 +36,17 @@ func ImportTatoebaEngSentences() error {
 	body := bytes.Buffer{}
 	mw := multipart.NewWriter(&body)
 
-	fw, err := mw.CreateFormFile("file", cfg.DataSource.TatoebaDataSource.EngSentencesFile)
+	fw, err := mw.CreateFormFile("file", filename)
 	if err != nil {
 		return err
 	}
 
+	logger.InfoContext(ctx, "Copy")
 	if _, err := io.Copy(fw, file); err != nil {
 		return err
 	}
 
+	logger.InfoContext(ctx, "Close")
 	if err := mw.Close(); err != nil {
 		return err
 	}
@@ -63,6 +62,8 @@ func ImportTatoebaEngSentences() error {
 	client := http.Client{
 		Timeout: time.Duration(timeoutImportMin) * time.Minute,
 	}
+
+	logger.InfoContext(ctx, "Start")
 
 	resp, err := client.Do(req)
 	if err != nil {

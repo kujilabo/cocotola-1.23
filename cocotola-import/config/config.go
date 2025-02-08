@@ -15,14 +15,11 @@ type AuthConfig struct {
 	Password string `yaml:"password" validate:"required"`
 }
 
-type DebugConfig struct {
-	GinMode bool `yaml:"ginMode"`
-	Wait    bool `yaml:"wait"`
-}
-
 type TatoebaDataSourceConfig struct {
 	Dir              string `yaml:"dir" validate:"required"`
 	EngSentencesFile string `yaml:"engSentences" validate:"required"`
+	JpnSentencesFile string `yaml:"jpnSentences" validate:"required"`
+	LinksFile        string `yaml:"links" validate:"required"`
 }
 
 type DataSourceConfig struct {

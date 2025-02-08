@@ -1,18 +1,24 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { TatoebaSentence ,TatoebaSentencePair } from "@/feature/tatoeba/model/sentence";
 
 type State = {
-  sentences: string[];
+  sentences: TatoebaSentencePair[];
   error: string | null;
 };
 type Action = {
-  getSentencds: () => Promise<string[]>;
+  getSentences: () => Promise<void>;
 };
-export const useTodoStore = create<State & Action>()(
+export const useSentenceListStore = create<State & Action>()(
   devtools((set) => ({
     sentences: [],
-    getSentencds: async (): Promise<string[]> => {
-      return ["a", "b", "c"];
+    getSentences: async (): Promise<void> => {
+      set({sentences: [
+        new  TatoebaSentencePair(
+          new TatoebaSentence(2, 2, "en", "I am a student", "tatoeba"),
+          new TatoebaSentence(1, 1, "jp", "私は学生です", "tatoeba"),
+        ),
+      ]});
     },
     // addTodo: (todoText) =>
     //     set((state) => ({

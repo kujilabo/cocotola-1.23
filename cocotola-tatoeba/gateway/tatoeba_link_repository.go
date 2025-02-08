@@ -3,23 +3,31 @@ package gateway
 import (
 	"context"
 	"errors"
+	"log/slog"
+	"strconv"
+	"time"
 
+	"github.com/patrickmn/go-cache"
 	"gorm.io/gorm"
 
-	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
+
+	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
 type tatoebaLinkRepository struct {
-	db *gorm.DB
-	rf service.RepositoryFactory
+	db        *gorm.DB
+	rf        service.RepositoryFactory
+	linkCache *cache.Cache
+	logger    *slog.Logger
 }
 
 type tatoebaLinkEntity struct {
-	From int
-	To   int
+	Src int
+	Dst int
 }
 
 func (e *tatoebaLinkEntity) TableName() string {
@@ -27,31 +35,54 @@ func (e *tatoebaLinkEntity) TableName() string {
 }
 
 func newTatoebaLinkRepository(db *gorm.DB, rf service.RepositoryFactory) service.TatoebaLinkRepository {
+	slog.Default().InfoContext(context.Background(), "newTatoebaLinkRepository")
 	return &tatoebaLinkRepository{
-		db: db,
-		rf: rf,
+		db:        db,
+		rf:        rf,
+		linkCache: cache.New(5*time.Minute, 10*time.Minute),
+		logger:    slog.Default().With(slog.String(rsliblog.LoggerNameKey, "TatoebaLinkRepository")),
 	}
 }
 
 func (r *tatoebaLinkRepository) Add(ctx context.Context, param service.TatoebaLinkAddParameter) error {
 	sentenceRepo := r.rf.NewTatoebaSentenceRepository(ctx)
-	fromContained, err := sentenceRepo.ContainsSentenceBySentenceNumber(ctx, param.GetFrom())
-	if err != nil {
-		return err
+	isSrcContainedCache, srcFound := r.linkCache.Get(strconv.Itoa(param.GetSrc()))
+	if !srcFound {
+		isSrcContainedInDB, err := sentenceRepo.ContainsSentenceBySentenceNumber(ctx, param.GetSrc())
+		if err != nil {
+			return err
+		}
+		r.linkCache.Set(strconv.Itoa(param.GetSrc()), isSrcContainedInDB, cache.DefaultExpiration)
+		isSrcContainedCache = isSrcContainedInDB
 	}
 
-	toContained, err := sentenceRepo.ContainsSentenceBySentenceNumber(ctx, param.GetTo())
-	if err != nil {
-		return err
+	isDstContainedCache, dstFound := r.linkCache.Get(strconv.Itoa(param.GetDst()))
+	if !dstFound {
+		isDstContainedInDB, err := sentenceRepo.ContainsSentenceBySentenceNumber(ctx, param.GetDst())
+		if err != nil {
+			return err
+		}
+		r.linkCache.Set(strconv.Itoa(param.GetDst()), isDstContainedInDB, cache.DefaultExpiration)
+		isDstContainedCache = isDstContainedInDB
 	}
 
-	if !fromContained || !toContained {
+	isSrcContained, ok := isSrcContainedCache.(bool)
+	if !ok {
+		return rsliberrors.Errorf("failed to Add tatoebaLink. err: %w", service.ErrTatoebaSentenceNotFound)
+	}
+
+	isDstContained, ok := isDstContainedCache.(bool)
+	if !ok {
+		return rsliberrors.Errorf("failed to Add tatoebaLink. err: %w", service.ErrTatoebaSentenceNotFound)
+	}
+
+	if !isSrcContained || !isDstContained {
 		return service.ErrTatoebaSentenceNotFound
 	}
 
 	entity := tatoebaLinkEntity{
-		From: param.GetFrom(),
-		To:   param.GetTo(),
+		Src: param.GetSrc(),
+		Dst: param.GetDst(),
 	}
 
 	if result := r.db.Create(&entity); result.Error != nil {

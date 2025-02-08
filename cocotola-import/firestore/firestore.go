@@ -3,8 +3,10 @@ package firestore
 import (
 	"context"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path"
 
@@ -49,7 +51,7 @@ func (r *CSVReader) Next(ctx context.Context) ([]string, error) {
 	words := r.words
 	err := r.err
 	r.words, r.err = r.reader.Read()
-	if r.err == io.EOF {
+	if errors.Is(r.err, io.EOF) {
 		r.eof = true
 	}
 	return words, err
@@ -112,7 +114,7 @@ func Firebase(ctx context.Context) error {
 			"technology": "bbb",
 		})
 
-		fmt.Println(words)
+		log.Println(words)
 		return nil
 	}); err != nil {
 		return err

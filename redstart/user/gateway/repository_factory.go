@@ -52,7 +52,7 @@ func (f *repositoryFactory) NewUserGroupRepository(ctx context.Context) service.
 // 	return NewRBACRepository(ctx, f.db)
 // }
 
-func (f *repositoryFactory) NewAuthorizationManager(ctx context.Context) service.AuthorizationManager {
+func (f *repositoryFactory) NewAuthorizationManager(ctx context.Context) (service.AuthorizationManager, error) {
 	return NewAuthorizationManager(ctx, f.dialect, f.db, f)
 }
 

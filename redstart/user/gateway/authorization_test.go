@@ -25,7 +25,8 @@ func Test_AddPairOfUserAndGroup(t *testing.T) {
 			user1 := testAddAppUser(t, ctx, ts, owner, "LOGIN_ID_1", "USERNAME_1", "PASSWORD_1")
 			user2 := testAddAppUser(t, ctx, ts, owner, "LOGIN_ID_2", "USERNAME_2", "PASSWORD_2")
 
-			authorizationManager := gateway.NewAuthorizationManager(ctx, ts.dialect, ts.db, ts.rf)
+			authorizationManager, err := gateway.NewAuthorizationManager(ctx, ts.dialect, ts.db, ts.rf)
+			require.NoError(t, err)
 			userGroupRepo := gateway.NewUserGroupRepository(ctx, ts.dialect, ts.db)
 			ownerGroup, err := userGroupRepo.FindUserGroupByKey(ctx, owner, service.OwnerGroupKey)
 			require.NoError(t, err)

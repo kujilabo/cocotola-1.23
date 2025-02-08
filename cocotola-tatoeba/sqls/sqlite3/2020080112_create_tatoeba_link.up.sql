@@ -1,7 +1,7 @@
 create table `tatoeba_link` (
- `from` int not null
-,`to` int not null
-,unique(`from`, `to`)
-,foreign key(`from`) references `tatoeba_sentence`(`sentence_number`)
-,foreign key(`to`) references `tatoeba_sentence`(`sentence_number`)
+ `src` int not null
+,`dst` int not null
+,unique(`src`, `dst`)
+,foreign key(`src`) references `tatoeba_sentence`(`sentence_number`)
+,foreign key(`dst`) references `tatoeba_sentence`(`sentence_number`)
 );

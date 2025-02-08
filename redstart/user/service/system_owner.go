@@ -36,7 +36,10 @@ func NewSystemOwner(ctx context.Context, rf RepositoryFactory, systemOwnerModel 
 	userGroupRepo := rf.NewUserGroupRepository(ctx)
 	// pairOfUserAndGroup := rf.NewPairOfUserAndGroupRepository(ctx)
 	// rbacRepo := rf.NewRBACRepository(ctx)
-	authorizationManager := rf.NewAuthorizationManager(ctx)
+	authorizationManager, err := rf.NewAuthorizationManager(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	m := &SystemOwner{
 		SystemOwnerModel: systemOwnerModel,

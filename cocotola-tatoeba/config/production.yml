@@ -33,5 +33,5 @@ swagger:
   host: cocotola.com
   schema: https
 debug:
-  ginMode: false
+  gin: false
   wait: false
