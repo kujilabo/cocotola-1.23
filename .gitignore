@@ -40,5 +40,5 @@ results.json
 google-services.json
 keys/*serviceAccount.json
 
-tateba.db
+tatoeba.db
 *.tsv
