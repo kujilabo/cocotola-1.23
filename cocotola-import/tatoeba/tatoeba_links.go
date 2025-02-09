@@ -5,17 +5,18 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/fs"
 	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 	"time"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/config"
 )
 
-func ImportTatoebaLinks(ctx context.Context, dir fs.FS, filename string) error {
+func ImportTatoebaLinks(ctx context.Context, dirPath, filename string) error {
 	logger := slog.Default()
 	logger.InfoContext(ctx, "ImportTatoebaLinks")
 	cfg, err := config.LoadConfig("local")
@@ -28,7 +29,7 @@ func ImportTatoebaLinks(ctx context.Context, dir fs.FS, filename string) error {
 		return err
 	}
 
-	file, err := dir.Open(filename)
+	file, err := os.Open(path.Join(dirPath, filename))
 	if err != nil {
 		return err
 	}

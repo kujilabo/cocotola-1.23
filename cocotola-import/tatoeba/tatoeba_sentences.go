@@ -5,11 +5,12 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/fs"
 	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 	"time"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/config"
@@ -17,7 +18,7 @@ import (
 
 var timeoutImportMin = 30
 
-func ImportTatoebaSentences(ctx context.Context, dir fs.FS, filename string) error {
+func ImportTatoebaSentences(ctx context.Context, dirPath, filename string) error {
 	logger := slog.Default()
 	logger.InfoContext(ctx, "ImportTatoebaSentences")
 	cfg, err := config.LoadConfig("local")
@@ -30,7 +31,7 @@ func ImportTatoebaSentences(ctx context.Context, dir fs.FS, filename string) err
 		return err
 	}
 
-	file, err := dir.Open(filename)
+	file, err := os.Open(path.Join(dirPath, filename))
 	if err != nil {
 		return err
 	}

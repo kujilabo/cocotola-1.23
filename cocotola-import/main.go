@@ -7,7 +7,6 @@ import (
 	"log/slog"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/config"
-	"github.com/kujilabo/cocotola-1.23/cocotola-import/data"
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/firestore"
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/tatoeba"
 )
@@ -35,13 +34,13 @@ func import1(ctx context.Context) error {
 		return err
 	}
 
-	if err := tatoeba.ImportTatoebaSentences(ctx, data.Data, cfg.DataSource.TatoebaDataSource.EngSentencesFile); err != nil {
+	if err := tatoeba.ImportTatoebaSentences(ctx, "data", cfg.DataSource.TatoebaDataSource.EngSentencesFile); err != nil {
 		return err
 	}
-	if err := tatoeba.ImportTatoebaSentences(ctx, data.Data, cfg.DataSource.TatoebaDataSource.JpnSentencesFile); err != nil {
+	if err := tatoeba.ImportTatoebaSentences(ctx, "data", cfg.DataSource.TatoebaDataSource.JpnSentencesFile); err != nil {
 		return err
 	}
-	if err := tatoeba.ImportTatoebaLinks(ctx, data.Data, cfg.DataSource.TatoebaDataSource.LinksFile); err != nil {
+	if err := tatoeba.ImportTatoebaLinks(ctx, "data", cfg.DataSource.TatoebaDataSource.LinksFile); err != nil {
 		return err
 	}
 	return nil
