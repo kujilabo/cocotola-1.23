@@ -26,29 +26,19 @@ class WordStudy extends ConsumerWidget {
     print('WordStudy build');
     final wordStudyStatus = ref.watch(wordStudyStatusProvider);
 
+    final header = Text('aaaaaaaaaaaaaaa');
     final main = _buildMain(wordStudyStatus);
     return Scaffold(
       appBar: AppBar(
         title: Text('WordStudy'),
       ),
-      body: Center(
+      body: Container(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextButton(
-              style: TextButton.styleFrom(
-                minimumSize: Size(20, 20), // 最小サイズを設定
-                padding: EdgeInsets.zero, // パディングをゼロ
-                // fixedSize: const Size(20, 20),
-                fixedSize: const Size(5, 5),
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.blue,
-              ),
-              onPressed: () => print('a'),
-              child: Text('a'),
+            header,
+            Expanded(
+              child: main, // Expandedウィジェットでmainを包む
             ),
-            Text('WordStudy'),
-            SingleChildScrollView(child: main),
           ],
         ),
       ),

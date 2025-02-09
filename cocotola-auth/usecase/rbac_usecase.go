@@ -34,7 +34,11 @@ func (u *RBACUsecase) AddPolicyToUser(ctx context.Context, organizationID *rsuse
 			return err
 		}
 
-		authorizationManager := rsrf.NewAuthorizationManager(ctx)
+		authorizationManager, err := rsrf.NewAuthorizationManager(ctx)
+		if err != nil {
+			return err
+		}
+
 		if err := authorizationManager.AddPolicyToUserBySystemAdmin(ctx, sysAdmin, organizationID, subject, action, object, effect); err != nil {
 			return err
 		}
@@ -50,7 +54,11 @@ func (u *RBACUsecase) Authorize(ctx context.Context, operator service.OperatorIn
 			return false, err
 		}
 
-		authorizationManager := rsrf.NewAuthorizationManager(ctx)
+		authorizationManager, err := rsrf.NewAuthorizationManager(ctx)
+		if err != nil {
+			return false, err
+		}
+
 		return authorizationManager.Authorize(ctx, operator, action, object)
 	})
 }

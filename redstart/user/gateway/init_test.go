@@ -3,16 +3,13 @@
 package gateway_test
 
 import (
-	"context"
 	"log"
-	"os"
 	"time"
 
 	"gorm.io/gorm"
 
 	"github.com/kujilabo/cocotola-1.23/redstart/sqls"
 	"github.com/kujilabo/cocotola-1.23/redstart/user/domain"
-	"github.com/kujilabo/cocotola-1.23/redstart/user/gateway"
 
 	testlibgateway "github.com/kujilabo/cocotola-1.23/redstart/testlib/gateway"
 )
@@ -25,12 +22,12 @@ var (
 	invalidAppUserID *domain.AppUserID
 )
 
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
-}
+// func getEnv(key, fallback string) string {
+// 	if value, ok := os.LookupEnv(key); ok {
+// 		return value
+// 	}
+// 	return fallback
+// }
 
 // func createMySQLContainer() string {
 // 	ctx := context.Background()
@@ -65,7 +62,7 @@ func init() {
 	}
 	invalidAppUserID = invalidAppUserIDTmp
 
-	ctx := context.Background()
+	// ctx := context.Background()
 	// mysqlHost := getEnv("MYSQL_HOST", "127.0.0.1")
 	// mysqlPortS := getEnv("MYSQL_PORT", "3307")
 	// mysqlPort, err := strconv.Atoi(mysqlPortS)
@@ -107,16 +104,16 @@ func init() {
 		sqlDB.Close()
 	}
 
-	for dialect, db := range testlibgateway.ListDB() {
-		dialect := dialect
-		db := db
-		rf, err := gateway.NewRepositoryFactory(ctx, dialect, dialect.Name(), db, loc)
-		if err != nil {
-			panic(err)
-		}
-		authorizationManager := rf.NewAuthorizationManager(ctx)
-		if err := authorizationManager.Init(ctx); err != nil {
-			panic(err)
-		}
-	}
+	// for dialect, db := range testlibgateway.ListDB() {
+	// 	dialect := dialect
+	// 	db := db
+	// rf, err := gateway.NewRepositoryFactory(ctx, dialect, dialect.Name(), db, loc)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// authorizationManager, err := rf.NewAuthorizationManager(ctx)
+	// if err := authorizationManager.Init(ctx); err != nil {
+	// 	panic(err)
+	// }
+	// }
 }

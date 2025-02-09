@@ -3,7 +3,11 @@ package gateway
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"log/slog"
 
+	sqlite3 "github.com/glebarez/go-sqlite"
+	"github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/source"
@@ -21,7 +25,7 @@ type DialectRDBMS interface {
 // "github.com/golang-migrate/migrate/v4/database"
 // "github.com/golang-migrate/migrate/v4/source"
 // _ "github.com/golang-migrate/migrate/v4/source/file"
-// "gorm.io/gorm"
+// "gorm.io/gorm
 
 // liberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 
@@ -32,20 +36,22 @@ const SQLITE_CONSTRAINT_PRIMARYKEY = 1555
 const SQLITE_CONSTRAINT_UNIQUE = 2067
 
 func ConvertDuplicatedError(err error, newErr error) error {
-	// var mysqlErr *mysql.MySQLError
-	// if ok := errors.As(err, &mysqlErr); ok && mysqlErr.Number == MYSQL_ER_DUP_ENTRY {
-	// 	return newErr
-	// }
+	var mysqlErr *mysql.MySQLError
+	if ok := errors.As(err, &mysqlErr); ok && mysqlErr.Number == MYSQL_ER_DUP_ENTRY {
+		return newErr
+	}
 
+	logger := slog.Default()
+	logger.Error(fmt.Sprintf("ConvertDuplicatedError, %+v", err))
 	// TODO: Implement this for sqlite3
-	// var sqlite3Err sqlite3.Error
-	// if ok := errors.As(err, &sqlite3Err); ok {
-	// 	if int(sqlite3Err.ExtendedCode) == SQLITE_CONSTRAINT_PRIMARYKEY {
-	// 		return newErr
-	// 	} else if int(sqlite3Err.ExtendedCode) == SQLITE_CONSTRAINT_UNIQUE {
-	// 		return newErr
-	// 	}
-	// }
+	var sqlite3Err *sqlite3.Error
+	if ok := errors.As(err, &sqlite3Err); ok {
+		if sqlite3Err.Code() == SQLITE_CONSTRAINT_PRIMARYKEY {
+			return newErr
+		} else if sqlite3Err.Code() == SQLITE_CONSTRAINT_UNIQUE {
+			return newErr
+		}
+	}
 
 	return err
 }

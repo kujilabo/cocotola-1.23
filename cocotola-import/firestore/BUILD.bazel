@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "firestore",
+    srcs = ["firestore.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/firestore",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_google_firebase_go_v4//:go",
+        "@org_golang_google_api//option",
+    ],
+)
+
+go_test(
+    name = "firestore_test",
+    srcs = ["firestore_test.go"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

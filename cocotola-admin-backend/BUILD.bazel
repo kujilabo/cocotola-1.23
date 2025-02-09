@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "cocotola-admin-backend_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-admin-backend",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "cocotola-admin-backend",
+    embed = [":cocotola-admin-backend_lib"],
+    visibility = ["//visibility:public"],
+)

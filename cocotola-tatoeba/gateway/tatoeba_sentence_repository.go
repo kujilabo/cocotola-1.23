@@ -12,10 +12,10 @@ import (
 	"gorm.io/gorm"
 
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
-	rslibgateway "github.com/kujilabo/cocotola-1.23/redstart/lib/gateway"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
@@ -45,7 +45,7 @@ type tatoebaSentencePairEntity struct {
 	DstUpdatedAt      time.Time
 }
 
-func (e *tatoebaSentenceEntity) toModel() (service.TatoebaSentence, error) {
+func (e *tatoebaSentenceEntity) toModel() (*service.TatoebaSentence, error) {
 	lang3, err := libdomain.NewLang3(e.Lang3)
 	if err != nil {
 		return nil, rsliberrors.Errorf("failed to NewLang3. err: %w", err)
@@ -57,7 +57,7 @@ func (e *tatoebaSentenceEntity) toModel() (service.TatoebaSentence, error) {
 	return service.NewTatoebaSentence(e.SentenceNumber, lang3, e.Text, author, e.UpdatedAt)
 }
 
-func (e *tatoebaSentencePairEntity) toModel() (service.TatoebaSentencePair, error) {
+func (e *tatoebaSentencePairEntity) toModel() (*service.TatoebaSentencePair, error) {
 	srcE := tatoebaSentenceEntity{
 		SentenceNumber: e.SrcSentenceNumber,
 		Lang3:          e.SrcLang3,
@@ -154,7 +154,7 @@ func newTatoebaSentenceRepository(db *gorm.DB) service.TatoebaSentenceRepository
 
 // where t1.lang3='eng' and t3.lang3='jpn';
 
-func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
+func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error) {
 	ctx, span := tracer.Start(ctx, "tatoebaSentenceRepository.FindTatoebaSentencePairs")
 	defer span.End()
 
@@ -168,11 +168,11 @@ func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context
 	return r.findTatoebaSentences(ctx, param)
 }
 
-func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
+func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error) {
 	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
-	r.logger.DebugContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences")
+	r.logger.InfoContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences")
 	limit := param.GetPageSize()
 	offset := (param.GetPageNo() - 1) * param.GetPageSize()
 
@@ -198,23 +198,25 @@ func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, pa
 				"T3.text AS dst_text," +
 				"T3.author AS dst_author," +
 				"T3.updated_at AS dst_updated_at").
-			Joins("INNER JOIN tatoeba_link AS T2 ON T1.sentence_number = T2.`from`").
-			Joins("INNER JOIN tatoeba_sentence AS T3 ON T3.sentence_number = T2.`to`").
+			Joins("INNER JOIN tatoeba_link AS T2 ON T1.sentence_number = T2.`src`").
+			Joins("INNER JOIN tatoeba_sentence AS T3 ON T3.sentence_number = T2.`dst`").
 			Where("T1.lang3 = 'eng' AND T3.lang3 = 'jpn'")
-		if param.GetKeyword() != "" {
-			keyword1 := strings.ReplaceAll(param.GetKeyword(), "%", "\\%")
+		keywords := SplitString(param.GetKeyword(), ' ', '"')
+		for _, keyword := range keywords {
+			keyword1 := strings.ReplaceAll(keyword, "%", "\\%")
 			keyword2 := "%" + keyword1 + "%"
 			db = db.Where("T1.text like ?", keyword2)
 		}
 		return db
 	}
 
+	r.logger.InfoContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences 222")
 	entities := []tatoebaSentencePairEntity{}
 	if result := where().Limit(limit).Offset(offset).Scan(&entities); result.Error != nil {
 		return nil, result.Error
 	}
 
-	results := make([]service.TatoebaSentencePair, len(entities))
+	results := make([]*service.TatoebaSentencePair, len(entities))
 	for i, e := range entities {
 		m, err := e.toModel()
 		if err != nil {
@@ -223,14 +225,30 @@ func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, pa
 		results[i] = m
 	}
 
+	r.logger.InfoContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences 333")
 	var count int64 = 0
 	// if result := where().Count(&count); result.Error != nil {
 	// 	return nil, result.Error
 	// }
 
+	r.logger.InfoContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences 444")
+
 	return service.NewTatoebaSentencePairSearchResult(int(count), results), nil
 }
 
+func SplitString(str string, space, quote rune) []string {
+	quoted := false
+	split := strings.FieldsFunc(str, func(r1 rune) bool {
+		if r1 == quote {
+			quoted = !quoted
+		}
+		return !quoted && r1 == space
+	})
+	for i := 0; i < len(split); i++ {
+		split[i] = strings.Trim(split[i], string(quote))
+	}
+	return split
+}
 func min(x, y int) int {
 	if x < y {
 		return x
@@ -238,7 +256,7 @@ func min(x, y int) int {
 	return y
 }
 
-func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
+func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error) {
 	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
@@ -260,8 +278,8 @@ func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Con
 				"T3.text AS dst_text," +
 				"T3.author AS dst_author," +
 				"T3.updated_at AS dst_updated_at").
-			Joins("INNER JOIN tatoeba_link AS T2 ON T1.sentence_number = T2.`from`").
-			Joins("INNER JOIN tatoeba_sentence AS T3 ON T3.sentence_number = T2.`to`").
+			Joins("INNER JOIN tatoeba_link AS T2 ON T1.sentence_number = T2.`src`").
+			Joins("INNER JOIN tatoeba_sentence AS T3 ON T3.sentence_number = T2.`dst`").
 			Joins("INNER JOIN (SELECT CEIL(RAND() * (SELECT MAX(`sentence_number`) FROM `tatoeba_sentence`)) AS `sentence_number`) AS `tmp` ON T1.sentence_number >= tmp.sentence_number").
 			Where("T1.lang3 = 'eng' AND T3.lang3 = 'jpn'")
 		if param.GetKeyword() != "" {
@@ -283,7 +301,7 @@ func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Con
 	r.logger.InfoContext(ctx, fmt.Sprintf("len(entities): %d", len(entities)))
 
 	length := min(param.GetPageSize(), len(entities))
-	results := make([]service.TatoebaSentencePair, length)
+	results := make([]*service.TatoebaSentencePair, length)
 	for i := 0; i < length; i++ {
 		m, err := entities[i].toModel()
 		if err != nil {
@@ -300,7 +318,7 @@ func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Con
 	return service.NewTatoebaSentencePairSearchResult(int(count), results), nil
 }
 
-func (r *tatoebaSentenceRepository) FindTatoebaSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error) {
+func (r *tatoebaSentenceRepository) FindTatoebaSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (*service.TatoebaSentence, error) {
 	entity := tatoebaSentenceEntity{}
 	if result := r.db.Where("sentence_number = ?", sentenceNumber).
 		First(&entity); result.Error != nil {

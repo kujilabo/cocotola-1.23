@@ -270,6 +270,12 @@ tasks:
     cmds:
       - docker run -t -v $(pwd):/path checkmarx/kics:latest scan -p /path -o /path/ --config /path/.github/kics.yml
 
+  docker-dev-all-in-one-up:
+    cmds:
+      - docker compose -f docker/dev-all-in-one/compose.yml up -d
+  docker-dev-all-in-one-down:
+    cmds:
+      - docker compose -f docker/dev-all-in-one/compose.yml down
   docker-dev-microserivce-up:
     cmds:
       - docker compose -f docker/dev-microservice/compose.yml up -d

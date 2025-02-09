@@ -45,6 +45,19 @@ func (l *Lang3) String() string {
 	return l.value
 }
 
+func (l *Lang3) ToLang2() *Lang2 {
+	switch l.value {
+	case "eng":
+		return Lang2EN
+	case "jpn":
+		return Lang2JA
+	case "kor":
+		return Lang2KO
+	default:
+		return Lang2Unknown
+	}
+}
+
 // func (l *lang2) ToLang3() Lang3 {
 // 	switch l.value {
 // 	case "en":

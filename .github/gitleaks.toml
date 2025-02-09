@@ -6,4 +6,5 @@ useDefault = true
 [allowlist]
 paths = [
   '''local.yml''',
+  '''firebase_options.dart''',
 ]

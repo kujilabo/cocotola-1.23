@@ -44,6 +44,7 @@ func OpenSQLite3(cfg *SQLite3Config) (*gorm.DB, error) {
 			slog_gorm.WithContextFunc(liblog.LoggerNameKey, func(ctx context.Context) (slog.Value, bool) {
 				return slog.StringValue("gorm"), true
 			}),
+			slog_gorm.SetLogLevel(slog_gorm.DefaultLogType, slog.LevelDebug),
 		),
 	}
 

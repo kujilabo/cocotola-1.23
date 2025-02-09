@@ -10,9 +10,11 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/usecase",
     visibility = ["//visibility:public"],
     deps = [
+        "//cocotola-tatoeba/domain",
         "//cocotola-tatoeba/service",
         "//redstart/lib/errors",
         "//redstart/lib/log",
+        "//redstart/lib/service",
         "@io_opentelemetry_go_otel//:otel",
     ],
 )

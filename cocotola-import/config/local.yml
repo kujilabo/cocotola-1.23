@@ -1,9 +1,13 @@
 ---
 tatoebaApi:
-  endpoint: http://localhost:8280
+  endpoint: http://localhost:8040
   username: username
   password: password  # pragma: allowlist secret
 datasource:
   tatoeba:
     dir: ${HOME}/pecolynx/cocotola-data/datasource/tatoeba
-    engSentences: eng_sentences_detailed_lite.tsv
+    # engSentences: eng_sentences_detailed_lite.tsv
+    # jpnSentences: jpn_sentences_detailed_lite.tsv
+    engSentences: eng_sentences_detailed.tsv
+    jpnSentences: jpn_sentences_detailed.tsv
+    links: links.tsv

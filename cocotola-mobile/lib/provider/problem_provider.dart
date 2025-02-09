@@ -15,22 +15,26 @@ class ProblemWithStatus {
   }
 }
 
-class ProblemRepository extends Notifier<ProblemWithStatus> {
+class ProblemRepository extends AsyncNotifier<ProblemWithStatus> {
   @override
-  ProblemWithStatus build() {
-    final problemSet = ref.watch(problemSetProvider);
+  Future<ProblemWithStatus> build() async {
+    final problemSet = await ref.watch(problemSetProvider.future);
     return ProblemWithStatus(
         problemSet: problemSet, currentProblem: problemSet[0], index: 0);
   }
 
   void next() {
-    state = ProblemWithStatus(
-      problemSet: state.problemSet,
-      currentProblem: state.problemSet[state.index + 1],
-      index: state.index + 1,
+    final currentState = state.value!;
+    state = AsyncValue.data(
+      ProblemWithStatus(
+        problemSet: currentState.problemSet,
+        currentProblem: currentState.problemSet[currentState.index + 1],
+        index: currentState.index + 1,
+      ),
     );
   }
 }
 
-final problemProvider = NotifierProvider<ProblemRepository, ProblemWithStatus>(
-    ProblemRepository.new);
+final problemProvider =
+    AsyncNotifierProvider<ProblemRepository, ProblemWithStatus>(
+        ProblemRepository.new);

@@ -10,11 +10,12 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
+	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
 const (
-	commitSize = 1000
+	commitSize = 5000
 	logSize    = 100000
 )
 
@@ -25,21 +26,22 @@ type AdminUsecase struct {
 }
 
 func NewAdminUsecase(txManager, nonTxManager service.TransactionManager) *AdminUsecase {
-	adminHandlerLoggerName := "adminUsecase"
+	adminUsecaseLoggerName := "adminUsecase"
 	return &AdminUsecase{
 		txManager:    txManager,
 		nonTxManager: nonTxManager,
-		logger:       slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName)),
+		logger:       slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminUsecaseLoggerName)),
 	}
 }
 
-func (u *AdminUsecase) ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) error {
+func (u *AdminUsecase) ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) (*domain.ImportResult, error) {
 	ctx, span := tracer.Start(ctx, "adminUsecase.ImportSentences")
 	defer span.End()
 
+	u.logger.InfoContext(ctx, "ImportSentences")
 	var readCount = 0
-	var importCount = 0
-	var skipCount = 0
+	var importedCount = 0
+	var skippedCount = 0
 	var loop = true
 	for loop {
 		if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
@@ -51,8 +53,8 @@ func (u *AdminUsecase) ImportSentences(ctx context.Context, iterator service.Tat
 			}
 
 			readCount += readCountTmp
-			skipCount += skipCountTmp
-			importCount += importCountTmp
+			skippedCount += skipCountTmp
+			importedCount += importCountTmp
 
 			if eof {
 				loop = false
@@ -61,31 +63,38 @@ func (u *AdminUsecase) ImportSentences(ctx context.Context, iterator service.Tat
 
 			return nil
 		}); err != nil {
-			return rsliberrors.Errorf("import sentence. err: %w", err)
+			return nil, rsliberrors.Errorf("import sentence. err: %w", err)
 		}
 	}
 
-	u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
-	u.logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skipCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importedCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skippedCount))
 	u.logger.InfoContext(ctx, fmt.Sprintf("read count: %d", readCount))
 
-	return nil
+	return &domain.ImportResult{
+		ImportedCount: importedCount,
+		SkippedCount:  skippedCount,
+		ReadCount:     readCount,
+	}, nil
 }
 
 func (u *AdminUsecase) importSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator, repo service.TatoebaSentenceRepository) (bool, int, int, int, error) {
 	readCount := 0
 	skipCount := 0
-	importCount := 0
+	importedCount := 0
 	i := 0
 	for {
 		param, err := iterator.Next(ctx)
 		if errors.Is(err, io.EOF) {
-			return true, readCount, skipCount, importCount, nil
+			return true, readCount, skipCount, importedCount, nil
 		}
 		if err != nil {
-			return false, readCount, skipCount, importCount, rsliberrors.Errorf("read next line. read count: %d, err: %w", readCount, err)
+			return false, readCount, skipCount, importedCount, rsliberrors.Errorf("read next line. read count: %d, err: %w", readCount, err)
 		}
 		readCount++
+		if readCount%logSize == 0 {
+			u.logger.InfoContext(ctx, fmt.Sprintf("read count: %d, imported count: %d", readCount, importedCount))
+		}
 
 		if param == nil {
 			skipCount++
@@ -99,24 +108,24 @@ func (u *AdminUsecase) importSentences(ctx context.Context, iterator service.Tat
 				continue
 			}
 
-			return false, readCount, skipCount, importCount, rsliberrors.Errorf("failed to Add. read count: %d, err: %w", readCount, err)
+			return false, readCount, skipCount, importedCount, rsliberrors.Errorf("failed to Add. read count: %d, err: %w", readCount, err)
 		}
 
 		i++
-		importCount++
+		importedCount++
 		if i >= commitSize {
-			if importCount%logSize == 0 {
-				u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
+			if importedCount%logSize == 0 {
+				u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importedCount))
 			}
-			return false, readCount, skipCount, importCount, nil
+			return false, readCount, skipCount, importedCount, nil
 		}
 	}
 }
 
-func (u *AdminUsecase) ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) error {
+func (u *AdminUsecase) ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) (*domain.ImportResult, error) {
 	var readCount = 0
-	var importCount = 0
-	var skipCount = 0
+	var importedCount = 0
+	var skippedCount = 0
 	var loop = true
 	for loop {
 		if err := u.txManager.Do(ctx, func(rf service.RepositoryFactory) error {
@@ -126,96 +135,72 @@ func (u *AdminUsecase) ImportLinks(ctx context.Context, iterator service.Tatoeba
 			if err != nil {
 				return err
 			}
+			readCount += readCountTmp
+			skippedCount += skipCountTmp
+			importedCount += importCountTmp
+
 			if eof {
 				loop = false
 				return nil
 			}
-			readCount += readCountTmp
-			skipCount += skipCountTmp
-			importCount += importCountTmp
-
-			// i := 0
-			// for {
-			// 	param, err := iterator.Next(ctx)
-			// 	if errors.Is(err, io.EOF) {
-			// 		loop = false
-			// 		break
-			// 	}
-			// 	readCount++
-			// 	if err != nil {
-			// 		return rsliberrors.Errorf("read next line. read count: %d, err: %w", readCount, err)
-			// 	}
-			// 	if param == nil {
-			// 		skipCount++
-			// 		continue
-			// 	}
-
-			// 	if err := repo.Add(ctx, param); err != nil {
-			// 		if !errors.Is(err, service.ErrTatoebaSentenceNotFound) {
-			// 			logger.WarnContext(ctx, fmt.Sprintf("failed to Add. read count: %d, err: %v", readCount, err))
-			// 		}
-			// 		skipCount++
-			// 		continue
-			// 	}
-			// 	i++
-			// 	importCount++
-			// 	if i >= commitSize {
-			// 		if importCount%logSize == 0 {
-			// 			logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
-			// 		}
-			// 		break
-			// 	}
-			// }
 
 			return nil
 		}); err != nil {
-			return rsliberrors.Errorf("import sentence. err: %w", err)
+			return nil, rsliberrors.Errorf("import sentence. err: %w", err)
 		}
 	}
 
-	u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
-	u.logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skipCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importedCount))
+	u.logger.InfoContext(ctx, fmt.Sprintf("skipped count: %d", skippedCount))
 	u.logger.InfoContext(ctx, fmt.Sprintf("read count: %d", readCount))
 
-	return nil
+	return &domain.ImportResult{
+		ImportedCount: importedCount,
+		SkippedCount:  skippedCount,
+		ReadCount:     readCount,
+	}, nil
 }
 
 func (u *AdminUsecase) importLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator, repo service.TatoebaLinkRepository) (bool, int, int, int, error) {
 	eof := false
 	readCount := 0
-	skipCount := 0
-	importCount := 0
+	skippedCount := 0
+	importedCount := 0
 	i := 0
 	for {
 		param, err := iterator.Next(ctx)
 		if errors.Is(err, io.EOF) {
 			eof = true
-			return eof, readCount, skipCount, importCount, nil
+			return eof, readCount, skippedCount, importedCount, nil
+		}
+		if err != nil {
+			return eof, readCount, skippedCount, importedCount, rsliberrors.Errorf("read next line. read count: %d, err: %w", readCount, err)
 		}
 		readCount++
-		if err != nil {
-			return eof, readCount, skipCount, importCount, rsliberrors.Errorf("read next line. read count: %d, err: %w", readCount, err)
+		if readCount%logSize == 0 {
+			u.logger.InfoContext(ctx, fmt.Sprintf("read count: %d, imported count: %d", readCount, importedCount))
 		}
 
 		if param == nil {
-			skipCount++
-			return eof, readCount, skipCount, importCount, nil
+			skippedCount++
+			continue
 		}
 
 		if err := repo.Add(ctx, param); err != nil {
 			if !errors.Is(err, service.ErrTatoebaSentenceNotFound) {
 				u.logger.WarnContext(ctx, fmt.Sprintf("failed to Add. read count: %d, err: %v", readCount, err))
 			}
-			skipCount++
-			return eof, readCount, skipCount, importCount, nil
+			skippedCount++
+			continue
 		}
+
 		i++
-		importCount++
+		importedCount++
 		if i >= commitSize {
-			if importCount%logSize == 0 {
-				u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importCount))
+			if importedCount%logSize == 0 {
+				u.logger.InfoContext(ctx, fmt.Sprintf("imported count: %d", importedCount))
 			}
-			return eof, readCount, skipCount, importCount, nil
+			return eof, readCount, skippedCount, importedCount, nil
 		}
 	}
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type RBACRepository interface {
-	Init() error
+	// Init() error
 	GetEnforcer() casbin.IEnforcer
 	// who can do what actions on which resources
 	AddPolicy(ctx context.Context, domain domain.RBACDomain, subject domain.RBACSubject, action domain.RBACAction, object domain.RBACObject, effect domain.RBACEffect) error

@@ -16,14 +16,15 @@ import (
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
 
 	controllerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
+	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
 type AdminUsecase interface {
-	ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) error
+	ImportSentences(ctx context.Context, iterator service.TatoebaSentenceAddParameterIterator) (*domain.ImportResult, error)
 
-	ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) error
+	ImportLinks(ctx context.Context, iterator service.TatoebaLinkAddParameterIterator) (*domain.ImportResult, error)
 }
 
 type AdminHandler struct {
@@ -81,11 +82,12 @@ func (h *AdminHandler) ImportSentences(c *gin.Context) {
 
 		iterator := h.newTatoebaSentenceAddParameterReader(multipartFile)
 
-		if err := h.adminUsecase.ImportSentences(ctx, iterator); err != nil {
+		importResult, err := h.adminUsecase.ImportSentences(ctx, iterator)
+		if err != nil {
 			return rsliberrors.Errorf("failed to ImportSentences. err: %w", err)
 		}
 
-		c.Status(http.StatusOK)
+		c.JSON(http.StatusOK, importResult)
 		return nil
 	}, h.errorHandle)
 }
@@ -126,11 +128,12 @@ func (h *AdminHandler) ImportLinks(c *gin.Context) {
 
 		iterator := h.newTatoebaLinkAddParameterReader(multipartFile)
 
-		if err := h.adminUsecase.ImportLinks(ctx, iterator); err != nil {
+		importResult, err := h.adminUsecase.ImportLinks(ctx, iterator)
+		if err != nil {
 			return rsliberrors.Errorf("failed to ImportLinks. err: %w", err)
 		}
 
-		c.Status(http.StatusOK)
+		c.JSON(http.StatusOK, importResult)
 		return nil
 	}, h.errorHandle)
 }

@@ -4,19 +4,90 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
+	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
+	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
-type UserUsecase interface {
-	FindSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error)
+type TatoebaSentenceFindParameter struct {
+	PageNo   int    `json:"pageNo" binding:"required,gte=1"`
+	PageSize int    `json:"pageSize" binding:"required,gte=1"`
+	Keyword  string `json:"keyword"`
+	Random   bool   `json:"random"`
+}
 
-	FindSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error)
+type TatoebaSentenceResponse struct {
+	SentenceNumber int       `json:"sentenceNumber"`
+	Lang2          string    `json:"lang2" binding:"len=2" validate:"oneof=ja en"`
+	Text           string    `json:"text"`
+	Author         string    `json:"author"`
+	UpdatedAt      time.Time `json:"updatedAt"`
+}
+
+type TatoebaSentencePair struct {
+	Src TatoebaSentenceResponse `json:"src"`
+	Dst TatoebaSentenceResponse `json:"dst"`
+}
+
+type TatoebaSentencePairFindResponse struct {
+	TotalCount int                   `json:"totalCount"`
+	Results    []TatoebaSentencePair `json:"results"`
+}
+
+func ToTatoebaSentenceSearchCondition(ctx context.Context, param *TatoebaSentenceFindParameter) (*service.TatoebaSentenceSearchCondition, error) {
+	return service.NewTatoebaSentenceSearchCondition(param.PageNo, param.PageSize, param.Keyword, param.Random)
+}
+
+func ToTatoebaSentenceFindResponse(ctx context.Context, result *service.TatoebaSentencePairSearchResult) (*TatoebaSentencePairFindResponse, error) {
+	entities := make([]TatoebaSentencePair, len(result.Results))
+	for i, m := range result.Results {
+		src := TatoebaSentenceResponse{
+			SentenceNumber: m.Src.SentenceNumber,
+			Lang2:          m.Src.Lang3.ToLang2().String(),
+			Text:           m.Src.Text,
+			Author:         m.Src.Author,
+			UpdatedAt:      m.Src.UpdatedAt,
+		}
+		if err := rslibdomain.Validator.Struct(src); err != nil {
+			return nil, err
+		}
+
+		dst := TatoebaSentenceResponse{
+			SentenceNumber: m.Dst.SentenceNumber,
+			Lang2:          m.Dst.Lang3.ToLang2().String(),
+			Text:           m.Dst.Text,
+			Author:         m.Dst.Author,
+			UpdatedAt:      m.Dst.UpdatedAt,
+		}
+		if err := rslibdomain.Validator.Struct(dst); err != nil {
+			return nil, err
+		}
+
+		entities[i] = TatoebaSentencePair{
+			Src: src,
+			Dst: dst,
+		}
+	}
+
+	return &TatoebaSentencePairFindResponse{
+		TotalCount: result.TotalCount,
+		Results:    entities,
+	}, nil
+}
+
+type UserUsecase interface {
+	FindSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error)
+
+	FindSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (*service.TatoebaSentence, error)
 }
 
 type UserHandler struct {
@@ -47,26 +118,26 @@ func (h *UserHandler) logger() *slog.Logger {
 // @Security    BasicAuth
 func (h *UserHandler) FindSentencePairs(c *gin.Context) {
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
-		// param := entity.TatoebaSentenceFindParameter{}
-		// if err := c.ShouldBindJSON(&param); err != nil {
-		// 	c.Status(http.StatusBadRequest)
-		// 	return nil
-		// }
-		// logger.Debugf("FindSentencePairs. param: %+v", param)
-		// parameter, err := converter.ToTatoebaSentenceSearchCondition(ctx, &param)
-		// if err != nil {
-		// 	return liberrors.Errorf("convert parameter to TatoebaSentenceSearchCondition. err: %w", err)
-		// }
-		// result, err := h.userUsecase.FindSentencePairs(ctx, parameter)
-		// if err != nil {
-		// 	return liberrors.Errorf("execute FindSentencePairs. err: %w", err)
-		// }
-		// response, err := converter.ToTatoebaSentenceFindResponse(ctx, result)
-		// if err != nil {
-		// 	return liberrors.Errorf("convert result to TatoebaSentenceFindResponse. err: %w", err)
-		// }
+		param := TatoebaSentenceFindParameter{}
+		if err := c.ShouldBindJSON(&param); err != nil {
+			c.Status(http.StatusBadRequest)
+			return nil
+		}
+		h.logger().DebugContext(ctx, fmt.Sprintf("FindSentencePairs. param: %+v", param))
+		parameter, err := ToTatoebaSentenceSearchCondition(ctx, &param)
+		if err != nil {
+			return rsliberrors.Errorf("convert parameter to TatoebaSentenceSearchCondition. err: %w", err)
+		}
+		result, err := h.userUsecase.FindSentencePairs(ctx, parameter)
+		if err != nil {
+			return rsliberrors.Errorf("execute FindSentencePairs. err: %w", err)
+		}
+		response, err := ToTatoebaSentenceFindResponse(ctx, result)
+		if err != nil {
+			return rsliberrors.Errorf("convert result to TatoebaSentenceFindResponse. err: %w", err)
+		}
 
-		// c.JSON(http.StatusOK, response)
+		c.JSON(http.StatusOK, response)
 		return nil
 	}, h.errorHandle)
 }
@@ -107,4 +178,15 @@ func (h *UserHandler) FindSentenceBySentenceNumber(c *gin.Context) {
 func (h *UserHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
 	h.logger().ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
 	return false
+}
+
+func NewInitUserRouterFunc(userUsecase UserUsecase) libcontroller.InitRouterGroupFunc {
+	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
+		user := parentRouterGroup.Group("user")
+		userHandler := NewUserHandler(userUsecase)
+		for _, m := range middleware {
+			user.Use(m)
+		}
+		user.POST("sentence_pair/find", userHandler.FindSentencePairs)
+	}
 }

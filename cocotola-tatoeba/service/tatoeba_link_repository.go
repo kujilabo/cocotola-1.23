@@ -11,29 +11,29 @@ var ErrTatoebaLinkAlreadyExists = errors.New("tatoebaLink already exists")
 var ErrTatoebaLinkSourceNotFound = errors.New("tatoebaLink source not found")
 
 type TatoebaLinkAddParameter interface {
-	GetFrom() int
-	GetTo() int
+	GetSrc() int
+	GetDst() int
 }
 
 type tatoebaLinkAddParameter struct {
-	From int `validate:"required"`
-	To   int `validate:"required"`
+	Src int `validate:"required"`
+	Dst int `validate:"required"`
 }
 
-func NewTatoebaLinkAddParameter(from, to int) (TatoebaLinkAddParameter, error) {
+func NewTatoebaLinkAddParameter(src, dst int) (TatoebaLinkAddParameter, error) {
 	m := &tatoebaLinkAddParameter{
-		From: from,
-		To:   to,
+		Src: src,
+		Dst: dst,
 	}
 	return m, libdomain.Validator.Struct(m)
 }
 
-func (p *tatoebaLinkAddParameter) GetFrom() int {
-	return p.From
+func (p *tatoebaLinkAddParameter) GetSrc() int {
+	return p.Src
 }
 
-func (p *tatoebaLinkAddParameter) GetTo() int {
-	return p.To
+func (p *tatoebaLinkAddParameter) GetDst() int {
+	return p.Dst
 }
 
 type TatoebaLinkRepository interface {

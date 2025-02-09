@@ -19,6 +19,7 @@ go_library(
         "//redstart/lib/errors",
         "//redstart/lib/gateway",
         "//redstart/lib/log",
+        "@com_github_patrickmn_go_cache//:go-cache",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
     ],
@@ -28,6 +29,7 @@ go_test(
     name = "gateway_test",
     srcs = ["tatoeba_sentence_repository_test.go"],
     deps = [
+        ":gateway",
         "//redstart/testlib/gateway",
         "@com_github_stretchr_testify//assert",
     ],

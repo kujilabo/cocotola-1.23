@@ -127,23 +127,23 @@ func (_c *TatoebaSentenceRepository_ContainsSentenceBySentenceNumber_Call) RunAn
 }
 
 // FindTatoebaSentenceBySentenceNumber provides a mock function with given fields: ctx, sentenceNumber
-func (_m *TatoebaSentenceRepository) FindTatoebaSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (service.TatoebaSentence, error) {
+func (_m *TatoebaSentenceRepository) FindTatoebaSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (*service.TatoebaSentence, error) {
 	ret := _m.Called(ctx, sentenceNumber)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindTatoebaSentenceBySentenceNumber")
 	}
 
-	var r0 service.TatoebaSentence
+	var r0 *service.TatoebaSentence
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int) (service.TatoebaSentence, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) (*service.TatoebaSentence, error)); ok {
 		return rf(ctx, sentenceNumber)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int) service.TatoebaSentence); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) *service.TatoebaSentence); ok {
 		r0 = rf(ctx, sentenceNumber)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(service.TatoebaSentence)
+			r0 = ret.Get(0).(*service.TatoebaSentence)
 		}
 	}
 
@@ -175,38 +175,38 @@ func (_c *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call) Ru
 	return _c
 }
 
-func (_c *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call) Return(_a0 service.TatoebaSentence, _a1 error) *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call {
+func (_c *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call) Return(_a0 *service.TatoebaSentence, _a1 error) *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call) RunAndReturn(run func(context.Context, int) (service.TatoebaSentence, error)) *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call {
+func (_c *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call) RunAndReturn(run func(context.Context, int) (*service.TatoebaSentence, error)) *TatoebaSentenceRepository_FindTatoebaSentenceBySentenceNumber_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // FindTatoebaSentencePairs provides a mock function with given fields: ctx, param
-func (_m *TatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error) {
+func (_m *TatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error) {
 	ret := _m.Called(ctx, param)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindTatoebaSentencePairs")
 	}
 
-	var r0 service.TatoebaSentencePairSearchResult
+	var r0 *service.TatoebaSentencePairSearchResult
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error)); ok {
 		return rf(ctx, param)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, service.TatoebaSentenceSearchCondition) service.TatoebaSentencePairSearchResult); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, service.TatoebaSentenceSearchConditionInterface) *service.TatoebaSentencePairSearchResult); ok {
 		r0 = rf(ctx, param)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(service.TatoebaSentencePairSearchResult)
+			r0 = ret.Get(0).(*service.TatoebaSentencePairSearchResult)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, service.TatoebaSentenceSearchCondition) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, service.TatoebaSentenceSearchConditionInterface) error); ok {
 		r1 = rf(ctx, param)
 	} else {
 		r1 = ret.Error(1)
@@ -222,24 +222,24 @@ type TatoebaSentenceRepository_FindTatoebaSentencePairs_Call struct {
 
 // FindTatoebaSentencePairs is a helper method to define mock.On call
 //   - ctx context.Context
-//   - param service.TatoebaSentenceSearchCondition
+//   - param service.TatoebaSentenceSearchConditionInterface
 func (_e *TatoebaSentenceRepository_Expecter) FindTatoebaSentencePairs(ctx interface{}, param interface{}) *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call {
 	return &TatoebaSentenceRepository_FindTatoebaSentencePairs_Call{Call: _e.mock.On("FindTatoebaSentencePairs", ctx, param)}
 }
 
-func (_c *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call) Run(run func(ctx context.Context, param service.TatoebaSentenceSearchCondition)) *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call {
+func (_c *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call) Run(run func(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface)) *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(service.TatoebaSentenceSearchCondition))
+		run(args[0].(context.Context), args[1].(service.TatoebaSentenceSearchConditionInterface))
 	})
 	return _c
 }
 
-func (_c *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call) Return(_a0 service.TatoebaSentencePairSearchResult, _a1 error) *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call {
+func (_c *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call) Return(_a0 *service.TatoebaSentencePairSearchResult, _a1 error) *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call) RunAndReturn(run func(context.Context, service.TatoebaSentenceSearchCondition) (service.TatoebaSentencePairSearchResult, error)) *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call {
+func (_c *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call) RunAndReturn(run func(context.Context, service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error)) *TatoebaSentenceRepository_FindTatoebaSentencePairs_Call {
 	_c.Call.Return(run)
 	return _c
 }

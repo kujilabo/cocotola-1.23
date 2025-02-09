@@ -7,7 +7,7 @@ import (
 )
 
 type AuthorizationManager interface {
-	Init(ctx context.Context) error
+	// Init(ctx context.Context) error
 
 	AddUserToGroup(ctx context.Context, operator AppUserInterface, appUserID *domain.AppUserID, userGroupID *domain.UserGroupID) error
 

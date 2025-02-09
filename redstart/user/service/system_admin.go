@@ -105,7 +105,10 @@ func (m *SystemAdmin) AddOrganization(ctx context.Context, param OrganizationAdd
 		return nil, liberrors.Errorf("failed to FindSystemOwnerByOrganizationName. error: %w", err)
 	}
 
-	authorizationManager := m.rf.NewAuthorizationManager(ctx)
+	authorizationManager, err := m.rf.NewAuthorizationManager(ctx)
+	if err != nil {
+		return nil, liberrors.Errorf("failed to NewAuthorizationManager. error: %w", err)
+	}
 
 	// rbacRepo := m.rf.NewRBACRepository(ctx)
 	// rbacDomain := NewRBACOrganization(organizationID)
