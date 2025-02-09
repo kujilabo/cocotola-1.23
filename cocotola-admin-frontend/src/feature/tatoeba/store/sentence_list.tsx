@@ -1,12 +1,10 @@
-import { backendTatoebaUrl } from "@/config/config";
-import {
-  TatoebaSentence,
-  type TatoebaSentencePair,
-} from "@/feature/tatoeba/model/sentence";
-import { extractErrorMessage } from "@/lib/base";
 import axios from "axios";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+
+import { backendTatoebaUrl } from "@/config/config";
+import type { TatoebaSentencePair } from "@/feature/tatoeba/model/sentence";
+import { extractErrorMessage } from "@/lib/base";
 
 type State = {
   sentences: TatoebaSentencePair[];
@@ -47,9 +45,9 @@ export const useSentenceListStore = create<State & Action>()(
         .then((resp) => {
           console.log("callback then");
           const data = resp.data as SentenceFindResponse;
-          for (const sentencePair of data.results) {
-            console.log(sentencePair);
-          }
+          // for (const sentencePair of data.results) {
+          //   console.log(sentencePair);
+          // }
           set({ sentences: data.results });
         })
         .catch((err: Error) => {

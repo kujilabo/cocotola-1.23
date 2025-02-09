@@ -1,24 +1,17 @@
-import { MainLayout } from "@/component/layout";
-import {
-  TatoebaSentence,
-  TatoebaSentencePair,
-  newTatoebaSentenceWithText,
-} from "@/feature/tatoeba/model/sentence";
-import { useSentenceListStore } from "@/feature/tatoeba/store/sentence_list";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import ListSubheader from "@mui/material/ListSubheader";
+import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Fragment, useCallback, useEffect, useState } from "react";
 
-import { StreamTwoTone } from "@mui/icons-material";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
+import { MainLayout } from "@/component/layout";
+import {
+  TatoebaSentencePair,
+  newTatoebaSentenceWithText,
+} from "@/feature/tatoeba/model/sentence";
+import { useMySentenceListStore } from "@/feature/tatoeba/store/my_sentence_list";
+import { useSentenceListStore } from "@/feature/tatoeba/store/sentence_list";
 
 const convertSelectedText = (text: string): string => {
   const first = text.substring(0, 1);
@@ -87,6 +80,30 @@ const formatText = (
   }
   return "ERROR";
 };
+
+const createNewSentencePair = (
+  selectedSentenceSrcDst: string,
+  stageSentencePair: TatoebaSentencePair,
+  start: number,
+  end: number,
+): TatoebaSentencePair => {
+  if (selectedSentenceSrcDst === "src") {
+    const newText = convertText(stageSentencePair.src.text, start, end);
+    return new TatoebaSentencePair(
+      newTatoebaSentenceWithText(stageSentencePair.src, newText),
+      stageSentencePair.dst,
+    );
+  }
+  if (selectedSentenceSrcDst === "dst") {
+    const newText = convertText(stageSentencePair.dst.text, start, end);
+    return new TatoebaSentencePair(
+      stageSentencePair.src,
+      newTatoebaSentenceWithText(stageSentencePair.dst, newText),
+    );
+  }
+  throw new Error("error");
+};
+
 export const SentenceList = () => {
   const [stageSentencePairs, setStageSentencePairs] = useState<
     Map<string, TatoebaSentencePair>
@@ -94,6 +111,7 @@ export const SentenceList = () => {
   const [errors, setErrors] = useState<Map<string, string>>(
     new Map<string, string>(),
   );
+
   const [selection, setSelection] = useState<Selection | null>(null);
 
   const [selectedSentenceKey, setSelectedSentenceKey] = useState<string>("");
@@ -101,6 +119,10 @@ export const SentenceList = () => {
     useState<string>("");
   const sentencePairs = useSentenceListStore((state) => state.sentences);
   const getSentences = useSentenceListStore((state) => state.getSentences);
+  const mySentencePairs = useMySentenceListStore((state) => state.sentences);
+  const saveSentencePair = useMySentenceListStore(
+    (state) => state.saveSentencePair,
+  );
 
   // console.log("sentenceMap", sentenceMap);
 
@@ -110,13 +132,16 @@ export const SentenceList = () => {
 
   useEffect(() => {
     const stageSentencePairs = new Map<string, TatoebaSentencePair>(
-      sentencePairs.map((sentencePair) => [
-        `${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`,
-        sentencePair,
-      ]),
+      sentencePairs.map((sentencePair) => {
+        const sentenceKey = `${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`;
+        if (sentenceKey in mySentencePairs) {
+          return [sentenceKey, mySentencePairs[sentenceKey]];
+        }
+        return [sentenceKey, sentencePair];
+      }),
     );
     setStageSentencePairs(stageSentencePairs);
-  }, [sentencePairs]);
+  }, [sentencePairs, mySentencePairs]);
 
   const handleSelectionChange = useCallback(() => {
     const selection = document.getSelection();
@@ -133,7 +158,9 @@ export const SentenceList = () => {
       return;
     }
 
-    const sentenceKeyElement = findSentenceKeylement(selection?.anchorNode);
+    const sentenceKeyElement = findSentenceKeylement(
+      selection.anchorNode.parentElement,
+    );
     setSelection(selection);
     setSelectedSentenceKey(
       sentenceKeyElement?.getAttribute("data-sentence-key") ?? "",
@@ -143,8 +170,8 @@ export const SentenceList = () => {
     );
   }, []);
 
-  const handleCardClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const sentenceKey = findSentenceKey(event.target);
+  const onMarkClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const sentenceKey = findSentenceKey(event.currentTarget);
     if (sentenceKey === null || sentenceKey === "") {
       return;
     }
@@ -178,38 +205,33 @@ export const SentenceList = () => {
       return "";
     }
 
-    const anchorOffset = selection.anchorOffset;
-    const focusOffset = selection.focusOffset;
-
-    let newSentencePair: TatoebaSentencePair;
-    if (selectedSentenceSrcDst === "src") {
-      const newText = convertText(
-        stageSentencePair.src.text,
-        anchorOffset,
-        focusOffset,
-      );
-      newSentencePair = new TatoebaSentencePair(
-        newTatoebaSentenceWithText(stageSentencePair.src, newText),
-        stageSentencePair.dst,
-      );
-    } else if (selectedSentenceSrcDst === "dst") {
-      const newText = convertText(
-        stageSentencePair.dst.text,
-        anchorOffset,
-        focusOffset,
-      );
-      newSentencePair = new TatoebaSentencePair(
-        stageSentencePair.src,
-        newTatoebaSentenceWithText(stageSentencePair.dst, newText),
-      );
-    } else {
-      console.log("error", selectedSentenceKey);
-      return;
-    }
+    const newSentencePair = createNewSentencePair(
+      selectedSentenceSrcDst,
+      stageSentencePair,
+      selection.anchorOffset,
+      selection.focusOffset,
+    );
 
     setStageSentencePairs((stageSentencePair) => {
       return new Map(stageSentencePair.set(sentenceKey, newSentencePair));
     });
+  };
+
+  const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const sentenceKey = findSentenceKey(event.currentTarget);
+    if (sentenceKey === null || sentenceKey === "") {
+      return;
+    }
+    const stageSentencePair = stageSentencePairs.get(sentenceKey);
+    if (stageSentencePair === undefined) {
+      console.log("problem is undefined");
+      return;
+    }
+    console.log("onSaveClick");
+    saveSentencePair(sentenceKey, stageSentencePair);
+  };
+  const onRemoveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("onRemoveClick");
   };
 
   useEffect(() => {
@@ -257,8 +279,29 @@ export const SentenceList = () => {
           {error !== "" ? <Typography>{error}</Typography> : <></>}
         </CardContent>
         <CardActions>
-          <Button size="small" variant="outlined" onClick={handleCardClick}>
-            Mark
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{ textTransform: "none" }}
+            onClick={onMarkClick}
+          >
+            Mark / Unmark
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{ textTransform: "none" }}
+            onClick={onSaveClick}
+          >
+            Save
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{ textTransform: "none" }}
+            onClick={onRemoveClick}
+          >
+            Remove
           </Button>
         </CardActions>
       </Fragment>
