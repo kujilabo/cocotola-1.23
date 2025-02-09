@@ -34,10 +34,12 @@ func GetPublicRouterGroupFuncs() []libcontroller.InitRouterGroupFunc {
 func GetPrivateRouterGroupFuncs(txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
 	// usecase
 	adminUsecase := usecase.NewAdminUsecase(txManager, nonTxManager)
+	userUsecase := usecase.NewUserUsecase(txManager, nonTxManager)
 
 	// private router
 	return []libcontroller.InitRouterGroupFunc{
 		NewInitAdminRouterFunc(adminUsecase),
+		NewInitUserRouterFunc(userUsecase),
 	}
 }
 

@@ -18,10 +18,12 @@ func main() {
 		log.Fatalf("fireabase error: %+v", err)
 		panic(err)
 	}
-	// if err := import2(ctx); err != nil {
-	// 	log.Fatalf("fireabase error: %+v", err)
-	// 	panic(err)
-	// }
+	if false {
+		if err := import2(ctx); err != nil {
+			log.Fatalf("fireabase error: %+v", err)
+			panic(err)
+		}
+	}
 }
 
 func import1(ctx context.Context) error {

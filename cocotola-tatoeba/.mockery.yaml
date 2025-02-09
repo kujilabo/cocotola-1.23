@@ -11,11 +11,6 @@ packages:
     interfaces:
       TatoebaLinkAddParameter:
       TatoebaLinkRepository:
-      TatoebaSentence:
-      TatoebaSentencePair:
-      TatoebaSentenceAddParameter:
-      TatoebaSentenceSearchCondition:
-      TatoebaSentencePairSearchResult:
       TatoebaSentenceRepository:
       TatoebaLinkAddParameterIterator:
       TatoebaSentenceAddParameterIterator:

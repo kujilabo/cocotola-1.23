@@ -12,8 +12,12 @@
     "check": "biome check --config-path ../.github/biome.json --write"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.6.0",
     "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fontsource/roboto": "^5.1.1",
+    "@mui/icons-material": "^6.4.3",
+    "@mui/material": "^6.4.3",
+    "axios": "^1.7.9",
     "next-themes": "^0.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

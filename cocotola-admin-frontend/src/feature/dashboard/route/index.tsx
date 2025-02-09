@@ -6,10 +6,10 @@ import { useNavStore } from "@/feature/store/nav";
 import { useEffect } from "react";
 export const DashboardRoutes = () => {
   const selectTab = useNavStore((state) => state.selectTab);
-//   selectTab('members');
+  //   selectTab('members');
   useEffect(() => {
-    selectTab('dashboard');
-  }, []);
+    selectTab("dashboard");
+  }, [selectTab]);
   return (
     <Routes>
       <Route path="*" element={<Dashboard />} />

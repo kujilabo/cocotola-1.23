@@ -17,12 +17,12 @@ func (_m *TatoebaLinkAddParameter) EXPECT() *TatoebaLinkAddParameter_Expecter {
 	return &TatoebaLinkAddParameter_Expecter{mock: &_m.Mock}
 }
 
-// GetFrom provides a mock function with given fields:
-func (_m *TatoebaLinkAddParameter) GetFrom() int {
+// GetDst provides a mock function with given fields:
+func (_m *TatoebaLinkAddParameter) GetDst() int {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetFrom")
+		panic("no return value specified for GetDst")
 	}
 
 	var r0 int
@@ -35,39 +35,39 @@ func (_m *TatoebaLinkAddParameter) GetFrom() int {
 	return r0
 }
 
-// TatoebaLinkAddParameter_GetFrom_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetFrom'
-type TatoebaLinkAddParameter_GetFrom_Call struct {
+// TatoebaLinkAddParameter_GetDst_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetDst'
+type TatoebaLinkAddParameter_GetDst_Call struct {
 	*mock.Call
 }
 
-// GetFrom is a helper method to define mock.On call
-func (_e *TatoebaLinkAddParameter_Expecter) GetFrom() *TatoebaLinkAddParameter_GetFrom_Call {
-	return &TatoebaLinkAddParameter_GetFrom_Call{Call: _e.mock.On("GetFrom")}
+// GetDst is a helper method to define mock.On call
+func (_e *TatoebaLinkAddParameter_Expecter) GetDst() *TatoebaLinkAddParameter_GetDst_Call {
+	return &TatoebaLinkAddParameter_GetDst_Call{Call: _e.mock.On("GetDst")}
 }
 
-func (_c *TatoebaLinkAddParameter_GetFrom_Call) Run(run func()) *TatoebaLinkAddParameter_GetFrom_Call {
+func (_c *TatoebaLinkAddParameter_GetDst_Call) Run(run func()) *TatoebaLinkAddParameter_GetDst_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run()
 	})
 	return _c
 }
 
-func (_c *TatoebaLinkAddParameter_GetFrom_Call) Return(_a0 int) *TatoebaLinkAddParameter_GetFrom_Call {
+func (_c *TatoebaLinkAddParameter_GetDst_Call) Return(_a0 int) *TatoebaLinkAddParameter_GetDst_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *TatoebaLinkAddParameter_GetFrom_Call) RunAndReturn(run func() int) *TatoebaLinkAddParameter_GetFrom_Call {
+func (_c *TatoebaLinkAddParameter_GetDst_Call) RunAndReturn(run func() int) *TatoebaLinkAddParameter_GetDst_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// GetTo provides a mock function with given fields:
-func (_m *TatoebaLinkAddParameter) GetTo() int {
+// GetSrc provides a mock function with given fields:
+func (_m *TatoebaLinkAddParameter) GetSrc() int {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetTo")
+		panic("no return value specified for GetSrc")
 	}
 
 	var r0 int
@@ -80,29 +80,29 @@ func (_m *TatoebaLinkAddParameter) GetTo() int {
 	return r0
 }
 
-// TatoebaLinkAddParameter_GetTo_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetTo'
-type TatoebaLinkAddParameter_GetTo_Call struct {
+// TatoebaLinkAddParameter_GetSrc_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetSrc'
+type TatoebaLinkAddParameter_GetSrc_Call struct {
 	*mock.Call
 }
 
-// GetTo is a helper method to define mock.On call
-func (_e *TatoebaLinkAddParameter_Expecter) GetTo() *TatoebaLinkAddParameter_GetTo_Call {
-	return &TatoebaLinkAddParameter_GetTo_Call{Call: _e.mock.On("GetTo")}
+// GetSrc is a helper method to define mock.On call
+func (_e *TatoebaLinkAddParameter_Expecter) GetSrc() *TatoebaLinkAddParameter_GetSrc_Call {
+	return &TatoebaLinkAddParameter_GetSrc_Call{Call: _e.mock.On("GetSrc")}
 }
 
-func (_c *TatoebaLinkAddParameter_GetTo_Call) Run(run func()) *TatoebaLinkAddParameter_GetTo_Call {
+func (_c *TatoebaLinkAddParameter_GetSrc_Call) Run(run func()) *TatoebaLinkAddParameter_GetSrc_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run()
 	})
 	return _c
 }
 
-func (_c *TatoebaLinkAddParameter_GetTo_Call) Return(_a0 int) *TatoebaLinkAddParameter_GetTo_Call {
+func (_c *TatoebaLinkAddParameter_GetSrc_Call) Return(_a0 int) *TatoebaLinkAddParameter_GetSrc_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *TatoebaLinkAddParameter_GetTo_Call) RunAndReturn(run func() int) *TatoebaLinkAddParameter_GetTo_Call {
+func (_c *TatoebaLinkAddParameter_GetSrc_Call) RunAndReturn(run func() int) *TatoebaLinkAddParameter_GetSrc_Call {
 	_c.Call.Return(run)
 	return _c
 }

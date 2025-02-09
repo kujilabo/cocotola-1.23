@@ -11,7 +11,7 @@ go_library(
         "jpn_sentences_CC0.tsv",
         "jpn_sentences_detailed.tsv",
         "jpn_sentences_detailed_lite.tsv",
-        "links.csv",
+        "links.tsv",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/data",
     visibility = ["//visibility:public"],

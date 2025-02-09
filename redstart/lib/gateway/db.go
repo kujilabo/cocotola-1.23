@@ -46,9 +46,9 @@ func ConvertDuplicatedError(err error, newErr error) error {
 	// TODO: Implement this for sqlite3
 	var sqlite3Err *sqlite3.Error
 	if ok := errors.As(err, &sqlite3Err); ok {
-		if int(sqlite3Err.Code()) == SQLITE_CONSTRAINT_PRIMARYKEY {
+		if sqlite3Err.Code() == SQLITE_CONSTRAINT_PRIMARYKEY {
 			return newErr
-		} else if int(sqlite3Err.Code()) == SQLITE_CONSTRAINT_UNIQUE {
+		} else if sqlite3Err.Code() == SQLITE_CONSTRAINT_UNIQUE {
 			return newErr
 		}
 	}

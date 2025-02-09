@@ -8,6 +8,7 @@ go_library(
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import",
     visibility = ["//visibility:private"],
     deps = [
+        "//cocotola-import/config",
         "//cocotola-import/data",
         "//cocotola-import/firestore",
         "//cocotola-import/tatoeba",

@@ -26,11 +26,11 @@ type AdminUsecase struct {
 }
 
 func NewAdminUsecase(txManager, nonTxManager service.TransactionManager) *AdminUsecase {
-	adminHandlerLoggerName := "adminUsecase"
+	adminUsecaseLoggerName := "adminUsecase"
 	return &AdminUsecase{
 		txManager:    txManager,
 		nonTxManager: nonTxManager,
-		logger:       slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminHandlerLoggerName)),
+		logger:       slog.Default().With(slog.String(rsliblog.LoggerNameKey, adminUsecaseLoggerName)),
 	}
 }
 
