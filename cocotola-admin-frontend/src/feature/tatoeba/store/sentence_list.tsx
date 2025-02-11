@@ -19,6 +19,8 @@ type Action = {
 type SentencePairFindParamter = {
   pageNo: number;
   pageSize: number;
+  srcLang2: string;
+  dstLang2: string;
   keyword: string;
   random: boolean;
 };
@@ -34,10 +36,12 @@ export const useSentenceListStore = create<State & Action>()(
       const params: SentencePairFindParamter = {
         pageNo: 1,
         pageSize: 10,
+        srcLang2: "en",
+        dstLang2: "ja",
         keyword: "",
         random: false,
       };
-      
+
       await axios
         .get(`${backendTatoebaUrl}/api/v1/user/sentence_pair/find`, {
           params: params,

@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
+	"github.com/kujilabo/cocotola-1.23/lib/domain"
 	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 )
@@ -138,24 +140,37 @@ func (p *TatoebaSentenceAddParameter) GetUpdatedAt() time.Time {
 type TatoebaSentenceSearchConditionInterface interface {
 	GetPageNo() int
 	GetPageSize() int
+	GetSrcLang2() *domain.Lang2
+	GetDstLang2() *domain.Lang2
 	GetKeyword() string
 	IsRandom() bool
+	ToString() string
 }
 
 type TatoebaSentenceSearchCondition struct {
-	PageNo   int `validate:"required,gte=1"`
-	PageSize int `validate:"required,gte=1,lte=100"`
+	PageNo   int           `validate:"required,gte=1"`
+	PageSize int           `validate:"required,gte=1,lte=100"`
+	SrcLang2 *domain.Lang2 `validate:"required"`
+	DstLang2 *domain.Lang2 `validate:"required"`
 	Keyword  string
 	Random   bool
+	JSON     string
 }
 
-func NewTatoebaSentenceSearchCondition(pageNo, pageSize int, keyword string, random bool) (*TatoebaSentenceSearchCondition, error) {
+func NewTatoebaSentenceSearchCondition(pageNo, pageSize int, srcLang2, dstLang2 *domain.Lang2, keyword string, random bool) (*TatoebaSentenceSearchCondition, error) {
 	m := &TatoebaSentenceSearchCondition{
 		PageNo:   pageNo,
 		PageSize: pageSize,
+		SrcLang2: srcLang2,
+		DstLang2: dstLang2,
 		Keyword:  keyword,
 		Random:   random,
 	}
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	m.JSON = string(bytes)
 
 	return m, rslibdomain.Validator.Struct(m)
 }
@@ -172,8 +187,20 @@ func (c *TatoebaSentenceSearchCondition) GetKeyword() string {
 	return c.Keyword
 }
 
+func (c *TatoebaSentenceSearchCondition) GetSrcLang2() *domain.Lang2 {
+	return c.SrcLang2
+}
+
+func (c *TatoebaSentenceSearchCondition) GetDstLang2() *domain.Lang2 {
+	return c.DstLang2
+}
+
 func (c *TatoebaSentenceSearchCondition) IsRandom() bool {
 	return c.Random
+}
+
+func (c *TatoebaSentenceSearchCondition) ToString() string {
+	return c.JSON
 }
 
 type TatoebaSentencePairSearchResult struct {
@@ -189,7 +216,8 @@ func NewTatoebaSentencePairSearchResult(totalCount int, results []*TatoebaSenten
 }
 
 type TatoebaSentenceRepository interface {
-	FindTatoebaSentencePairs(ctx context.Context, param TatoebaSentenceSearchConditionInterface) (*TatoebaSentencePairSearchResult, error)
+	FindTatoebaSentencePairs(ctx context.Context, param TatoebaSentenceSearchConditionInterface) ([]*TatoebaSentencePair, error)
+	CountTatoebaSentencePairs(ctx context.Context, param TatoebaSentenceSearchConditionInterface) (int, error)
 
 	FindTatoebaSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (*TatoebaSentence, error)
 

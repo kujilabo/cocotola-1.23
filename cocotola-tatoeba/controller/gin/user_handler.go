@@ -14,6 +14,8 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
+	"github.com/kujilabo/cocotola-1.23/lib/domain"
+
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
@@ -21,6 +23,8 @@ import (
 type TatoebaSentenceFindParameter struct {
 	PageNo   int    `form:"pageNo" json:"pageNo" binding:"required,gte=1"`
 	PageSize int    `form:"pageSize" json:"pageSize" binding:"required,gte=1"`
+	SrcLang2 string `form:"srcLang2" json:"srcLang2" binding:"len=2" validate:"oneof=ja en"`
+	DstLang2 string `form:"dstLang2" json:"dstLang2" binding:"len=2" validate:"oneof=ja en"`
 	Keyword  string `form:"keyword" json:"keyword"`
 	Random   bool   `form:"random" json:"random"`
 }
@@ -44,7 +48,15 @@ type TatoebaSentencePairFindResponse struct {
 }
 
 func ToTatoebaSentenceSearchCondition(ctx context.Context, param *TatoebaSentenceFindParameter) (*service.TatoebaSentenceSearchCondition, error) {
-	return service.NewTatoebaSentenceSearchCondition(param.PageNo, param.PageSize, param.Keyword, param.Random)
+	srcLang2, err := domain.NewLang2(param.SrcLang2)
+	if err != nil {
+		return nil, rsliberrors.Errorf("convert srcLang2 to Lang2. err: %w", err)
+	}
+	dstLang2, err := domain.NewLang2(param.DstLang2)
+	if err != nil {
+		return nil, rsliberrors.Errorf("convert dstLang2 to Lang2. err: %w", err)
+	}
+	return service.NewTatoebaSentenceSearchCondition(param.PageNo, param.PageSize, srcLang2, dstLang2, param.Keyword, param.Random)
 }
 
 func ToTatoebaSentenceFindResponse(ctx context.Context, result *service.TatoebaSentencePairSearchResult) (*TatoebaSentencePairFindResponse, error) {

@@ -5,8 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Fragment, useCallback, useEffect, useState } from "react";
 
-import Pagination from '@mui/material/Pagination';
-      // <Pagination count={10} />
+// <Pagination count={10} />
 import { MainLayout } from "@/component/layout";
 import {
   TatoebaSentencePair,
@@ -14,9 +13,9 @@ import {
 } from "@/feature/tatoeba/model/sentence";
 import { useMySentenceListStore } from "@/feature/tatoeba/store/my_sentence_list";
 import { useSentenceListStore } from "@/feature/tatoeba/store/sentence_list";
+import Pagination from "@mui/material/Pagination";
 
 // import useSWR, { preload } from 'swr'
-
 
 // const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -133,12 +132,12 @@ export const SentenceList = () => {
   const deleteMySentencePair = useMySentenceListStore(
     (state) => state.deleteSentencePair,
   );
-  const  clearError = (sentenceKey: string)=>{
-  setErrors((errors) => {
-    errors.delete(sentenceKey);
-    return new Map(errors);
-  });
-};
+  const clearError = (sentenceKey: string) => {
+    setErrors((errors) => {
+      errors.delete(sentenceKey);
+      return new Map(errors);
+    });
+  };
 
   useEffect(() => {
     getSentences();
@@ -191,7 +190,6 @@ export const SentenceList = () => {
     }
     clearError(sentenceKey);
 
-    // const cardElement = findCardElement(event.target);
     if (selectedSentenceKey === "" || selectedSentenceSrcDst === "") {
       return;
     }
@@ -216,12 +214,12 @@ export const SentenceList = () => {
       return "";
     }
 
-    let start : number;
-    let end : number;
+    let start: number;
+    let end: number;
     if (selection.anchorOffset < selection.focusOffset) {
       start = selection.anchorOffset;
       end = selection.focusOffset;
-    } else{
+    } else {
       start = selection.focusOffset;
       end = selection.anchorOffset;
     }
@@ -249,10 +247,15 @@ export const SentenceList = () => {
       console.log("problem is undefined");
       return;
     }
-    const regex  = /<([^>]*)>/;
-    if (!regex.test(stageSentencePair.src.text) || !regex.test(stageSentencePair.dst.text)) {
+    const regex = /<([^>]*)>/;
+    if (
+      !regex.test(stageSentencePair.src.text) ||
+      !regex.test(stageSentencePair.dst.text)
+    ) {
       setErrors((errors) => {
-        return new Map(errors.set(sentenceKey, "Please fill in the blank"));
+        return new Map(
+          errors.set(sentenceKey, "Please mark at least one word"),
+        );
       });
       return;
     }
@@ -269,18 +272,20 @@ export const SentenceList = () => {
     console.log("onRemoveClick");
   };
 
-  const onExportClick =()=>{    
-    const blob = new Blob([JSON.stringify(mySentencePairs)], {type: 'application/json'});
+  const onExportClick = () => {
+    const blob = new Blob([JSON.stringify(mySentencePairs)], {
+      type: "application/json",
+    });
     const objectUrl = URL.createObjectURL(blob);
 
     var a = document.createElement("a");
     document.body.appendChild(a);
     a.style = "display: none";
-      a.href = objectUrl;
-      a.download = "fileName.json";
-      a.click();
-      URL.revokeObjectURL(objectUrl);
-      a.remove();
+    a.href = objectUrl;
+    a.download = "fileName.json";
+    a.click();
+    URL.revokeObjectURL(objectUrl);
+    a.remove();
   };
 
   useEffect(() => {
@@ -358,11 +363,12 @@ export const SentenceList = () => {
   };
   return (
     <MainLayout title="Sentence List">
-      <Button size="small"
-            variant="outlined"
-            sx={{ textTransform: "none" }}
-            onClick={onExportClick}>
-
+      <Button
+        size="small"
+        variant="outlined"
+        sx={{ textTransform: "none" }}
+        onClick={onExportClick}
+      >
         Export
       </Button>
       {sentencePairs.map((sentencePair) => (

@@ -34,14 +34,14 @@ export const useMySentenceListStore = create<State & Action>()(
             },
           });
         },
-        deleteSentencePair: (sentenceKey: string):void=>{
-            const sentencePairs = get().sentences;
-            delete sentencePairs[sentenceKey];
-            set({
-                sentences: {
-                ...sentencePairs,
-                },
-            });
+        deleteSentencePair: (sentenceKey: string): void => {
+          const sentencePairs = get().sentences;
+          delete sentencePairs[sentenceKey];
+          set({
+            sentences: {
+              ...sentencePairs,
+            },
+          });
         },
       }),
       {
