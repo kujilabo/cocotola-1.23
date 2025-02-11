@@ -5,6 +5,8 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Fragment, useCallback, useEffect, useState } from "react";
 
+import Pagination from '@mui/material/Pagination';
+      // <Pagination count={10} />
 import { MainLayout } from "@/component/layout";
 import {
   TatoebaSentencePair,
@@ -12,6 +14,11 @@ import {
 } from "@/feature/tatoeba/model/sentence";
 import { useMySentenceListStore } from "@/feature/tatoeba/store/my_sentence_list";
 import { useSentenceListStore } from "@/feature/tatoeba/store/sentence_list";
+
+// import useSWR, { preload } from 'swr'
+
+
+// const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 const convertSelectedText = (text: string): string => {
   const first = text.substring(0, 1);
@@ -120,11 +127,18 @@ export const SentenceList = () => {
   const sentencePairs = useSentenceListStore((state) => state.sentences);
   const getSentences = useSentenceListStore((state) => state.getSentences);
   const mySentencePairs = useMySentenceListStore((state) => state.sentences);
-  const saveSentencePair = useMySentenceListStore(
+  const saveMySentencePair = useMySentenceListStore(
     (state) => state.saveSentencePair,
   );
-
-  // console.log("sentenceMap", sentenceMap);
+  const deleteMySentencePair = useMySentenceListStore(
+    (state) => state.deleteSentencePair,
+  );
+  const  clearError = (sentenceKey: string)=>{
+  setErrors((errors) => {
+    errors.delete(sentenceKey);
+    return new Map(errors);
+  });
+};
 
   useEffect(() => {
     getSentences();
@@ -175,10 +189,7 @@ export const SentenceList = () => {
     if (sentenceKey === null || sentenceKey === "") {
       return;
     }
-    setErrors((errors) => {
-      errors.delete(sentenceKey);
-      return new Map(errors);
-    });
+    clearError(sentenceKey);
 
     // const cardElement = findCardElement(event.target);
     if (selectedSentenceKey === "" || selectedSentenceSrcDst === "") {
@@ -205,11 +216,21 @@ export const SentenceList = () => {
       return "";
     }
 
+    let start : number;
+    let end : number;
+    if (selection.anchorOffset < selection.focusOffset) {
+      start = selection.anchorOffset;
+      end = selection.focusOffset;
+    } else{
+      start = selection.focusOffset;
+      end = selection.anchorOffset;
+    }
+
     const newSentencePair = createNewSentencePair(
       selectedSentenceSrcDst,
       stageSentencePair,
-      selection.anchorOffset,
-      selection.focusOffset,
+      start,
+      end,
     );
 
     setStageSentencePairs((stageSentencePair) => {
@@ -222,16 +243,44 @@ export const SentenceList = () => {
     if (sentenceKey === null || sentenceKey === "") {
       return;
     }
+    clearError(sentenceKey);
     const stageSentencePair = stageSentencePairs.get(sentenceKey);
     if (stageSentencePair === undefined) {
       console.log("problem is undefined");
       return;
     }
+    const regex  = /<([^>]*)>/;
+    if (!regex.test(stageSentencePair.src.text) || !regex.test(stageSentencePair.dst.text)) {
+      setErrors((errors) => {
+        return new Map(errors.set(sentenceKey, "Please fill in the blank"));
+      });
+      return;
+    }
     console.log("onSaveClick");
-    saveSentencePair(sentenceKey, stageSentencePair);
+    saveMySentencePair(sentenceKey, stageSentencePair);
   };
+
   const onRemoveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const sentenceKey = findSentenceKey(event.currentTarget);
+    if (sentenceKey === null || sentenceKey === "") {
+      return;
+    }
+    deleteMySentencePair(sentenceKey);
     console.log("onRemoveClick");
+  };
+
+  const onExportClick =()=>{    
+    const blob = new Blob([JSON.stringify(mySentencePairs)], {type: 'application/json'});
+    const objectUrl = URL.createObjectURL(blob);
+
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+      a.href = objectUrl;
+      a.download = "fileName.json";
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+      a.remove();
   };
 
   useEffect(() => {
@@ -244,10 +293,10 @@ export const SentenceList = () => {
 
   const createCard = (sentencePair: TatoebaSentencePair) => {
     const sentenceKey = `${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`;
-    const stagestageSentencePair = stageSentencePairs.get(sentenceKey);
-    if (stagestageSentencePair === undefined) {
-      return <div>error</div>;
-    }
+    // const stagestageSentencePair = stageSentencePairs.get(sentenceKey);
+    // if (stagestageSentencePair === undefined) {
+    //   return <div>error</div>;
+    // }
     const error = errors.get(sentenceKey);
     return (
       <Fragment>
@@ -309,6 +358,13 @@ export const SentenceList = () => {
   };
   return (
     <MainLayout title="Sentence List">
+      <Button size="small"
+            variant="outlined"
+            sx={{ textTransform: "none" }}
+            onClick={onExportClick}>
+
+        Export
+      </Button>
       {sentencePairs.map((sentencePair) => (
         <Card
           variant="outlined"

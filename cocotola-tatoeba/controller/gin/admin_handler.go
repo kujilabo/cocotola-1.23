@@ -31,6 +31,7 @@ type AdminHandler struct {
 	adminUsecase                         AdminUsecase
 	newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator
 	newTatoebaLinkAddParameterReader     func(reader io.Reader) service.TatoebaLinkAddParameterIterator
+	logger                               *slog.Logger
 }
 
 func NewAdminHandler(adminUsecase AdminUsecase, newTatoebaSentenceAddParameterReader func(reader io.Reader) service.TatoebaSentenceAddParameterIterator, newTatoebaLinkAddParameterReader func(reader io.Reader) service.TatoebaLinkAddParameterIterator) *AdminHandler {
@@ -38,12 +39,13 @@ func NewAdminHandler(adminUsecase AdminUsecase, newTatoebaSentenceAddParameterRe
 		adminUsecase:                         adminUsecase,
 		newTatoebaSentenceAddParameterReader: newTatoebaSentenceAddParameterReader,
 		newTatoebaLinkAddParameterReader:     newTatoebaLinkAddParameterReader,
+		logger:                               slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.AdminHandler")),
 	}
 }
 
-func (h *AdminHandler) logger() *slog.Logger {
-	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.AdminHandler"))
-}
+// func (h *AdminHandler) logger() *slog.Logger {
+// 	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.AdminHandler"))
+// }
 
 // ImportSentences godoc
 // @Summary     import sentences
@@ -58,16 +60,16 @@ func (h *AdminHandler) logger() *slog.Logger {
 // @Security    BasicAuth
 func (h *AdminHandler) ImportSentences(c *gin.Context) {
 	controllerhelper.HandleFunction(c, func(ctx context.Context) error {
-		h.logger().InfoContext(ctx, "ImportSentences")
+		h.logger.InfoContext(ctx, "ImportSentences")
 		file, err := c.FormFile("file")
 		if err != nil {
 			if errors.Is(err, http.ErrMissingFile) {
-				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
 			if errors.Is(err, http.ErrNotMultipart) {
-				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
@@ -108,12 +110,12 @@ func (h *AdminHandler) ImportLinks(c *gin.Context) {
 		file, err := c.FormFile("file")
 		if err != nil {
 			if errors.Is(err, http.ErrMissingFile) {
-				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
 			if errors.Is(err, http.ErrNotMultipart) {
-				h.logger().WarnContext(ctx, fmt.Sprintf("err: %+v", err))
+				h.logger.WarnContext(ctx, fmt.Sprintf("err: %+v", err))
 				c.Status(http.StatusBadRequest)
 				return nil
 			}
@@ -139,7 +141,7 @@ func (h *AdminHandler) ImportLinks(c *gin.Context) {
 }
 
 func (h *AdminHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
-	h.logger().ErrorContext(ctx, fmt.Sprintf("adminHandler. err: %+v", err))
+	h.logger.ErrorContext(ctx, fmt.Sprintf("adminHandler. err: %+v", err))
 	return false
 }
 

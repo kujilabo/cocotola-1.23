@@ -12,6 +12,8 @@ type State = {
 };
 type Action = {
   getSentences: () => Promise<void>;
+
+  setSentences: (sentences: TatoebaSentencePair[]) => void;
 };
 
 type SentencePairFindParamter = {
@@ -29,14 +31,16 @@ export const useSentenceListStore = create<State & Action>()(
   devtools((set) => ({
     sentences: [],
     getSentences: async (): Promise<void> => {
-      const param: SentencePairFindParamter = {
+      const params: SentencePairFindParamter = {
         pageNo: 1,
         pageSize: 10,
         keyword: "",
         random: false,
       };
+      
       await axios
-        .post(`${backendTatoebaUrl}/api/v1/user/sentence_pair/find`, param, {
+        .get(`${backendTatoebaUrl}/api/v1/user/sentence_pair/find`, {
+          params: params,
           auth: {
             username: "username",
             password: "password",
@@ -65,6 +69,9 @@ export const useSentenceListStore = create<State & Action>()(
       //     new TatoebaSentence(1, 1, "jp", "私は学生です", "tatoeba"),
       //   ),
       // ]});
+    },
+    setSentences: (sentences: TatoebaSentencePair[]): void => {
+      set({ sentences: sentences });
     },
 
     // addTodo: (todoText) =>

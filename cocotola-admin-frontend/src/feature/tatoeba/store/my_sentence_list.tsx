@@ -14,6 +14,7 @@ type Action = {
     sentenceKey: string,
     sentencepair: TatoebaSentencePair,
   ) => void;
+  deleteSentencePair: (sentenceKey: string) => void;
 };
 
 export const useMySentenceListStore = create<State & Action>()(
@@ -32,6 +33,15 @@ export const useMySentenceListStore = create<State & Action>()(
               [sentenceKey]: sentencepair,
             },
           });
+        },
+        deleteSentencePair: (sentenceKey: string):void=>{
+            const sentencePairs = get().sentences;
+            delete sentencePairs[sentenceKey];
+            set({
+                sentences: {
+                ...sentencePairs,
+                },
+            });
         },
       }),
       {

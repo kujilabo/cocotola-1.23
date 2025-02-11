@@ -19,10 +19,10 @@ import (
 )
 
 type TatoebaSentenceFindParameter struct {
-	PageNo   int    `json:"pageNo" binding:"required,gte=1"`
-	PageSize int    `json:"pageSize" binding:"required,gte=1"`
-	Keyword  string `json:"keyword"`
-	Random   bool   `json:"random"`
+	PageNo   int    `form:"pageNo" json:"pageNo" binding:"required,gte=1"`
+	PageSize int    `form:"pageSize" json:"pageSize" binding:"required,gte=1"`
+	Keyword  string `form:"keyword" json:"keyword"`
+	Random   bool   `form:"random" json:"random"`
 }
 
 type TatoebaSentenceResponse struct {
@@ -92,17 +92,19 @@ type UserUsecase interface {
 
 type UserHandler struct {
 	userUsecase UserUsecase
+	logger      *slog.Logger
 }
 
 func NewUserHandler(userUsecase UserUsecase) *UserHandler {
 	return &UserHandler{
 		userUsecase: userUsecase,
+		logger:      slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler")),
 	}
 }
 
-func (h *UserHandler) logger() *slog.Logger {
-	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler"))
-}
+// func (h *UserHandler) logger() *slog.Logger {
+// 	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler"))
+// }
 
 // FindSentencePairs godoc
 // @Summary     find pair of sentences
@@ -119,11 +121,12 @@ func (h *UserHandler) logger() *slog.Logger {
 func (h *UserHandler) FindSentencePairs(c *gin.Context) {
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		param := TatoebaSentenceFindParameter{}
-		if err := c.ShouldBindJSON(&param); err != nil {
+		if err := c.ShouldBind(&param); err != nil {
+			h.logger.InfoContext(ctx, fmt.Sprintf("FindSentencePairs. err: %+v", err))
 			c.Status(http.StatusBadRequest)
 			return nil
 		}
-		h.logger().DebugContext(ctx, fmt.Sprintf("FindSentencePairs. param: %+v", param))
+		h.logger.DebugContext(ctx, fmt.Sprintf("FindSentencePairs. param: %+v", param))
 		parameter, err := ToTatoebaSentenceSearchCondition(ctx, &param)
 		if err != nil {
 			return rsliberrors.Errorf("convert parameter to TatoebaSentenceSearchCondition. err: %w", err)
@@ -176,7 +179,7 @@ func (h *UserHandler) FindSentenceBySentenceNumber(c *gin.Context) {
 }
 
 func (h *UserHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
-	h.logger().ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
+	h.logger.ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
 	return false
 }
 
@@ -187,6 +190,6 @@ func NewInitUserRouterFunc(userUsecase UserUsecase) libcontroller.InitRouterGrou
 		for _, m := range middleware {
 			user.Use(m)
 		}
-		user.POST("sentence_pair/find", userHandler.FindSentencePairs)
+		user.GET("sentence_pair/find", userHandler.FindSentencePairs)
 	}
 }
