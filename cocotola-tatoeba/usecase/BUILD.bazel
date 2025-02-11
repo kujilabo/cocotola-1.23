@@ -15,6 +15,7 @@ go_library(
         "//redstart/lib/errors",
         "//redstart/lib/log",
         "//redstart/lib/service",
+        "@com_github_patrickmn_go_cache//:go-cache",
         "@io_opentelemetry_go_otel//:otel",
     ],
 )
