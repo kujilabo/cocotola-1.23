@@ -154,7 +154,42 @@ func newTatoebaSentenceRepository(db *gorm.DB) service.TatoebaSentenceRepository
 
 // where t1.lang3='eng' and t3.lang3='jpn';
 
-func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error) {
+func (r *tatoebaSentenceRepository) whereTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) *gorm.DB {
+	db := r.db.Table("tatoeba_sentence AS T1").Select(
+		// Src
+		"T1.sentence_number AS src_sentence_number,"+
+			"T1.lang3 AS src_lang3,"+
+			"T1.text AS src_text,"+
+			"T1.author AS src_author,"+
+			"T1.updated_at AS src_updated_at,"+
+			// Dst
+			"T3.sentence_number AS dst_sentence_number,"+
+			"T3.lang3 AS dst_lang3,"+
+			"T3.text AS dst_text,"+
+			"T3.author AS dst_author,"+
+			"T3.updated_at AS dst_updated_at").
+		Joins("INNER JOIN tatoeba_link AS T2 ON T1.sentence_number = T2.`src`").
+		Joins("INNER JOIN tatoeba_sentence AS T3 ON T3.sentence_number = T2.`dst`").
+		Where("T1.lang3 = ? AND T3.lang3 = ?", param.GetSrcLang2().ToLang3().String(), param.GetDstLang2().ToLang3().String())
+	keywords := SplitString(param.GetKeyword(), ' ', '"')
+	for _, keyword := range keywords {
+		keyword1 := strings.ReplaceAll(keyword, "%", "\\%")
+		keyword2 := "%" + keyword1 + "%"
+		db = db.Where("T1.text like ?", keyword2)
+	}
+	return db
+}
+func (r *tatoebaSentenceRepository) CountTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (int, error) {
+
+	var count int64 = 0
+	if result := r.whereTatoebaSentencePairs(ctx, param).Count(&count); result.Error != nil {
+		return 0, result.Error
+	}
+
+	return int(count), nil
+}
+
+func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) ([]*service.TatoebaSentencePair, error) {
 	ctx, span := tracer.Start(ctx, "tatoebaSentenceRepository.FindTatoebaSentencePairs")
 	defer span.End()
 
@@ -168,7 +203,7 @@ func (r *tatoebaSentenceRepository) FindTatoebaSentencePairs(ctx context.Context
 	return r.findTatoebaSentences(ctx, param)
 }
 
-func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error) {
+func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) ([]*service.TatoebaSentencePair, error) {
 	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
@@ -187,20 +222,20 @@ func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, pa
 	where := func() *gorm.DB {
 		db := r.db.Table("tatoeba_sentence AS T1").Select(
 			// Src
-			"T1.sentence_number AS src_sentence_number," +
-				"T1.lang3 AS src_lang3," +
-				"T1.text AS src_text," +
-				"T1.author AS src_author," +
-				"T1.updated_at AS src_updated_at," +
+			"T1.sentence_number AS src_sentence_number,"+
+				"T1.lang3 AS src_lang3,"+
+				"T1.text AS src_text,"+
+				"T1.author AS src_author,"+
+				"T1.updated_at AS src_updated_at,"+
 				// Dst
-				"T3.sentence_number AS dst_sentence_number," +
-				"T3.lang3 AS dst_lang3," +
-				"T3.text AS dst_text," +
-				"T3.author AS dst_author," +
+				"T3.sentence_number AS dst_sentence_number,"+
+				"T3.lang3 AS dst_lang3,"+
+				"T3.text AS dst_text,"+
+				"T3.author AS dst_author,"+
 				"T3.updated_at AS dst_updated_at").
 			Joins("INNER JOIN tatoeba_link AS T2 ON T1.sentence_number = T2.`src`").
 			Joins("INNER JOIN tatoeba_sentence AS T3 ON T3.sentence_number = T2.`dst`").
-			Where("T1.lang3 = 'eng' AND T3.lang3 = 'jpn'")
+			Where("T1.lang3 = ? AND T3.lang3 = ?", param.GetSrcLang2().ToLang3().String(), param.GetDstLang2().ToLang3().String())
 		keywords := SplitString(param.GetKeyword(), ' ', '"')
 		for _, keyword := range keywords {
 			keyword1 := strings.ReplaceAll(keyword, "%", "\\%")
@@ -226,14 +261,8 @@ func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, pa
 	}
 
 	r.logger.InfoContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences 333")
-	var count int64 = 0
-	// if result := where().Count(&count); result.Error != nil {
-	// 	return nil, result.Error
-	// }
 
-	r.logger.InfoContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences 444")
-
-	return service.NewTatoebaSentencePairSearchResult(int(count), results), nil
+	return results, nil
 }
 
 func SplitString(str string, space, quote rune) []string {
@@ -256,7 +285,7 @@ func min(x, y int) int {
 	return y
 }
 
-func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (*service.TatoebaSentencePairSearchResult, error) {
+func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) ([]*service.TatoebaSentencePair, error) {
 	// ctx = rsliblog.WithLoggerName(ctx, loggerKey)
 	// logger := rsliblog.GetLoggerFromContext(ctx, loggerKey)
 
@@ -310,12 +339,12 @@ func (r *tatoebaSentenceRepository) findTatoebaSentencesByRandom(ctx context.Con
 		results[i] = m
 	}
 
-	var count int64 = 0
-	// if result := where().Count(&count); result.Error != nil {
-	// 	return nil, result.Error
-	// }
+	// var count int64 = 0
+	// // if result := where().Count(&count); result.Error != nil {
+	// // 	return nil, result.Error
+	// // }
 
-	return service.NewTatoebaSentencePairSearchResult(int(count), results), nil
+	return results, nil
 }
 
 func (r *tatoebaSentenceRepository) FindTatoebaSentenceBySentenceNumber(ctx context.Context, sentenceNumber int) (*service.TatoebaSentence, error) {

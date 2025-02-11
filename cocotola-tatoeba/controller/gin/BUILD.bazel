@@ -17,6 +17,7 @@ go_library(
         "//cocotola-tatoeba/service",
         "//cocotola-tatoeba/usecase",
         "//lib/controller/gin",
+        "//lib/domain",
         "//redstart/lib/domain",
         "//redstart/lib/errors",
         "//redstart/lib/log",

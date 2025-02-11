@@ -1,12 +1,10 @@
-import { backendTatoebaUrl } from "@/config/config";
-import {
-  TatoebaSentence,
-  type TatoebaSentencePair,
-} from "@/feature/tatoeba/model/sentence";
-import { extractErrorMessage } from "@/lib/base";
 import axios from "axios";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+
+import { backendTatoebaUrl } from "@/config/config";
+import type { TatoebaSentencePair } from "@/feature/tatoeba/model/sentence";
+import { extractErrorMessage } from "@/lib/base";
 
 type State = {
   sentences: TatoebaSentencePair[];
@@ -14,11 +12,15 @@ type State = {
 };
 type Action = {
   getSentences: () => Promise<void>;
+
+  setSentences: (sentences: TatoebaSentencePair[]) => void;
 };
 
 type SentencePairFindParamter = {
   pageNo: number;
   pageSize: number;
+  srcLang2: string;
+  dstLang2: string;
   keyword: string;
   random: boolean;
 };
@@ -31,14 +33,18 @@ export const useSentenceListStore = create<State & Action>()(
   devtools((set) => ({
     sentences: [],
     getSentences: async (): Promise<void> => {
-      const param: SentencePairFindParamter = {
+      const params: SentencePairFindParamter = {
         pageNo: 1,
         pageSize: 10,
+        srcLang2: "en",
+        dstLang2: "ja",
         keyword: "",
         random: false,
       };
+
       await axios
-        .post(`${backendTatoebaUrl}/api/v1/user/sentence_pair/find`, param, {
+        .get(`${backendTatoebaUrl}/api/v1/user/sentence_pair/find`, {
+          params: params,
           auth: {
             username: "username",
             password: "password",
@@ -47,9 +53,9 @@ export const useSentenceListStore = create<State & Action>()(
         .then((resp) => {
           console.log("callback then");
           const data = resp.data as SentenceFindResponse;
-          for (const sentencePair of data.results) {
-            console.log(sentencePair);
-          }
+          // for (const sentencePair of data.results) {
+          //   console.log(sentencePair);
+          // }
           set({ sentences: data.results });
         })
         .catch((err: Error) => {
@@ -67,6 +73,9 @@ export const useSentenceListStore = create<State & Action>()(
       //     new TatoebaSentence(1, 1, "jp", "私は学生です", "tatoeba"),
       //   ),
       // ]});
+    },
+    setSentences: (sentences: TatoebaSentencePair[]): void => {
+      set({ sentences: sentences });
     },
 
     // addTodo: (todoText) =>

@@ -14,15 +14,19 @@ import (
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
+	"github.com/kujilabo/cocotola-1.23/lib/domain"
+
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
 )
 
 type TatoebaSentenceFindParameter struct {
-	PageNo   int    `json:"pageNo" binding:"required,gte=1"`
-	PageSize int    `json:"pageSize" binding:"required,gte=1"`
-	Keyword  string `json:"keyword"`
-	Random   bool   `json:"random"`
+	PageNo   int    `form:"pageNo" json:"pageNo" binding:"required,gte=1"`
+	PageSize int    `form:"pageSize" json:"pageSize" binding:"required,gte=1"`
+	SrcLang2 string `form:"srcLang2" json:"srcLang2" binding:"len=2" validate:"oneof=ja en"`
+	DstLang2 string `form:"dstLang2" json:"dstLang2" binding:"len=2" validate:"oneof=ja en"`
+	Keyword  string `form:"keyword" json:"keyword"`
+	Random   bool   `form:"random" json:"random"`
 }
 
 type TatoebaSentenceResponse struct {
@@ -44,7 +48,15 @@ type TatoebaSentencePairFindResponse struct {
 }
 
 func ToTatoebaSentenceSearchCondition(ctx context.Context, param *TatoebaSentenceFindParameter) (*service.TatoebaSentenceSearchCondition, error) {
-	return service.NewTatoebaSentenceSearchCondition(param.PageNo, param.PageSize, param.Keyword, param.Random)
+	srcLang2, err := domain.NewLang2(param.SrcLang2)
+	if err != nil {
+		return nil, rsliberrors.Errorf("convert srcLang2 to Lang2. err: %w", err)
+	}
+	dstLang2, err := domain.NewLang2(param.DstLang2)
+	if err != nil {
+		return nil, rsliberrors.Errorf("convert dstLang2 to Lang2. err: %w", err)
+	}
+	return service.NewTatoebaSentenceSearchCondition(param.PageNo, param.PageSize, srcLang2, dstLang2, param.Keyword, param.Random)
 }
 
 func ToTatoebaSentenceFindResponse(ctx context.Context, result *service.TatoebaSentencePairSearchResult) (*TatoebaSentencePairFindResponse, error) {
@@ -92,17 +104,19 @@ type UserUsecase interface {
 
 type UserHandler struct {
 	userUsecase UserUsecase
+	logger      *slog.Logger
 }
 
 func NewUserHandler(userUsecase UserUsecase) *UserHandler {
 	return &UserHandler{
 		userUsecase: userUsecase,
+		logger:      slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler")),
 	}
 }
 
-func (h *UserHandler) logger() *slog.Logger {
-	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler"))
-}
+// func (h *UserHandler) logger() *slog.Logger {
+// 	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler"))
+// }
 
 // FindSentencePairs godoc
 // @Summary     find pair of sentences
@@ -119,11 +133,12 @@ func (h *UserHandler) logger() *slog.Logger {
 func (h *UserHandler) FindSentencePairs(c *gin.Context) {
 	handlerhelper.HandleFunction(c, func(ctx context.Context) error {
 		param := TatoebaSentenceFindParameter{}
-		if err := c.ShouldBindJSON(&param); err != nil {
+		if err := c.ShouldBind(&param); err != nil {
+			h.logger.InfoContext(ctx, fmt.Sprintf("FindSentencePairs. err: %+v", err))
 			c.Status(http.StatusBadRequest)
 			return nil
 		}
-		h.logger().DebugContext(ctx, fmt.Sprintf("FindSentencePairs. param: %+v", param))
+		h.logger.DebugContext(ctx, fmt.Sprintf("FindSentencePairs. param: %+v", param))
 		parameter, err := ToTatoebaSentenceSearchCondition(ctx, &param)
 		if err != nil {
 			return rsliberrors.Errorf("convert parameter to TatoebaSentenceSearchCondition. err: %w", err)
@@ -176,7 +191,7 @@ func (h *UserHandler) FindSentenceBySentenceNumber(c *gin.Context) {
 }
 
 func (h *UserHandler) errorHandle(ctx context.Context, c *gin.Context, err error) bool {
-	h.logger().ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
+	h.logger.ErrorContext(ctx, fmt.Sprintf("userHandler. err: %+v", err))
 	return false
 }
 
@@ -187,6 +202,6 @@ func NewInitUserRouterFunc(userUsecase UserUsecase) libcontroller.InitRouterGrou
 		for _, m := range middleware {
 			user.Use(m)
 		}
-		user.POST("sentence_pair/find", userHandler.FindSentencePairs)
+		user.GET("sentence_pair/find", userHandler.FindSentencePairs)
 	}
 }
