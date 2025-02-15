@@ -44,36 +44,34 @@ func newTatoebaLinkRepository(db *gorm.DB, rf service.RepositoryFactory) service
 	}
 }
 
+func (r *tatoebaLinkRepository) Contains(ctx context.Context, sentenceRepo service.TatoebaSentenceRepository, number int) (bool, error) {
+	isContainedCache, found := r.linkCache.Get(strconv.Itoa(number))
+	if !found {
+		isSrcContainedInDB, err := sentenceRepo.ContainsSentenceBySentenceNumber(ctx, number)
+		if err != nil {
+			return false, err
+		}
+		r.linkCache.Set(strconv.Itoa(number), isSrcContainedInDB, cache.DefaultExpiration)
+		isContainedCache = isSrcContainedInDB
+	}
+
+	isContained, ok := isContainedCache.(bool)
+	if !ok {
+		return false, rsliberrors.Errorf("failed to Add tatoebaLink. err: %w", service.ErrTatoebaSentenceNotFound)
+	}
+	return isContained, nil
+}
+
 func (r *tatoebaLinkRepository) Add(ctx context.Context, param service.TatoebaLinkAddParameter) error {
 	sentenceRepo := r.rf.NewTatoebaSentenceRepository(ctx)
-	isSrcContainedCache, srcFound := r.linkCache.Get(strconv.Itoa(param.GetSrc()))
-	if !srcFound {
-		isSrcContainedInDB, err := sentenceRepo.ContainsSentenceBySentenceNumber(ctx, param.GetSrc())
-		if err != nil {
-			return err
-		}
-		r.linkCache.Set(strconv.Itoa(param.GetSrc()), isSrcContainedInDB, cache.DefaultExpiration)
-		isSrcContainedCache = isSrcContainedInDB
+	isSrcContained, err := r.Contains(ctx, sentenceRepo, param.GetSrc())
+	if err != nil {
+		return err
 	}
 
-	isDstContainedCache, dstFound := r.linkCache.Get(strconv.Itoa(param.GetDst()))
-	if !dstFound {
-		isDstContainedInDB, err := sentenceRepo.ContainsSentenceBySentenceNumber(ctx, param.GetDst())
-		if err != nil {
-			return err
-		}
-		r.linkCache.Set(strconv.Itoa(param.GetDst()), isDstContainedInDB, cache.DefaultExpiration)
-		isDstContainedCache = isDstContainedInDB
-	}
-
-	isSrcContained, ok := isSrcContainedCache.(bool)
-	if !ok {
-		return rsliberrors.Errorf("failed to Add tatoebaLink. err: %w", service.ErrTatoebaSentenceNotFound)
-	}
-
-	isDstContained, ok := isDstContainedCache.(bool)
-	if !ok {
-		return rsliberrors.Errorf("failed to Add tatoebaLink. err: %w", service.ErrTatoebaSentenceNotFound)
+	isDstContained, err := r.Contains(ctx, sentenceRepo, param.GetDst())
+	if err != nil {
+		return err
 	}
 
 	if !isSrcContained || !isDstContained {

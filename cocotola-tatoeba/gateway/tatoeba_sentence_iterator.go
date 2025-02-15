@@ -100,7 +100,6 @@ func (r *TatoebaSentenceAddParameterReader) Next(ctx context.Context) (*service.
 
 	time1 := line[4]
 	time2 := line[5]
-	updatedAt := time.Now()
 
 	if len(([]rune(text))) > textLimitLength {
 		// skip
@@ -110,6 +109,21 @@ func (r *TatoebaSentenceAddParameterReader) Next(ctx context.Context) (*service.
 	}
 
 	//\N	2020-02-23 05:07:26
+	updatedAt, err := r.getUpdatedTime(time1, time2)
+	if err != nil {
+		return nil, err
+	}
+
+	param, err := service.NewTatoebaSentenceAddParameter(sentenceNumber, lang3, text, author, updatedAt)
+	if err != nil {
+		return nil, rsliberrors.Errorf("failed to NewTatoebaSentenceAddParameter. rowNumber: %d, values: %v, err: %w", r.num, line, err)
+	}
+
+	r.num++
+	return param, nil
+}
+
+func (r *TatoebaSentenceAddParameterReader) getUpdatedTime(time1, time2 string) (time.Time, error) {
 	if r.isValidDatetime(time1) || r.isValidDatetime(time2) {
 		var timeS string
 		if r.isValidDatetime(time1) {
@@ -120,18 +134,11 @@ func (r *TatoebaSentenceAddParameterReader) Next(ctx context.Context) (*service.
 
 		timeTmp, err := time.Parse("2006-01-02 15:04:05", timeS)
 		if err != nil {
-			return nil, rsliberrors.Errorf("failed to Parse. rowNumber: %d, value: %s, err: %w", r.num, timeS, err)
+			return time.Time{}, rsliberrors.Errorf("failed to Parse. rowNumber: %d, value: %s, err: %w", r.num, timeS, err)
 		}
-		updatedAt = timeTmp
+		return timeTmp, nil
 	}
-
-	param, err := service.NewTatoebaSentenceAddParameter(sentenceNumber, lang3, text, author, updatedAt)
-	if err != nil {
-		return nil, rsliberrors.Errorf("failed to NewTatoebaSentenceAddParameter. rowNumber: %d, values: %v, err: %w", r.num, line, err)
-	}
-
-	r.num++
-	return param, nil
+	return time.Now(), nil
 }
 
 func (r *TatoebaSentenceAddParameterReader) isValidDatetime(value string) bool {

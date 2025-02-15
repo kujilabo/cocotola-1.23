@@ -79,6 +79,33 @@ func (m *SystemAdmin) FindOrganizationByName(ctx context.Context, name string) (
 	return org, nil
 }
 
+func (m *SystemAdmin) addSystemOwnertoOrganization(ctx context.Context, authorizationManager AuthorizationManager, organizationID *domain.OrganizationID, organizationName string) (*SystemOwner, error) {
+	systemOwnerID, err := m.appUserRepo.AddSystemOwner(ctx, m, organizationID)
+	if err != nil {
+		return nil, liberrors.Errorf("failed to AddSystemOwner. error: %w", err)
+	}
+
+	systemOwner, err := m.appUserRepo.FindSystemOwnerByOrganizationName(ctx, m, organizationName)
+	if err != nil {
+		return nil, liberrors.Errorf("failed to FindSystemOwnerByOrganizationName. error: %w", err)
+	}
+
+	// 3. add policy to "system-owner" user
+	rbacSystemOwner := NewRBACAppUser(organizationID, systemOwnerID)
+	rbacAllUserRolesObject := NewRBACAllUserRolesObject(organizationID)
+	// - "system-owner" user "can" "set" "all-user-roles"
+	if err := authorizationManager.AddPolicyToUserBySystemAdmin(ctx, m, organizationID, rbacSystemOwner, RBACSetAction, rbacAllUserRolesObject, RBACAllowEffect); err != nil {
+		return nil, err
+	}
+
+	// - "system-owner" user "can" "unset" "all-user-roles"
+	if err := authorizationManager.AddPolicyToUserBySystemAdmin(ctx, m, organizationID, rbacSystemOwner, RBACUnsetAction, rbacAllUserRolesObject, RBACAllowEffect); err != nil {
+		return nil, err
+	}
+
+	return systemOwner, nil
+}
+
 func (m *SystemAdmin) AddOrganization(ctx context.Context, param OrganizationAddParameterInterface) (*domain.OrganizationID, error) {
 	// 1. add organization
 	organizationID, err := m.orgRepo.AddOrganization(ctx, m, param)
@@ -94,37 +121,33 @@ func (m *SystemAdmin) AddOrganization(ctx context.Context, param OrganizationAdd
 	// 	return nil, liberrors.Errorf("userGroupRepo.AddSystemOwnerRole. error: %w", err)
 	// }
 
-	// 2. add "system-owner" user
-	systemOwnerID, err := m.appUserRepo.AddSystemOwner(ctx, m, organizationID)
-	if err != nil {
-		return nil, liberrors.Errorf("failed to AddSystemOwner. error: %w", err)
-	}
-
-	systemOwner, err := m.appUserRepo.FindSystemOwnerByOrganizationName(ctx, m, param.Name())
-	if err != nil {
-		return nil, liberrors.Errorf("failed to FindSystemOwnerByOrganizationName. error: %w", err)
-	}
-
 	authorizationManager, err := m.rf.NewAuthorizationManager(ctx)
 	if err != nil {
 		return nil, liberrors.Errorf("failed to NewAuthorizationManager. error: %w", err)
 	}
 
+	// 2. add "system-owner" user
+	// 3. add policy to "system-owner" user
+	systemOwner, err := m.addSystemOwnertoOrganization(ctx, authorizationManager, organizationID, param.Name())
+	if err != nil {
+		return nil, liberrors.Errorf("failed to addSystemOwnertoOrganization. error: %w", err)
+	}
+
 	// rbacRepo := m.rf.NewRBACRepository(ctx)
 	// rbacDomain := NewRBACOrganization(organizationID)
 
-	// 3. add policy to "system-owner" user
-	rbacSystemOwner := NewRBACAppUser(organizationID, systemOwnerID)
+	// // 3. add policy to "system-owner" user
+	// rbacSystemOwner := NewRBACAppUser(organizationID, systemOwnerID)
 	rbacAllUserRolesObject := NewRBACAllUserRolesObject(organizationID)
-	// - "system-owner" user "can" "set" "all-user-roles"
-	if err := authorizationManager.AddPolicyToUserBySystemAdmin(ctx, m, organizationID, rbacSystemOwner, RBACSetAction, rbacAllUserRolesObject, RBACAllowEffect); err != nil {
-		return nil, err
-	}
+	// // - "system-owner" user "can" "set" "all-user-roles"
+	// if err := authorizationManager.AddPolicyToUserBySystemAdmin(ctx, m, organizationID, rbacSystemOwner, RBACSetAction, rbacAllUserRolesObject, RBACAllowEffect); err != nil {
+	// 	return nil, err
+	// }
 
-	// - "system-owner" user "can" "unset" "all-user-roles"
-	if err := authorizationManager.AddPolicyToUserBySystemAdmin(ctx, m, organizationID, rbacSystemOwner, RBACUnsetAction, rbacAllUserRolesObject, RBACAllowEffect); err != nil {
-		return nil, err
-	}
+	// // - "system-owner" user "can" "unset" "all-user-roles"
+	// if err := authorizationManager.AddPolicyToUserBySystemAdmin(ctx, m, organizationID, rbacSystemOwner, RBACUnsetAction, rbacAllUserRolesObject, RBACAllowEffect); err != nil {
+	// 	return nil, err
+	// }
 
 	// // "system-owner" "can" "set" "all-user-roles"
 	// if err := rbacRepo.AddPolicy(rbacDomain, rbacAppUser, RBACSetAction, rbacAllUserRolesObject, RBACAllowEffect); err != nil {
