@@ -79,7 +79,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn401_whenAuthorizationHeaderIsEmpty(
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecase)
 
 	// given
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -108,7 +108,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn401_whenAuthorizationHeaderIsInvali
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecase)
 	authenticationUsecase.On("GetUserInfo", anyOfCtx, "INVALID_TOKEN").Return(nil, errors.New("INVALID"))
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -143,7 +143,7 @@ func TestAuthHandler_GetUserInfo_shouldReturn200_whenAuthorizationHeaderIsValid(
 		LoginID:        "LOGIN_ID",
 		Username:       "USERNAME",
 	}
-	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecase)
 	authenticationUsecase.On("GetUserInfo", anyOfCtx, "VALID_TOKEN").Return(appUserInfo, nil)
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -183,7 +183,7 @@ func TestAuthHandler_RefreshToken_shouldReturn400_whenRequestBodyIsEmpty(t *test
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecase)
 	r := initAuthRouter(t, ctx, authenticationUsecase)
 	w := httptest.NewRecorder()
 
@@ -209,7 +209,7 @@ func TestAuthHandler_RefreshToken_shouldReturn401_whenTokenIsInvalid(t *testing.
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecase)
 	authenticationUsecase.On("RefreshToken", anyOfCtx, "INVALID_TOKEN").Return("", errors.New("INVALID"))
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)
@@ -237,7 +237,7 @@ func TestAuthHandler_RefreshToken_shouldReturn200_whenTokenIsValid(t *testing.T)
 	ctx := context.Background()
 
 	// given
-	authenticationUsecase := new(controllermock.AuthenticationUsecaseInterface)
+	authenticationUsecase := new(controllermock.AuthenticationUsecase)
 	authenticationUsecase.On("RefreshToken", anyOfCtx, "VALID_TOKEN").Return("ACCESS_TOKEN", nil)
 
 	r := initAuthRouter(t, ctx, authenticationUsecase)
