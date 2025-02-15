@@ -79,28 +79,14 @@ func (c *GoogleAuthClient) RetrieveAccessToken(ctx context.Context, code string)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusUnauthorized {
+	if resp.StatusCode != http.StatusOK {
 		respBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, rsliberrors.Errorf("io.ReadAll. err: %w", err)
 		}
 
-		c.logger.InfoContext(ctx, fmt.Sprintf("retrieve access token. status: %d, param: %s, body:%s", resp.StatusCode, string(paramBytes), string(respBytes)))
-
-		return nil, rsliberrors.Errorf("retrieve access token. err: %w", domain.ErrUnauthenticated)
-	} else if resp.StatusCode == http.StatusBadRequest {
-		respBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, rsliberrors.Errorf("io.ReadAll. err: %w", err)
-		}
-
-		c.logger.InfoContext(ctx, fmt.Sprintf("retrieve access token. status: %d, param: %s, body:%s", resp.StatusCode, string(paramBytes), string(respBytes)))
-
-		return nil, rsliberrors.Errorf("retrieve access token. err: %w", domain.ErrUnauthenticated)
-	} else if resp.StatusCode != http.StatusOK {
-		respBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, rsliberrors.Errorf("io.ReadAll. err: %w", err)
+		if 400 <= resp.StatusCode && resp.StatusCode < 500 {
+			c.logger.InfoContext(ctx, fmt.Sprintf("retrieve access token. status: %d, param: %s, body:%s", resp.StatusCode, string(paramBytes), string(respBytes)))
 		}
 
 		return nil, fmt.Errorf("retrieve access token. status: %d, body:%s", resp.StatusCode, string(respBytes))

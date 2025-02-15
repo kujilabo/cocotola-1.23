@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	firebase.google.com/go/v4 v4.15.2
-	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20250211143737-067861efbd50
+	github.com/kujilabo/cocotola-1.23/redstart v0.0.0-20250215152529-c6d4bf5587c2
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/api v0.221.0
 	gopkg.in/yaml.v3 v3.0.1

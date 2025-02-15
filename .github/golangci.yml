@@ -25,7 +25,7 @@ linters:
 
 linters-settings:
   gocyclo:
-    min-complexity: 15
+    min-complexity: 10
 
   staticcheck:
     # https://staticcheck.io/docs/options#checks

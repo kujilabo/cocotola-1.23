@@ -23,47 +23,9 @@ var (
 func init() {
 	var err error
 
-	Lang2EN, err = NewLang2("en")
-	if err != nil {
-		panic(err)
-	}
-	Lang2ES, err = NewLang2("es")
-	if err != nil {
-		panic(err)
-	}
-	Lang2JA, err = NewLang2("ja")
-	if err != nil {
-		panic(err)
-	}
-	Lang2KO, err = NewLang2("ko")
-	if err != nil {
-		panic(err)
-	}
-	Lang2Unknown, err = NewLang2("__")
-	if err != nil {
-		panic(err)
-	}
+	initLang2()
 
-	Lang3ENG, err = NewLang3("eng")
-	if err != nil {
-		panic(err)
-	}
-	Lang3ESP, err = NewLang3("esp")
-	if err != nil {
-		panic(err)
-	}
-	Lang3JPN, err = NewLang3("jpn")
-	if err != nil {
-		panic(err)
-	}
-	Lang3KOR, err = NewLang3("kor")
-	if err != nil {
-		panic(err)
-	}
-	Lang3Unknown, err = NewLang3("___")
-	if err != nil {
-		panic(err)
-	}
+	initLang3()
 
 	Lang5ENUS, err = NewLang5("en-US")
 	if err != nil {
@@ -85,4 +47,52 @@ func init() {
 	// if err != nil {
 	// 	panic(err)
 	// }
+}
+
+func initLang3() {
+	var err error
+	Lang3ENG, err = NewLang3("eng")
+	if err != nil {
+		panic(err)
+	}
+	Lang3ESP, err = NewLang3("esp")
+	if err != nil {
+		panic(err)
+	}
+	Lang3JPN, err = NewLang3("jpn")
+	if err != nil {
+		panic(err)
+	}
+	Lang3KOR, err = NewLang3("kor")
+	if err != nil {
+		panic(err)
+	}
+	Lang3Unknown, err = NewLang3("___")
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initLang2() {
+	var err error
+	Lang2EN, err = NewLang2("en")
+	if err != nil {
+		panic(err)
+	}
+	Lang2ES, err = NewLang2("es")
+	if err != nil {
+		panic(err)
+	}
+	Lang2JA, err = NewLang2("ja")
+	if err != nil {
+		panic(err)
+	}
+	Lang2KO, err = NewLang2("ko")
+	if err != nil {
+		panic(err)
+	}
+	Lang2Unknown, err = NewLang2("__")
+	if err != nil {
+		panic(err)
+	}
 }

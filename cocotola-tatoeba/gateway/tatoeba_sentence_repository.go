@@ -179,8 +179,8 @@ func (r *tatoebaSentenceRepository) whereFindTatoebaSentencePairs(ctx context.Co
 	}
 	return db
 }
-func (r *tatoebaSentenceRepository) CountTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (int, error) {
 
+func (r *tatoebaSentenceRepository) CountTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (int, error) {
 	var count int64 = 0
 	if result := r.whereFindTatoebaSentencePairs(ctx, param).Count(&count); result.Error != nil {
 		return 0, result.Error
