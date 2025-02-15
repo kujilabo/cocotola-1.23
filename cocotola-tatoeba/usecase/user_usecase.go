@@ -15,19 +15,19 @@ import (
 )
 
 type UserUsecase struct {
-	txManager             service.TransactionManager
-	nonTxManager          service.TransactionManager
-	findSentencePairCache *cache.Cache
-	logger                *slog.Logger
+	txManager                 service.TransactionManager
+	nonTxManager              service.TransactionManager
+	findTatoebaSentencesCache *cache.Cache
+	logger                    *slog.Logger
 }
 
 func NewUserUsecase(txManager, nonTxManager service.TransactionManager) *UserUsecase {
 	userUsecaseLoggerName := "userUsecase"
 	return &UserUsecase{
-		txManager:             txManager,
-		nonTxManager:          nonTxManager,
-		findSentencePairCache: cache.New(5*60*time.Second, 10*60*time.Second),
-		logger:                slog.Default().With(slog.String(rsliblog.LoggerNameKey, userUsecaseLoggerName)),
+		txManager:                 txManager,
+		nonTxManager:              nonTxManager,
+		findTatoebaSentencesCache: cache.New(5*time.Minute, 10*time.Minute),
+		logger:                    slog.Default().With(slog.String(rsliblog.LoggerNameKey, userUsecaseLoggerName)),
 	}
 }
 
@@ -40,7 +40,14 @@ func (u *UserUsecase) FindSentencePairs(ctx context.Context, param service.Tatoe
 			return nil, rsliberrors.Errorf("execute FindTatoebaSentencePairs. err: %w", err)
 		}
 
-		if cachedCount, ok := u.findSentencePairCache.Get(param.ToString()); ok {
+		if cachedCount, ok := u.findTatoebaSentencesCache.Get(param.ToString()); ok {
+			if _cachedCountInt, ok := cachedCount.(int); ok {
+				return service.NewTatoebaSentencePairSearchResult(_cachedCountInt, sentences), nil
+			}
+			u.logger.ErrorContext(ctx, "cachedCount is not int")
+		}
+
+		if cachedCount, ok := u.findTatoebaSentencesCache.Get(param.ToString()); ok {
 			if _cachedCountInt, ok := cachedCount.(int); ok {
 				return service.NewTatoebaSentencePairSearchResult(_cachedCountInt, sentences), nil
 			}
@@ -51,7 +58,7 @@ func (u *UserUsecase) FindSentencePairs(ctx context.Context, param service.Tatoe
 		if err != nil {
 			return nil, rsliberrors.Errorf("execute CountTatoebaSentencePairs. err: %w", err)
 		}
-		u.findSentencePairCache.Set(param.ToString(), count, cache.DefaultExpiration)
+		u.findTatoebaSentencesCache.Set(param.ToString(), count, cache.DefaultExpiration)
 
 		return service.NewTatoebaSentencePairSearchResult(count, sentences), nil
 	})

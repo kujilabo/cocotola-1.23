@@ -5,24 +5,24 @@ import { devtools, persist } from "zustand/middleware";
 import { backendTatoebaUrl } from "@/config/config";
 import type { TatoebaSentencePair } from "@/feature/tatoeba/model/sentence";
 import { extractErrorMessage } from "@/lib/base";
-
-type State = {
-  sentences: TatoebaSentencePair[];
-  error: string | null;
-};
-type Action = {
-  getSentences: () => Promise<void>;
-
-  setSentences: (sentences: TatoebaSentencePair[]) => void;
-};
-
-type SentencePairFindParamter = {
+export type TatoebaSentenceFindParameter = {
   pageNo: number;
   pageSize: number;
   srcLang2: string;
   dstLang2: string;
   keyword: string;
   random: boolean;
+};
+
+type State = {
+  sentences: TatoebaSentencePair[];
+  loading: boolean;
+  error: string | null;
+};
+type Action = {
+  getSentences: (param: TatoebaSentenceFindParameter) => Promise<void>;
+
+  setSentences: (sentences: TatoebaSentencePair[]) => void;
 };
 
 type SentenceFindResponse = {
@@ -32,19 +32,13 @@ type SentenceFindResponse = {
 export const useSentenceListStore = create<State & Action>()(
   devtools((set) => ({
     sentences: [],
-    getSentences: async (): Promise<void> => {
-      const params: SentencePairFindParamter = {
-        pageNo: 1,
-        pageSize: 10,
-        srcLang2: "en",
-        dstLang2: "ja",
-        keyword: "",
-        random: false,
-      };
-
+    getSentences: async (
+      param: TatoebaSentenceFindParameter,
+    ): Promise<void> => {
+      set({ loading: true });
       await axios
         .get(`${backendTatoebaUrl}/api/v1/user/sentence_pair/find`, {
-          params: params,
+          params: param,
           auth: {
             username: "username",
             password: "password",
@@ -57,6 +51,7 @@ export const useSentenceListStore = create<State & Action>()(
           //   console.log(sentencePair);
           // }
           set({ sentences: data.results });
+          set({ loading: false });
         })
         .catch((err: Error) => {
           console.log("callback err");
@@ -65,6 +60,7 @@ export const useSentenceListStore = create<State & Action>()(
           //   arg.postFailureProcess(errorMessage);
           //   return thunkAPI.rejectWithValue(errorMessage);
           set({ error: errorMessage });
+          set({ loading: false });
           return "";
         });
       // set({sentences: [

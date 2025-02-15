@@ -26,13 +26,14 @@ func NewLang2(lang string) (*Lang2, error) {
 func (l *Lang2) String() string {
 	return l.value
 }
-
 func (l *Lang2) ToLang3() *Lang3 {
 	switch l.value {
 	case "en":
 		return Lang3ENG
 	case "ja":
 		return Lang3JPN
+	case "ko":
+		return Lang3KOR
 	default:
 		return Lang3Unknown
 	}

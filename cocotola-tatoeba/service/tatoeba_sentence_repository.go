@@ -198,7 +198,6 @@ func (c *TatoebaSentenceSearchCondition) GetDstLang2() *domain.Lang2 {
 func (c *TatoebaSentenceSearchCondition) IsRandom() bool {
 	return c.Random
 }
-
 func (c *TatoebaSentenceSearchCondition) ToString() string {
 	return c.JSON
 }

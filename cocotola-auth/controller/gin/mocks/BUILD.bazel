@@ -3,8 +3,8 @@ load("@rules_go//go:def.bzl", "go_library")
 go_library(
     name = "mocks",
     srcs = [
-        "AuthenticationUsecaseInterface.go",
-        "GoogleUserUsecaseInterface.go",
+        "AuthenticationUsecase.go",
+        "GoogleUserUsecase.go",
     ],
     importpath = "github.com/kujilabo/cocotola-1.23/cocotola-auth/controller/gin/mocks",
     visibility = ["//visibility:public"],

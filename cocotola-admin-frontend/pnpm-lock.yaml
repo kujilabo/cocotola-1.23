@@ -26,6 +26,9 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.7.9
+      immer:
+        specifier: ^10.1.1
+        version: 10.1.1
       next-themes:
         specifier: ^0.4.4
         version: 0.4.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -49,7 +52,11 @@ importers:
         version: 2.3.2(react@18.3.1)
       zustand:
         specifier: 5.0.3
+<<<<<<< HEAD
         version: 5.0.3(@types/react@18.3.18)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
+=======
+        version: 5.0.3(@types/react@18.3.18)(immer@10.1.1)(react@18.3.1)
+>>>>>>> 549cc56 (find get)
     devDependencies:
       '@biomejs/biome':
         specifier: 1.9.4
@@ -1115,6 +1122,9 @@ packages:
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
+
+  immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
 
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
@@ -2572,6 +2582,8 @@ snapshots:
 
   ignore@5.3.2: {}
 
+  immer@10.1.1: {}
+
   import-fresh@3.3.1:
     dependencies:
       parent-module: 1.0.1
@@ -2939,8 +2951,13 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
+<<<<<<< HEAD
   zustand@5.0.3(@types/react@18.3.18)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1)):
+=======
+  zustand@5.0.3(@types/react@18.3.18)(immer@10.1.1)(react@18.3.1):
+>>>>>>> 549cc56 (find get)
     optionalDependencies:
       '@types/react': 18.3.18
+      immer: 10.1.1
       react: 18.3.1
       use-sync-external-store: 1.4.0(react@18.3.1)

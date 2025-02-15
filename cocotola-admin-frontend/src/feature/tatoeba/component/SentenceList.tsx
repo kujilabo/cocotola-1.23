@@ -3,18 +3,21 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, memo, useCallback, useEffect, useState } from "react";
 
 // <Pagination count={10} />
+
 import { MainLayout } from "@/component/layout";
 import {
   TatoebaSentencePair,
   newTatoebaSentenceWithText,
 } from "@/feature/tatoeba/model/sentence";
-import { useMySentenceListStore } from "@/feature/tatoeba/store/my_sentence_list";
 import { useSentenceListStore } from "@/feature/tatoeba/store/sentence_list";
-import Pagination from "@mui/material/Pagination";
 
+import { StageSentencePairs } from "@/feature/tatoeba/component/stage_sentence_pais";
+import { TatoebaSentenceFindParameter } from "@/feature/tatoeba/store/sentence_list";
+import { TextField } from "@mui/material";
+import { useMySentencePairListStore } from "../store/my_sentence_pair_list";
 // import useSWR, { preload } from 'swr'
 
 // const fetcher = (url: string) => fetch(url).then((res) => res.json())
@@ -40,9 +43,7 @@ const convertText = (text: string, start: number, end: number): string => {
   return text1 + text2 + text3;
 };
 
-const findSentenceKeylement = (
-  element: HTMLElement | null,
-): HTMLElement | null => {
+const findSentenceKeylement = (element: Node | null): HTMLElement | null => {
   let key = null;
   let target = element;
   for (let i = 0; i < 5; i++) {
@@ -71,7 +72,7 @@ const formatText = (
   sentence: string,
   sentenceKey: string,
   sentenceSrcDst: string,
-  stageSententcePairs: Map<string, TatoebaSentencePair>,
+  stageSententcePairs: StageSentencePairs,
 ) => {
   const stageSentencePair = stageSententcePairs.get(sentenceKey);
   if (stageSentencePair === undefined) {
@@ -109,15 +110,34 @@ const createNewSentencePair = (
   }
   throw new Error("error");
 };
+type SearchButtonProp = {
+  onClick: () => void;
+};
+
+const SearchButton = memo(({ onClick }: SearchButtonProp) => {
+  console.log("reset: rendered");
+  return (
+    <Button
+      size="small"
+      variant="outlined"
+      sx={{ textTransform: "none" }}
+      onClick={onClick}
+    >
+      Search
+    </Button>
+  );
+});
+// Reset.displayName = "Reset";
 
 export const SentenceList = () => {
-  const [stageSentencePairs, setStageSentencePairs] = useState<
-    Map<string, TatoebaSentencePair>
-  >(new Map<string, TatoebaSentencePair>());
+  const [stageSentencePairs, setStageSentencePairs] =
+    useState<StageSentencePairs>(
+      new StageSentencePairs(new Map<string, TatoebaSentencePair>()),
+    );
+
   const [errors, setErrors] = useState<Map<string, string>>(
     new Map<string, string>(),
   );
-
   const [selection, setSelection] = useState<Selection | null>(null);
 
   const [selectedSentenceKey, setSelectedSentenceKey] = useState<string>("");
@@ -125,14 +145,34 @@ export const SentenceList = () => {
     useState<string>("");
   const sentencePairs = useSentenceListStore((state) => state.sentences);
   const getSentences = useSentenceListStore((state) => state.getSentences);
-  const mySentencePairs = useMySentenceListStore((state) => state.sentences);
-  const saveMySentencePair = useMySentenceListStore(
-    (state) => state.saveSentencePair,
+  const loading = useSentenceListStore((state) => state.loading);
+  const mySentencePairs = useMySentencePairListStore(
+    (state) => state.sentencePairs,
   );
-  const deleteMySentencePair = useMySentenceListStore(
-    (state) => state.deleteSentencePair,
+  const addSentencePair = useMySentencePairListStore(
+    (state) => state.addSentencePair,
   );
-  const clearError = (sentenceKey: string) => {
+  const removeSentencePair = useMySentencePairListStore(
+    (state) => state.removeSentencePair,
+  );
+  const [keyword, setkeyword] = useState<string>("");
+  console.log("keyword", keyword);
+
+  const onKeywordChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      console.log("keyword ccc", event.target.value);
+      setkeyword(event.target.value);
+    },
+    [],
+  );
+  // const onKeywordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   console.log("keyword ccc", event.target.value);
+  //   setkeyword(event.target.value);
+  // };
+
+  // console.log("sentenceMap", sentenceMap);
+
+  const clearErrors = (sentenceKey: string) => {
     setErrors((errors) => {
       errors.delete(sentenceKey);
       return new Map(errors);
@@ -140,7 +180,14 @@ export const SentenceList = () => {
   };
 
   useEffect(() => {
-    getSentences();
+    getSentences({
+      pageNo: 1,
+      pageSize: 10,
+      keyword: "",
+      srcLang2: "en",
+      dstLang2: "ja",
+      random: false,
+    });
   }, [getSentences]);
 
   useEffect(() => {
@@ -153,8 +200,23 @@ export const SentenceList = () => {
         return [sentenceKey, sentencePair];
       }),
     );
-    setStageSentencePairs(stageSentencePairs);
+    setStageSentencePairs(new StageSentencePairs(stageSentencePairs));
   }, [sentencePairs, mySentencePairs]);
+
+  const onSearchClick = useCallback(
+    (keyword: string) => {
+      console.log("aaaa", keyword);
+      getSentences({
+        pageNo: 1,
+        pageSize: 10,
+        keyword: keyword,
+        srcLang2: "en",
+        dstLang2: "ja",
+        random: false,
+      });
+    },
+    [getSentences],
+  );
 
   const handleSelectionChange = useCallback(() => {
     const selection = document.getSelection();
@@ -163,17 +225,17 @@ export const SentenceList = () => {
       selection === null ||
       selection?.anchorNode === null ||
       selection?.focusNode === null ||
-      selection?.anchorNode !== selection?.focusNode
+      selection?.anchorNode !== selection?.focusNode ||
+      selection?.toString() === ""
     ) {
       setSelection(null);
       setSelectedSentenceKey("");
       setSelectedSentenceSrcDst("");
       return;
     }
+    console.log("selection 2", selection);
 
-    const sentenceKeyElement = findSentenceKeylement(
-      selection.anchorNode.parentElement,
-    );
+    const sentenceKeyElement = findSentenceKeylement(selection?.anchorNode);
     setSelection(selection);
     setSelectedSentenceKey(
       sentenceKeyElement?.getAttribute("data-sentence-key") ?? "",
@@ -183,13 +245,15 @@ export const SentenceList = () => {
     );
   }, []);
 
+
   const onMarkClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const sentenceKey = findSentenceKey(event.currentTarget);
     if (sentenceKey === null || sentenceKey === "") {
       return;
     }
-    clearError(sentenceKey);
+    clearErrors(sentenceKey);
 
+    // const cardElement = findCardElement(event.target);
     if (selectedSentenceKey === "" || selectedSentenceSrcDst === "") {
       return;
     }
@@ -208,22 +272,17 @@ export const SentenceList = () => {
 
     const spacePos = selection.toString().indexOf(" ");
     if (spacePos !== -1) {
-      setErrors((errors) => {
-        return new Map(errors.set(sentenceKey, "Please select one word"));
-      });
+      setErrors(
+        (errors) => new Map(errors.set(sentenceKey, "Please select one word")),
+      );
       return "";
     }
 
-    let start: number;
-    let end: number;
-    if (selection.anchorOffset < selection.focusOffset) {
-      start = selection.anchorOffset;
-      end = selection.focusOffset;
-    } else {
-      start = selection.focusOffset;
-      end = selection.anchorOffset;
-    }
+    const anchorOffset = selection.anchorOffset;
+    const focusOffset = selection.focusOffset;
 
+    const start = Math.min(anchorOffset, focusOffset);
+    const end = Math.max(anchorOffset, focusOffset);
     const newSentencePair = createNewSentencePair(
       selectedSentenceSrcDst,
       stageSentencePair,
@@ -231,9 +290,12 @@ export const SentenceList = () => {
       end,
     );
 
-    setStageSentencePairs((stageSentencePair) => {
-      return new Map(stageSentencePair.set(sentenceKey, newSentencePair));
-    });
+    setStageSentencePairs((stageSentencePairs) =>
+      stageSentencePairs.createWithNewSentencePair(
+        sentenceKey,
+        newSentencePair,
+      ),
+    );
   };
 
   const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -241,44 +303,36 @@ export const SentenceList = () => {
     if (sentenceKey === null || sentenceKey === "") {
       return;
     }
-    clearError(sentenceKey);
-    const stageSentencePair = stageSentencePairs.get(sentenceKey);
-    if (stageSentencePair === undefined) {
-      console.log("problem is undefined");
+    clearErrors(sentenceKey);
+    const error = stageSentencePairs.validate(sentenceKey);
+    if (error !== null) {
+      setErrors((errors) => new Map(errors.set(sentenceKey, error)));
       return;
     }
-    const regex = /<([^>]*)>/;
-    if (
-      !regex.test(stageSentencePair.src.text) ||
-      !regex.test(stageSentencePair.dst.text)
-    ) {
-      setErrors((errors) => {
-        return new Map(
-          errors.set(sentenceKey, "Please mark at least one word"),
-        );
-      });
+    const sentencePair = stageSentencePairs.get(sentenceKey);
+    if (sentencePair === undefined) {
       return;
     }
-    console.log("onSaveClick");
-    saveMySentencePair(sentenceKey, stageSentencePair);
+    console.log("sentencePair", sentencePair);
+    addSentencePair(sentenceKey, sentencePair);
   };
+
 
   const onRemoveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const sentenceKey = findSentenceKey(event.currentTarget);
     if (sentenceKey === null || sentenceKey === "") {
       return;
     }
-    deleteMySentencePair(sentenceKey);
+    removeSentencePair(sentenceKey);
     console.log("onRemoveClick");
   };
-
   const onExportClick = () => {
     const blob = new Blob([JSON.stringify(mySentencePairs)], {
       type: "application/json",
     });
     const objectUrl = URL.createObjectURL(blob);
 
-    var a = document.createElement("a");
+    const a = document.createElement("a");
     document.body.appendChild(a);
     a.style = "display: none";
     a.href = objectUrl;
@@ -287,6 +341,7 @@ export const SentenceList = () => {
     URL.revokeObjectURL(objectUrl);
     a.remove();
   };
+
 
   useEffect(() => {
     document.addEventListener("selectionchange", handleSelectionChange);
@@ -298,10 +353,6 @@ export const SentenceList = () => {
 
   const createCard = (sentencePair: TatoebaSentencePair) => {
     const sentenceKey = `${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`;
-    // const stagestageSentencePair = stageSentencePairs.get(sentenceKey);
-    // if (stagestageSentencePair === undefined) {
-    //   return <div>error</div>;
-    // }
     const error = errors.get(sentenceKey);
     return (
       <Fragment>
@@ -361,6 +412,7 @@ export const SentenceList = () => {
       </Fragment>
     );
   };
+
   return (
     <MainLayout title="Sentence List">
       <Button
@@ -371,6 +423,14 @@ export const SentenceList = () => {
       >
         Export
       </Button>
+      <TextField
+        id="keyword"
+        label="Keyword"
+        variant="standard"
+        onChange={onKeywordChange}
+      />
+      <SearchButton onClick={() => onSearchClick(keyword)} />
+
       {sentencePairs.map((sentencePair) => (
         <Card
           variant="outlined"
