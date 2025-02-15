@@ -11,5 +11,6 @@ go_library(
         "//lib/domain",
         "//redstart/lib/errors",
         "//redstart/lib/log",
+        "//redstart/lib/service",
     ],
 )
