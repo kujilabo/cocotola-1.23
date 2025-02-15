@@ -11,3 +11,4 @@ packages:
     interfaces:
       SynthesizerUsecase:
 issue-845-fix: True
+resolve-type-alias: False

@@ -10,11 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
-
-	"github.com/kujilabo/cocotola-1.23/lib/domain"
 
 	handlerhelper "github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/controller/gin/helper"
 	"github.com/kujilabo/cocotola-1.23/cocotola-tatoeba/service"
@@ -48,11 +47,11 @@ type TatoebaSentencePairFindResponse struct {
 }
 
 func ToTatoebaSentenceSearchCondition(ctx context.Context, param *TatoebaSentenceFindParameter) (*service.TatoebaSentenceSearchCondition, error) {
-	srcLang2, err := domain.NewLang2(param.SrcLang2)
+	srcLang2, err := libdomain.NewLang2(param.SrcLang2)
 	if err != nil {
 		return nil, rsliberrors.Errorf("convert srcLang2 to Lang2. err: %w", err)
 	}
-	dstLang2, err := domain.NewLang2(param.DstLang2)
+	dstLang2, err := libdomain.NewLang2(param.DstLang2)
 	if err != nil {
 		return nil, rsliberrors.Errorf("convert dstLang2 to Lang2. err: %w", err)
 	}
@@ -114,10 +113,6 @@ func NewUserHandler(userUsecase UserUsecase) *UserHandler {
 	}
 }
 
-// func (h *UserHandler) logger() *slog.Logger {
-// 	return slog.Default().With(slog.String(rsliblog.LoggerNameKey, "tatoeba.UserHandler"))
-// }
-
 // FindSentencePairs godoc
 // @Summary     find pair of sentences
 // @Description find pair of sentences
@@ -136,6 +131,7 @@ func (h *UserHandler) FindSentencePairs(c *gin.Context) {
 		if err := c.ShouldBind(&param); err != nil {
 			h.logger.InfoContext(ctx, fmt.Sprintf("FindSentencePairs. err: %+v", err))
 			c.Status(http.StatusBadRequest)
+			h.logger.ErrorContext(ctx, fmt.Sprintf("FindSentencePairs. err: %+v", err))
 			return nil
 		}
 		h.logger.DebugContext(ctx, fmt.Sprintf("FindSentencePairs. param: %+v", param))

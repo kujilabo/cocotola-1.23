@@ -154,7 +154,7 @@ func newTatoebaSentenceRepository(db *gorm.DB) service.TatoebaSentenceRepository
 
 // where t1.lang3='eng' and t3.lang3='jpn';
 
-func (r *tatoebaSentenceRepository) whereTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) *gorm.DB {
+func (r *tatoebaSentenceRepository) whereFindTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) *gorm.DB {
 	db := r.db.Table("tatoeba_sentence AS T1").Select(
 		// Src
 		"T1.sentence_number AS src_sentence_number,"+
@@ -182,7 +182,7 @@ func (r *tatoebaSentenceRepository) whereTatoebaSentencePairs(ctx context.Contex
 func (r *tatoebaSentenceRepository) CountTatoebaSentencePairs(ctx context.Context, param service.TatoebaSentenceSearchConditionInterface) (int, error) {
 
 	var count int64 = 0
-	if result := r.whereTatoebaSentencePairs(ctx, param).Count(&count); result.Error != nil {
+	if result := r.whereFindTatoebaSentencePairs(ctx, param).Count(&count); result.Error != nil {
 		return 0, result.Error
 	}
 
@@ -219,35 +219,9 @@ func (r *tatoebaSentenceRepository) findTatoebaSentences(ctx context.Context, pa
 	// ) AS `tmp` ON s.id >= tmp.id
 	// ORDER BY s.id
 
-	where := func() *gorm.DB {
-		db := r.db.Table("tatoeba_sentence AS T1").Select(
-			// Src
-			"T1.sentence_number AS src_sentence_number,"+
-				"T1.lang3 AS src_lang3,"+
-				"T1.text AS src_text,"+
-				"T1.author AS src_author,"+
-				"T1.updated_at AS src_updated_at,"+
-				// Dst
-				"T3.sentence_number AS dst_sentence_number,"+
-				"T3.lang3 AS dst_lang3,"+
-				"T3.text AS dst_text,"+
-				"T3.author AS dst_author,"+
-				"T3.updated_at AS dst_updated_at").
-			Joins("INNER JOIN tatoeba_link AS T2 ON T1.sentence_number = T2.`src`").
-			Joins("INNER JOIN tatoeba_sentence AS T3 ON T3.sentence_number = T2.`dst`").
-			Where("T1.lang3 = ? AND T3.lang3 = ?", param.GetSrcLang2().ToLang3().String(), param.GetDstLang2().ToLang3().String())
-		keywords := SplitString(param.GetKeyword(), ' ', '"')
-		for _, keyword := range keywords {
-			keyword1 := strings.ReplaceAll(keyword, "%", "\\%")
-			keyword2 := "%" + keyword1 + "%"
-			db = db.Where("T1.text like ?", keyword2)
-		}
-		return db
-	}
-
 	r.logger.InfoContext(ctx, "tatoebaSentenceRepository.FindTatoebaSentences 222")
 	entities := []tatoebaSentencePairEntity{}
-	if result := where().Limit(limit).Offset(offset).Scan(&entities); result.Error != nil {
+	if result := r.whereFindTatoebaSentencePairs(ctx, param).Limit(limit).Offset(offset).Scan(&entities); result.Error != nil {
 		return nil, result.Error
 	}
 

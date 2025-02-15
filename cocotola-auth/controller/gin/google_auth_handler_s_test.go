@@ -41,7 +41,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn400_whenRequestBodyIsEmpty(t *t
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecase)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
 
@@ -66,7 +66,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn400_whenRequestBodyIsInvalid(t 
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecase)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
 
@@ -91,7 +91,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn500_whenErrorOccur(t *testing.T
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecase)
 	googleUserUsecase.On("Authorize", anyOfCtx, "VALID_STATE", "ERROR_CODE", "ORG_NAME").Return(nil, errors.New("ERROR"))
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
@@ -117,7 +117,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn401_whenCodeIsInvalid(t *testin
 	ctx := context.Background()
 
 	// given
-	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecase)
 	googleUserUsecase.On("Authorize", anyOfCtx, "VALID_STATE", "INVALID_CODE", "ORG_NAME").Return(nil, domain.ErrUnauthenticated)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()
@@ -147,7 +147,7 @@ func TestGoogleAuthHandler_Authorize_shouldReturn401_whenCodeIsValid(t *testing.
 		AccessToken:  "ACCESS_TOKEN",
 		RefreshToken: "REFRESH_TOKEN",
 	}
-	googleUserUsecase := new(controllermock.GoogleUserUsecaseInterface)
+	googleUserUsecase := new(controllermock.GoogleUserUsecase)
 	googleUserUsecase.On("Authorize", anyOfCtx, "VALID_STATE", "VALID_CODE", "ORG_NAME").Return(authToksenSet, nil)
 	r := initGoogleRouter(t, ctx, googleUserUsecase)
 	w := httptest.NewRecorder()

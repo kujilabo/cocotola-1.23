@@ -7,10 +7,10 @@ var (
 	Lang2KO      *Lang2
 	Lang2Unknown *Lang2
 
-	Lang3ENG *Lang3
-	// Lang3ESP     Lang3
-	Lang3JPN *Lang3
-	// Lang3KOR     Lang3
+	Lang3ENG     *Lang3
+	Lang3ESP     *Lang3
+	Lang3JPN     *Lang3
+	Lang3KOR     *Lang3
 	Lang3Unknown *Lang3
 
 	Lang5ENUS *Lang5
@@ -48,22 +48,22 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	// Lang3ESP, err = NewLang3("esp")
-	// if err != nil {
-	// 	panic(err)
-	// }
+	Lang3ESP, err = NewLang3("esp")
+	if err != nil {
+		panic(err)
+	}
 	Lang3JPN, err = NewLang3("jpn")
 	if err != nil {
 		panic(err)
 	}
-	// Lang3KOR, err = NewLang3("kor")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// Lang3Unknown, err = NewLang3("___")
-	// if err != nil {
-	// 	panic(err)
-	// }
+	Lang3KOR, err = NewLang3("kor")
+	if err != nil {
+		panic(err)
+	}
+	Lang3Unknown, err = NewLang3("___")
+	if err != nil {
+		panic(err)
+	}
 
 	Lang5ENUS, err = NewLang5("en-US")
 	if err != nil {
