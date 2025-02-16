@@ -156,8 +156,13 @@ export const SentenceList = () => {
   const [selectedSentenceKey, setSelectedSentenceKey] = useState<string>("");
   const [selectedSentenceSrcDst, setSelectedSentenceSrcDst] =
     useState<string>("");
+
   const sentencePairs = useSentenceListStore((state) => state.sentences);
   const getSentences = useSentenceListStore((state) => state.getSentences);
+  const [sentencePairStatuses, setSentencePairStatuses] = useState<
+    Map<string, string>
+  >(new Map<string, string>());
+
   const isLoading = useSentenceListStore((state) => state.loading);
   const mySentencePairs = useMySentencePairListStore(
     (state) => state.sentencePairs,
@@ -205,14 +210,22 @@ export const SentenceList = () => {
   }, [getSentences, getQueryParam]);
 
   useEffect(() => {
+    const newStageSentencePairs = new Map<string, TatoebaSentencePair>();
+
+    for (const sentencePair of sentencePairs) {
+      const sentenceKey = `${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`;
+      if (sentenceKey in mySentencePairs) {
+        newStageSentencePairs.set(sentenceKey, mySentencePairs[sentenceKey]);
+        setSentencePairStatuses((sentencePairStatuses) =>
+          sentencePairStatuses.set(sentenceKey, "saved"),
+        );
+      } else {
+        newStageSentencePairs.set(sentenceKey, sentencePair);
+      }
+    }
+
     const stageSentencePairs = new Map<string, TatoebaSentencePair>(
-      sentencePairs.map((sentencePair) => {
-        const sentenceKey = `${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`;
-        if (sentenceKey in mySentencePairs) {
-          return [sentenceKey, mySentencePairs[sentenceKey]];
-        }
-        return [sentenceKey, sentencePair];
-      }),
+      newStageSentencePairs,
     );
     setStageSentencePairs(new StageSentencePairs(stageSentencePairs));
   }, [sentencePairs, mySentencePairs]);
@@ -324,6 +337,9 @@ export const SentenceList = () => {
           newSentencePair,
         ),
       );
+      setSentencePairStatuses((sentencePairStatuses) =>
+        sentencePairStatuses.set(sentenceKey, "staged"),
+      );
     },
     [
       setError,
@@ -367,6 +383,10 @@ export const SentenceList = () => {
         return;
       }
       removeSentencePair(sentenceKey);
+      setSentencePairStatuses((sentencePairStatuses) => {
+        sentencePairStatuses.delete(sentenceKey);
+        return sentencePairStatuses;
+      });
       console.log("onRemoveClick");
     },
     [removeSentencePair],
@@ -419,6 +439,7 @@ export const SentenceList = () => {
         <SentencePairCardList
           errors={errors}
           sentencePairs={sentencePairs}
+          sentencePairStatuses={sentencePairStatuses}
           stageSentencePairs={stageSentencePairs}
           onMarkClick={onMarkClick}
           onSaveClick={onSaveClick}

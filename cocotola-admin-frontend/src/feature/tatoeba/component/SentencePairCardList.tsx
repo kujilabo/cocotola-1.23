@@ -38,12 +38,14 @@ const formatText = (
   }
   return "ERROR";
 };
+
 export type SentencePairCardListProps = {
   onMarkClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onSaveClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onRemoveClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   errors: Map<string, string>;
   sentencePairs: TatoebaSentencePair[];
+  sentencePairStatuses: Map<string, string>;
   stageSentencePairs: StageSentencePairs;
 };
 
@@ -51,6 +53,7 @@ export const SentencePairCardList = memo(
   (props: SentencePairCardListProps): JSX.Element => {
     const {
       sentencePairs,
+      sentencePairStatuses,
       stageSentencePairs,
       errors,
       onMarkClick,
@@ -61,11 +64,19 @@ export const SentencePairCardList = memo(
     const createCard = (sentencePair: TatoebaSentencePair) => {
       const sentenceKey = `${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`;
       const error = errors.get(sentenceKey);
+      const status = sentencePairStatuses.get(sentenceKey);
+      const color =
+        status === "saved"
+          ? "orange"
+          : status === "staged"
+            ? "green"
+            : "text.primary";
       return (
         <Fragment>
           <CardContent>
             <Typography
-              sx={{ color: "text.primary", mb: 1.5 }}
+              // sx={{ color: "text.primary", mb: 1.5 }}
+              sx={{ color: { color }, mb: 1.5 }}
               data-sentence-key={sentenceKey}
               data-sentence-src-dst={"src"}
             >
@@ -77,7 +88,7 @@ export const SentencePairCardList = memo(
               )}
             </Typography>
             <Typography
-              sx={{ color: "text.secondary", mb: 1.5 }}
+              sx={{ color: { color }, mb: 1.5 }}
               data-sentence-key={`${sentencePair.src.sentenceNumber}-${sentencePair.dst.sentenceNumber}`}
               data-sentence-src-dst={"dst"}
             >
@@ -104,6 +115,7 @@ export const SentencePairCardList = memo(
               variant="outlined"
               sx={{ textTransform: "none" }}
               onClick={onSaveClick}
+              disabled={status !== "staged"}
             >
               Save
             </Button>
@@ -112,6 +124,7 @@ export const SentencePairCardList = memo(
               variant="outlined"
               sx={{ textTransform: "none" }}
               onClick={onRemoveClick}
+              disabled={status !== "saved"}
             >
               Remove
             </Button>
