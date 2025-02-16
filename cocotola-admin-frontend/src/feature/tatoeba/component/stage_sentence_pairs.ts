@@ -2,11 +2,11 @@ import type { TatoebaSentencePair } from "../model/sentence";
 
 export class StageSentencePairs {
   map: Map<string, TatoebaSentencePair>;
-  regex: RegExp = /<([^>]*)>/;
+  regex: RegExp;
 
   constructor(map: Map<string, TatoebaSentencePair>) {
     this.map = new Map<string, TatoebaSentencePair>(map);
-    this.regex = /<([^>]*)>/;
+    this.regex = /<[^<>]*>/;
   }
 
   validate = (sentenceKey: string): string | null => {

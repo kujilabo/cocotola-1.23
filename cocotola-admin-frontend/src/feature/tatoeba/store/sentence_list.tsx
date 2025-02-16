@@ -16,6 +16,7 @@ export type TatoebaSentenceFindParameter = {
 
 type State = {
   sentences: TatoebaSentencePair[];
+  totalSentencePairs: number;
   loading: boolean;
   error: string | null;
 };
@@ -32,6 +33,7 @@ type SentenceFindResponse = {
 export const useSentenceListStore = create<State & Action>()(
   devtools((set) => ({
     sentences: [],
+    totalSentencePairs: 0,
     getSentences: async (
       param: TatoebaSentenceFindParameter,
     ): Promise<void> => {
@@ -50,7 +52,10 @@ export const useSentenceListStore = create<State & Action>()(
           // for (const sentencePair of data.results) {
           //   console.log(sentencePair);
           // }
-          set({ sentences: data.results });
+          set({
+            sentences: data.results,
+            totalSentencePairs: data.totalCount,
+          });
           set({ loading: false });
         })
         .catch((err: Error) => {

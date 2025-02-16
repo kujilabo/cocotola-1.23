@@ -39,7 +39,7 @@ export const useMySentencePairListStore = create<State & Action>()(
           set((state) => {
             delete state.sentencePairs[sentenceKey];
             return {
-              sentencePairs: state.sentencePairs,
+              sentencePairs: { ...state.sentencePairs },
             };
           });
         },
