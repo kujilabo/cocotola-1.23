@@ -1,23 +1,14 @@
+import { Fragment, memo } from "react";
+
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Fragment, memo, useCallback, useEffect, useState } from "react";
 
-// <Pagination count={10} />
+import type { TatoebaSentencePair } from "@/feature/tatoeba/model/sentence";
 
-import { MainLayout } from "@/component/layout";
-import {
-  type TatoebaSentencePair,
-  newTatoebaSentenceWithText,
-} from "@/feature/tatoeba/model/sentence";
-import { useSentenceListStore } from "@/feature/tatoeba/store/sentence_list";
-
-import type { StageSentencePairs } from "@/feature/tatoeba/component/stage_sentence_pais";
-import { TatoebaSentenceFindParameter } from "@/feature/tatoeba/store/sentence_list";
-import { TextField } from "@mui/material";
-import { useMySentencePairListStore } from "../store/my_sentence_pair_list";
+import type { StageSentencePairs } from "@/feature/tatoeba/component/stage_sentence_pairs";
 
 const formatText = (
   sentence: string,

@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 // <Pagination count={10} />
 
-import { TextField } from "@mui/material";
+import { Pagination, TextField } from "@mui/material";
 
 import Button from "@mui/material/Button";
 
@@ -15,7 +15,7 @@ import {
 } from "@/feature/tatoeba/model/sentence";
 import { useSentenceListStore } from "@/feature/tatoeba/store/sentence_list";
 
-import { StageSentencePairs } from "@/feature/tatoeba/component/stage_sentence_pais";
+import { StageSentencePairs } from "@/feature/tatoeba/component/stage_sentence_pairs";
 import { useMySentencePairListStore } from "@/feature/tatoeba/store/my_sentence_pair_list";
 // import useSWR, { preload } from 'swr'
 
@@ -139,6 +139,33 @@ const ExportButton = memo(({ onClick }: ExportButtonProp) => {
   );
 });
 
+const pageNoStrToInt = (pageNoStr: string): number => {
+  const pageNoInt = Number.parseInt(pageNoStr);
+  if (!Number.isNaN(pageNoInt)) {
+    return pageNoInt;
+  }
+  return 1;
+};
+
+const downloadObjectAsJson = (
+  document: Document,
+  fileName: string,
+  mySentencePairs: { [key: string]: TatoebaSentencePair },
+) => {
+  const blob = new Blob([JSON.stringify(mySentencePairs)], {
+    type: "application/json",
+  });
+  const objectUrl = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  a.style = "display: none";
+  a.href = objectUrl;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(objectUrl);
+  a.remove();
+};
 // Reset.displayName = "Reset";
 
 export const SentenceList = () => {
@@ -158,6 +185,9 @@ export const SentenceList = () => {
     useState<string>("");
 
   const sentencePairs = useSentenceListStore((state) => state.sentences);
+  const totalSentencePairs = useSentenceListStore(
+    (state) => state.totalSentencePairs,
+  );
   const getSentences = useSentenceListStore((state) => state.getSentences);
   const [sentencePairStatuses, setSentencePairStatuses] = useState<
     Map<string, string>
@@ -174,6 +204,10 @@ export const SentenceList = () => {
     (state) => state.removeSentencePair,
   );
   const [keyword, setKeyword] = useState<string>("");
+  const [pageNo, setPageNo] = useState<number>(1);
+
+  const numPages = Math.floor(totalSentencePairs / 10);
+  console.log("numPages", numPages);
 
   const onKeywordChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => setKeyword(event.target.value),
@@ -186,7 +220,12 @@ export const SentenceList = () => {
   );
 
   const setError = useCallback((sentenceKey: string, error: string) => {
-    setErrors((errors) => new Map(errors.set(sentenceKey, error)));
+    setErrors((errors) => {
+      if (errors.get(sentenceKey) === error) {
+        return errors;
+      }
+      return new Map(errors.set(sentenceKey, error));
+    });
   }, []);
 
   const clearError = useCallback((sentenceKey: string) => {
@@ -199,8 +238,12 @@ export const SentenceList = () => {
   useEffect(() => {
     const keyword = getQueryParam("keyword");
     setKeyword(keyword);
+
+    const pageNo = pageNoStrToInt(getQueryParam("pageNo"));
+    setPageNo(pageNo);
+
     getSentences({
-      pageNo: 1,
+      pageNo: pageNo,
       pageSize: 10,
       keyword: keyword,
       srcLang2: "en",
@@ -230,6 +273,17 @@ export const SentenceList = () => {
     setStageSentencePairs(new StageSentencePairs(stageSentencePairs));
   }, [sentencePairs, mySentencePairs]);
 
+  useEffect(() => {
+    if (pageNo !== 1) {
+      setSearchParams({ pageNo: pageNo.toString() });
+    } else {
+      setSearchParams((searchParams) => {
+        searchParams.delete("pageNo");
+        return searchParams;
+      });
+    }
+  }, [pageNo, setSearchParams]);
+
   const onSearchClick = useCallback(() => {
     if (keyword !== "") {
       setSearchParams({ keyword: keyword });
@@ -239,36 +293,35 @@ export const SentenceList = () => {
         return searchParams;
       });
     }
+
     getSentences({
-      pageNo: 1,
+      pageNo: pageNo,
       pageSize: 10,
       keyword: keyword,
       srcLang2: "en",
       dstLang2: "ja",
       random: false,
     });
-  }, [getSentences, setSearchParams, keyword]);
+  }, [getSentences, setSearchParams, pageNo, keyword]);
 
   const handleSelectionChange = useCallback(() => {
-    const currentSelection = document.getSelection();
+    const currSelection = document.getSelection();
     // console.log("selection", selection);
     if (
-      currentSelection === null ||
-      currentSelection?.anchorNode === null ||
-      currentSelection?.focusNode === null ||
-      currentSelection?.anchorNode !== currentSelection?.focusNode ||
-      currentSelection?.toString() === ""
+      currSelection === null ||
+      currSelection?.anchorNode === null ||
+      currSelection?.focusNode === null ||
+      currSelection?.anchorNode !== currSelection?.focusNode ||
+      currSelection?.toString() === ""
     ) {
       setSelection(null);
       setSelectedSentenceKey("");
       setSelectedSentenceSrcDst("");
       return;
     }
-    console.log("selection 2", currentSelection);
+    console.log("selection 2", currSelection);
 
-    const sentenceKeyElement = findSentenceKeylement(
-      currentSelection?.anchorNode,
-    );
+    const sentenceKeyElement = findSentenceKeylement(currSelection?.anchorNode);
     const sentenceKey =
       sentenceKeyElement?.getAttribute("data-sentence-key") ?? "";
     if (sentenceKey === "") {
@@ -278,7 +331,7 @@ export const SentenceList = () => {
       return;
     }
 
-    setSelection(currentSelection);
+    setSelection(currSelection);
     setSelectedSentenceKey(
       sentenceKeyElement?.getAttribute("data-sentence-key") ?? "",
     );
@@ -360,9 +413,6 @@ export const SentenceList = () => {
       clearError(sentenceKey);
       const error = stageSentencePairs.validate(sentenceKey);
       if (error !== null) {
-        if (errors.get(sentenceKey) === error) {
-          return;
-        }
         setError(sentenceKey, error);
         return;
       }
@@ -373,7 +423,7 @@ export const SentenceList = () => {
       console.log("sentencePair", sentencePair);
       addSentencePair(sentenceKey, sentencePair);
     },
-    [errors, setError, clearError, stageSentencePairs, addSentencePair],
+    [setError, clearError, stageSentencePairs, addSentencePair],
   );
 
   const onRemoveClick = useCallback(
@@ -393,19 +443,7 @@ export const SentenceList = () => {
   );
 
   const onExportClick = useCallback(() => {
-    const blob = new Blob([JSON.stringify(mySentencePairs)], {
-      type: "application/json",
-    });
-    const objectUrl = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style = "display: none";
-    a.href = objectUrl;
-    a.download = "fileName.json";
-    a.click();
-    URL.revokeObjectURL(objectUrl);
-    a.remove();
+    downloadObjectAsJson(document, "fileName.json", mySentencePairs);
   }, [mySentencePairs]);
 
   const onEmptyClick = useCallback(
@@ -420,6 +458,11 @@ export const SentenceList = () => {
       document.removeEventListener("selectionchange", handleSelectionChange);
     };
   }, [handleSelectionChange]);
+
+  const onPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    console.log("onPageChange", value);
+    setPageNo(value);
+  };
 
   return (
     <MainLayout title="Sentence List">
@@ -449,6 +492,7 @@ export const SentenceList = () => {
           // onRemoveClick={onEmptyClick}
         />
       )}
+      <Pagination count={numPages} onChange={onPageChange} />
     </MainLayout>
   );
 };
