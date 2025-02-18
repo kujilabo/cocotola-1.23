@@ -66,6 +66,7 @@ tasks:
           - lib
           - cocotola-auth
           - cocotola-core
+          - cocotola-empty
           - cocotola-import
           - cocotola-synthesizer
           - cocotola-tatoeba
@@ -94,6 +95,7 @@ tasks:
           - lib
           - cocotola-auth
           - cocotola-core
+          - cocotola-empty
           - cocotola-import
           - cocotola-synthesizer
           - cocotola-tatoeba
@@ -238,6 +240,7 @@ tasks:
     cmds:
       - for:
           - cocotola-synthesizer
+          - cocotola-empty
           # - cocotola-auth
         task: push-project
         vars:
