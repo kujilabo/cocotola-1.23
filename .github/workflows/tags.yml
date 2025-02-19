@@ -37,7 +37,7 @@
           - id: digest_synthesizer
             run: |
               DIGEST=$(gcloud artifacts docker tags list us-east1-docker.pkg.dev/cocotola-1-23-develop-24-11-02/cocotola-synthesizer/cocotola-synthesizer --format json | jq -r '.[] |  select(.tag=="projects/cocotola-1-23-develop-24-11-02/locations/us-east1/repositories/cocotola-synthesizer/packages/cocotola-synthesizer/tags/latest") | .version' | cut -d':' -f 2)
-              echo "digest=$(DIGEST)" >> $GITHUB_OUTPUT
+              echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
           - run: echo ${{ steps.digest_synthesizer.outputs.digest }}
 
