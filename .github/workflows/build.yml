@@ -67,6 +67,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   update-image:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       # kics-scan ignore-line
