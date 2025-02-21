@@ -15,7 +15,19 @@ jobs:
         go-version: [1.23.x]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      # kics-scan ignore-line
+      id-token: write
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
       - name: Setup MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
@@ -30,19 +42,17 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - uses: actions/checkout@v4
-
       - uses: bazelbuild/setup-bazelisk@v2
 
-      - name: Mount bazel cache
-        id: bazel_cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/bazel
-          key: bazel
+      # - name: Mount bazel cache
+      #   id: bazel_cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.cache/bazel
+      #     key: bazel
 
-      - name: Check cache
-        run: echo "cache=${{ steps.bazel_cache.outputs.cache-hit }}"
+      # - name: Check cache
+      #   run: echo "cache=${{ steps.bazel_cache.outputs.cache-hit }}"
 
       - run: bazel info
 
@@ -61,7 +71,19 @@ jobs:
         node-version: [23]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      # kics-scan ignore-line
+      id-token: write
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -69,8 +91,6 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 9
-
-      - uses: actions/checkout@v4
 
       - uses: arduino/setup-task@v2
 
@@ -82,14 +102,24 @@ jobs:
         flutter-version: [3.27.1]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      # kics-scan ignore-line
+      id-token: write
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: ${{ matrix.flutter-version }}
       - run: flutter --version
-
-      - uses: actions/checkout@v4
 
       - uses: arduino/setup-task@v2
 
