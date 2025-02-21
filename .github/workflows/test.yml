@@ -15,7 +15,17 @@ jobs:
         go-version: [1.23.x]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      # kics-scan ignore-line
+      id-token: write
     steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
       - name: Setup MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
@@ -61,7 +71,17 @@ jobs:
         node-version: [23]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      # kics-scan ignore-line
+      id-token: write
     steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -82,7 +102,17 @@ jobs:
         flutter-version: [3.27.1]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      # kics-scan ignore-line
+      id-token: write
     steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.REGISTRY_SERVICE_ACCOUNT_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
