@@ -34,15 +34,15 @@ jobs:
 
       - uses: bazelbuild/setup-bazelisk@v2
 
-      - name: Mount bazel cache
-        id: bazel_cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/bazel
-          key: bazel
+      # - name: Mount bazel cache
+      #   id: bazel_cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.cache/bazel
+      #     key: bazel
 
-      - name: Check cache
-        run: echo "cache=${{ steps.bazel_cache.outputs.cache-hit }}"
+      # - name: Check cache
+      #   run: echo "cache=${{ steps.bazel_cache.outputs.cache-hit }}"
 
       - run: bazel info
 
