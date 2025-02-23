@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "sqls",
+    srcs = ["sqls.go"],
+    embedsrcs = [
+        "sqlite3/2021020101_create_export_history.up.sql",
+        "sqlite3/2021020102_create_word_sentence_pair.up.sql",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/sqls",
+    visibility = ["//visibility:public"],
+)
