@@ -5,6 +5,7 @@ use (
 	./cocotola-app
 	./cocotola-auth
 	./cocotola-core
+	./cocotola-empty
 	./cocotola-import
 	./cocotola-synthesizer
 	./cocotola-tatoeba

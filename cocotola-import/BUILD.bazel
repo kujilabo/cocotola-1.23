@@ -9,8 +9,10 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//cocotola-import/config",
-        "//cocotola-import/firestore",
         "//cocotola-import/tatoeba",
+        "//cocotola-import/usecase/import_firestore",
+        "//lib/domain",
+        "//redstart/lib/errors",
     ],
 )
 

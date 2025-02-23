@@ -1,0 +1,11 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "service",
+    srcs = [
+        "export_history.go",
+        "word_sentence_pair.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/service",
+    visibility = ["//visibility:public"],
+)
