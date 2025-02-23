@@ -2,33 +2,32 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
-	"log/slog"
+
+	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
+
+	libdomain "github.com/kujilabo/cocotola-1.23/lib/domain"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/config"
-	"github.com/kujilabo/cocotola-1.23/cocotola-import/firestore"
 	"github.com/kujilabo/cocotola-1.23/cocotola-import/tatoeba"
+	"github.com/kujilabo/cocotola-1.23/cocotola-import/usecase/import_firestore"
 )
 
 func main() {
 	ctx := context.Background()
-	if err := import1(ctx); err != nil {
-		log.Fatalf("fireabase error: %+v", err)
-		panic(err)
-	}
+	rsliberrors.UseXerrorsErrorf()
 	if false {
-		if err := import2(ctx); err != nil {
-			log.Fatalf("fireabase error: %+v", err)
-			panic(err)
+		if err := import1(ctx); err != nil {
+			libdomain.CheckError(err)
+		}
+	}
+	if true {
+		if err := import_firestore.ImportLocalFilesToFirestore(ctx); err != nil {
+			libdomain.CheckError(err)
 		}
 	}
 }
 
 func import1(ctx context.Context) error {
-	x := len("もう彼女には言えないよ。そんなに単純なことではなくなってきたからね。")
-	logger := slog.Default()
-	logger.InfoContext(ctx, fmt.Sprintf("len: %d", x))
 	cfg, err := config.LoadConfig("local")
 	if err != nil {
 		return err
@@ -41,13 +40,6 @@ func import1(ctx context.Context) error {
 		return err
 	}
 	if err := tatoeba.ImportTatoebaLinks(ctx, "data", cfg.DataSource.TatoebaDataSource.LinksFile); err != nil {
-		return err
-	}
-	return nil
-}
-
-func import2(ctx context.Context) error {
-	if err := firestore.Firebase(ctx); err != nil {
 		return err
 	}
 	return nil

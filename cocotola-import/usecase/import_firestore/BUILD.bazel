@@ -1,0 +1,25 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "import_firestore",
+    srcs = [
+        "export_firestore_to_local_files.go",
+        "import_local_files_to_firestore.go",
+        "import_to_local_db.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/usecase/import_firestore",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-import/gateway",
+        "//cocotola-import/service",
+        "//cocotola-import/sqls",
+        "//lib/domain",
+        "//redstart/lib/config",
+        "//redstart/lib/errors",
+        "//redstart/lib/gateway",
+        "@com_google_cloud_go_firestore//:firestore",
+        "@com_google_firebase_go_v4//:go",
+        "@io_gorm_gorm//:gorm",
+        "@org_golang_google_api//option",
+    ],
+)

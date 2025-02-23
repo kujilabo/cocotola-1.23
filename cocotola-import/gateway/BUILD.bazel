@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "gateway",
+    srcs = [
+        "export_history.go",
+        "word_sentence_pair.go",
+    ],
+    importpath = "github.com/kujilabo/cocotola-1.23/cocotola-import/gateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cocotola-import/service",
+        "//redstart/lib/errors",
+        "@io_gorm_gorm//:gorm",
+    ],
+)
