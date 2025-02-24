@@ -24,7 +24,6 @@ create table `word_sentence_pair` (
 ,`updated_at` datetime not null
 );
 ''',
-<<<<<<< HEAD
     '''
 CREATE INDEX document_id_word_sentence_pair_idx ON word_sentence_pair(document_id);
 ''',
@@ -42,15 +41,6 @@ CREATE INDEX dst_lang2_word_sentence_pair_idx ON word_sentence_pair(dst_lang2);
     '''
 CREATE INDEX document_id_word_sentence_pair_idx ON word_sentence_pair(document_id);
 ''',
-=======
-    'CREATE INDEX document_id_word_sentence_pair_idx ON word_sentence_pair(document_id);',
-    'CREATE INDEX workbook_id_word_sentence_pair_idx ON word_sentence_pair(workbook_id);',
-    'CREATE INDEX src_lang2_word_sentence_pair_idx ON word_sentence_pair(src_lang2);',
-    'CREATE INDEX dst_lang2_word_sentence_pair_idx ON word_sentence_pair(dst_lang2);',
-  ],
-  '2': [
-    'CREATE INDEX document_id_word_sentence_pair_idx ON word_sentence_pair(document_id);',
->>>>>>> c876418 (sqlite)
   ],
 };
 
