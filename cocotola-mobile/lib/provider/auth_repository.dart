@@ -36,7 +36,7 @@ class AuthRepository extends AsyncNotifier<UserState> {
     // await firebaseAuth.signInWithPopup(provider);
     // await firebaseAuth.signInWithRedirect(provider);
     final signinAccount = await googleLogin.signIn();
-    if (signinAccount == null) throw ('aaa');
+    if (signinAccount == null) throw UnimplementedError('aaa');
     final auth = await signinAccount.authentication;
     final credential = GoogleAuthProvider.credential(
       idToken: auth.idToken,
@@ -45,7 +45,7 @@ class AuthRepository extends AsyncNotifier<UserState> {
     // 認証情報をFirebaseに登録
     final user =
         (await FirebaseAuth.instance.signInWithCredential(credential)).user;
-    if (user == null) throw ('bbb');
+    if (user == null) throw UnimplementedError('bbb');
     return UserState(user: user, isSignedIn: true);
   }
 
