@@ -17,7 +17,7 @@ class CustomAnswerTextField extends ConsumerWidget {
     final decoration = customTheme.englishAnswerDecoration;
 
     return Container(
-      padding: EdgeInsets.only(left: 0, right: 10),
+      padding: EdgeInsets.only(right: 10),
       child:
           DecoratedBox(decoration: decoration, child: Text(text, style: style)),
     );

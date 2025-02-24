@@ -59,7 +59,7 @@ class CustomProblemTextField extends ConsumerWidget {
       text: TextSpan(text: text, style: style),
       maxLines: 1,
       textDirection: TextDirection.ltr,
-    )..layout(minWidth: 0);
+    )..layout();
     return textPainter.size.width;
   }
 
@@ -103,7 +103,7 @@ class CustomProblemTextField extends ConsumerWidget {
       },
       child: Container(
         width: width,
-        padding: EdgeInsets.only(left: 0, right: 10),
+        padding: EdgeInsets.only(right: 10),
         child: DecoratedBox(
           decoration: decoration,
           child: Row(

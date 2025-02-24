@@ -12,10 +12,8 @@ class MenuWordStudy extends ConsumerWidget {
   double _calcWidth(String text, TextStyle style) {
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
-      // maxLines: 1,
-      textAlign: TextAlign.start,
       textDirection: TextDirection.ltr,
-    )..layout(minWidth: 0);
+    )..layout();
     // textPainter.layout();
     print('textPainter.size: ${textPainter.size}');
     return textPainter.size.width;
