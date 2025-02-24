@@ -81,7 +81,7 @@ class MenuWordStudy extends ConsumerWidget {
                   ..invalidate(problemProvider);
 
                 Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<dynamic>(
                     builder: (context) => const WordStudy(),
                   ),
                 );
