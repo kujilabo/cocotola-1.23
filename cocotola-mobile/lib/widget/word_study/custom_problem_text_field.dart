@@ -7,7 +7,6 @@ import 'package:mobile/provider/custom_theme_data_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 
 class TimerState {
-
   const TimerState({required this.flag, required this.timer});
   final bool flag;
   final Timer timer;
@@ -30,7 +29,6 @@ final timerProvider =
     NotifierProvider<TimerRepository, TimerState>(TimerRepository.new);
 
 class BlinkText extends ConsumerWidget {
-
   const BlinkText({required this.text, super.key});
   final Text text;
 
@@ -48,9 +46,10 @@ class BlinkText extends ConsumerWidget {
 }
 
 class CustomProblemTextField extends ConsumerWidget {
-
   const CustomProblemTextField({
-    required this.index, required this.text, super.key,
+    required this.index,
+    required this.text,
+    super.key,
   });
   final int index;
   final String text;
@@ -93,7 +92,7 @@ class CustomProblemTextField extends ConsumerWidget {
     final textWidth = _calcWidth(text, style) * 1.06;
     final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);
     print('textWidth: $textWidth');
-    final width = max(50, textWidth + curosrWidth + 12);
+    final width = max(50, textWidth + curosrWidth + 12).toDouble();
 
     return GestureDetector(
       onTap: () {

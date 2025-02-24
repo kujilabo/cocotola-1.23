@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProblemTextField extends ConsumerWidget {
-
   const ProblemTextField({
-    required this.index, required this.englishText, required this.controller, required this.focusNode, super.key,
+    required this.index,
+    required this.englishText,
+    required this.controller,
+    required this.focusNode,
+    super.key,
     this.first = false,
     this.completed = false,
   });

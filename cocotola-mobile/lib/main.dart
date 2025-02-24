@@ -7,7 +7,7 @@ import 'package:mobile/widget/word_study/menu_word_study.dart';
 
 Future<void> main() async {
   print('aaa');
-  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   print('bbb');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
