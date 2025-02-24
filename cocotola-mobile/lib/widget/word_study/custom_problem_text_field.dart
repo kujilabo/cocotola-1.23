@@ -17,7 +17,7 @@ class TimerRepository extends Notifier<TimerState> {
   @override
   TimerState build() {
     ref.onDispose(() => state.timer.cancel());
-    final interval = const Duration(milliseconds: 800);
+    const interval = Duration(milliseconds: 800);
     return TimerState(flag: true, timer: Timer.periodic(interval, _onTick));
   }
 

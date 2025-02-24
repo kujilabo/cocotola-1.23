@@ -23,7 +23,7 @@ class WordStudy extends ConsumerWidget {
     print('WordStudy build');
     final wordStudyStatus = ref.watch(wordStudyStatusProvider);
 
-    final header = const Text('aaaaaaaaaaaaaaa');
+    const header = Text('aaaaaaaaaaaaaaa');
     final main = _buildMain(wordStudyStatus);
     return Scaffold(
       appBar: AppBar(
