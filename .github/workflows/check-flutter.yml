@@ -49,9 +49,9 @@ jobs:
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         working-directory: ${{ matrix.workdir }}
 
-      - run: flutter analyze
-        if: steps.changed-files-specific.outputs.any_changed == 'true'
-        working-directory: ${{ matrix.workdir }}
+      # - run: flutter analyze
+      #   if: steps.changed-files-specific.outputs.any_changed == 'true'
+      #   working-directory: ${{ matrix.workdir }}
 
       - run: flutter analyze | reviewdog -efm="%m ? %f:%l:%c ?%r" -reporter=github-pr-review -tee
         if: steps.changed-files-specific.outputs.any_changed == 'true'
