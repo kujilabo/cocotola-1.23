@@ -7,12 +7,9 @@ class PlainText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // color: Colors.purple,
-      child: Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: Text(text, style: style),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: Text(text, style: style),
     );
   }
 }

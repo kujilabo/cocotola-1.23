@@ -15,7 +15,7 @@ Future<void> main() async {
   );
   logger.i('ccc');
   // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  logger.i('ddd');
+  // logger.i('ddd');
 // void main() {
   runApp(
     const ProviderScope(
