@@ -66,15 +66,11 @@ class MenuWordStudy extends ConsumerWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                authRepositoryNotifier.signOut();
-              },
+              onPressed: authRepositoryNotifier.signOut,
               child: const Text('Sign Out'),
             ),
             ElevatedButton(
-              onPressed: () {
-                authRepositoryNotifier.signInAnonymously();
-              },
+              onPressed: authRepositoryNotifier.signInAnonymously,
               child: const Text('Sign In Anonymously'),
             ),
             ElevatedButton(
