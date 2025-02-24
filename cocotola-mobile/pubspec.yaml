@@ -36,6 +36,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.6.1
+  google_sign_in: ^6.2.2
   logger: ^2.5.0
   path: any
   riverpod_annotation: ^2.6.1

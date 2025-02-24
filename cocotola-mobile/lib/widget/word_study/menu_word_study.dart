@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/auth_repository.dart';
@@ -18,6 +19,40 @@ class MenuWordStudy extends ConsumerWidget {
     // textPainter.layout();
     logger.i('textPainter.size: ${textPainter.size}');
     return textPainter.size.width;
+  }
+
+  Widget _buildUserName(AsyncValue<User?> user) {
+    switch (user) {
+      case AsyncData(:final value):
+        if (value == null) {
+          return const Text(
+            'No User',
+            style: TextStyle(fontSize: 24),
+          );
+        }
+        logger.i('user: $value');
+        return Text(
+          value.isAnonymous ? 'Anonymous' : value.displayName ?? 'No Name',
+          style: const TextStyle(fontSize: 24),
+        );
+      case AsyncLoading():
+        return const Text(
+          'Loading...',
+          style: TextStyle(fontSize: 24),
+        );
+      case AsyncError(:final error):
+        logger.i('user: error $error');
+        return const Text(
+          'Error...',
+          style: TextStyle(fontSize: 24),
+        );
+      default:
+        logger.i('user: default');
+        return const Text(
+          'Error...',
+          style: TextStyle(fontSize: 24),
+        );
+    }
   }
 
   @override
@@ -49,13 +84,7 @@ class MenuWordStudy extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const Text(
-              'aaaaa',
-              textAlign: TextAlign.start,
-              textDirection: TextDirection.ltr,
-              textWidthBasis: TextWidthBasis.parent,
-              style: TextStyle(fontSize: 24),
-            ),
+            _buildUserName(user),
             TextField(
               controller: TextEditingController(),
             ),
@@ -72,6 +101,10 @@ class MenuWordStudy extends ConsumerWidget {
             ElevatedButton(
               onPressed: authRepositoryNotifier.signInAnonymously,
               child: const Text('Sign In Anonymously'),
+            ),
+            ElevatedButton(
+              onPressed: authRepositoryNotifier.singInWithGoogle,
+              child: const Text('Sign In With Google'),
             ),
             ElevatedButton(
               onPressed: () {

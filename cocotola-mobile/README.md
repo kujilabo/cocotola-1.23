@@ -18,3 +18,10 @@ samples, guidance on mobile development, and a full API reference.
 ```
 firebase emulators:start
 ```
+
+```
+./gradlew signingReport
+```
+```
+dart fix --apply
+```
