@@ -49,7 +49,6 @@ class WordStudyQuestion extends ConsumerWidget {
           if (value.allCompleted) {
             wordStudyStatusNotifier.setAnswerStatus();
           }
-          break;
         case AsyncError(:final error):
           break;
         case AsyncLoading():

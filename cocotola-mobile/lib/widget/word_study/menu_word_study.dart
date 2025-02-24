@@ -30,13 +30,10 @@ class MenuWordStudy extends ConsumerWidget {
     switch (user) {
       case AsyncData(:final value):
         print('user: $value');
-        break;
       case AsyncLoading():
         print('user: loading');
-        break;
       case AsyncError(:final error):
         print('user: error $error');
-        break;
       default:
         print('user: default');
     }
