@@ -17,7 +17,7 @@ class ProblemTextField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var color = completed ? Colors.red : Colors.black;
+    final color = completed ? Colors.red : Colors.black;
     // print('build EnglishText');
     return SizedBox(
       width: 100,

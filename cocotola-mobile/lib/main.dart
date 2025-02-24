@@ -10,7 +10,7 @@ import 'package:mobile/firebase_options.dart';
 
 Future<void> main() async {
   print('aaa');
-  var widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   print('bbb');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

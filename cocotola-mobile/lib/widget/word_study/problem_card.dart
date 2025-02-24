@@ -18,7 +18,7 @@ class ProblemCard extends ConsumerWidget {
     TextStyle plainTextStyle,
     TextStyle answerTextStyle,
   ) {
-    var widgets = <Widget>[];
+    final widgets = <Widget>[];
     var index = 0;
     for (final english in problem.englishList) {
       if (english.isProblem) {
@@ -43,7 +43,7 @@ class ProblemCard extends ConsumerWidget {
     TextStyle plainTextStyle,
     TextStyle problemTextStyle,
   ) {
-    var widgets = <Widget>[];
+    final widgets = <Widget>[];
     for (final translation in problem.translationList) {
       final style = translation.isProblem ? problemTextStyle : plainTextStyle;
       widgets.add(PlainText(text: translation.text, style: style));
@@ -55,11 +55,11 @@ class ProblemCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final customThemeData = ref.watch(customThemDataProvider);
     final theme = customThemeData.problemCard;
-    var englishTexts = _buildEnglishTexts(
+    final englishTexts = _buildEnglishTexts(
       customThemeData.problemCard.englishPlainTextStyle,
       customThemeData.problemCard.englishAnswerTextStyle,
     );
-    var translationTexts = _buildTranslationTexts(
+    final translationTexts = _buildTranslationTexts(
       customThemeData.problemCard.translationPlainTextStyle,
       customThemeData.problemCard.translationProblemTextStyle,
     );

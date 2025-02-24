@@ -60,7 +60,7 @@ class WordStudyQuestion extends ConsumerWidget {
       }
     });
 
-    var problemCard = _buidProblemCard(textFieldValueList);
+    final problemCard = _buidProblemCard(textFieldValueList);
 
     final bottomHeight = screenHeight * 0.3;
     final bottom = SizedBox(

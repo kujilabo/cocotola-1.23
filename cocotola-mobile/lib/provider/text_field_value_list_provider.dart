@@ -37,7 +37,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
   Future<TextFieldValueList> build() async {
     final problemWithStatus = await ref.watch(problemProvider.future);
     final problem = problemWithStatus.currentProblem;
-    var texts = <TextFieldValue>[];
+    final texts = <TextFieldValue>[];
 
     for (var i = 0; i < problem.englishList.length; i++) {
       final english = problem.englishList[i];
@@ -80,7 +80,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
     }
 
     var allCompleted = false;
-    var completed = newText == currTextField.answer;
+    final completed = newText == currTextField.answer;
     var newIndex = currentState.index;
     if (completed) {
       var numCorrect = 1;
@@ -162,7 +162,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
     final text1 = currText.substring(currPosition, currText.length);
     final newText = text0 + text1;
 
-    var completed = newText == currTextField.answer;
+    final completed = newText == currTextField.answer;
     final texts = [
       ...currentState.texts.sublist(0, index),
       TextFieldValue(

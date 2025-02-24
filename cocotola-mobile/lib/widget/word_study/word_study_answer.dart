@@ -122,8 +122,8 @@ class WordStudyAnswer extends ConsumerWidget {
     final bottomHeight = screenHeight * 0.3;
     final textFieldValueList = ref.watch(textFieldValueListProvider);
 
-    var problemCard = _buidProblemCard(textFieldValueList);
-    var bottom = _buildBottom(
+    final problemCard = _buidProblemCard(textFieldValueList);
+    final bottom = _buildBottom(
       context,
       problemNotifier,
       wordStudyStatusNotifier,
