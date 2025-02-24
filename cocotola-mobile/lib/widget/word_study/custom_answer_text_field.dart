@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
 
 class CustomAnswerTextField extends ConsumerWidget {
-  final String text;
 
   const CustomAnswerTextField({
     required this.text, super.key,
   });
+  final String text;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Keyboard extends StatelessWidget {
-  final void Function(String) onPresskey;
-  final void Function() onPressBackspace;
 
   const Keyboard({
     required this.onPresskey, required this.onPressBackspace, super.key,
   });
+  final void Function(String) onPresskey;
+  final void Function() onPressBackspace;
 
   @override
   Widget build(BuildContext context) {

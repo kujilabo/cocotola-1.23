@@ -4,23 +4,18 @@ import 'package:mobile/provider/problem_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 class TextFieldValue {
-  final String text;
-  final String answer;
-  final int position;
-  final bool completed;
   const TextFieldValue(
       {required this.text,
       required this.answer,
       required this.position,
       required this.completed});
+  final String text;
+  final String answer;
+  final int position;
+  final bool completed;
 }
 
 class TextFieldValueList {
-  final WordProblem problem;
-  final List<TextFieldValue> texts;
-  final int index;
-  final int numProblems;
-  final bool allCompleted;
   const TextFieldValueList({
     required this.problem,
     required this.texts,
@@ -28,6 +23,11 @@ class TextFieldValueList {
     required this.numProblems,
     required this.allCompleted,
   });
+  final WordProblem problem;
+  final List<TextFieldValue> texts;
+  final int index;
+  final int numProblems;
+  final bool allCompleted;
 }
 
 class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {

@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
 
 class ThemeProblemCard {
-  final Color translationBackgroundColor;
-  final TextStyle translationPlainTextStyle;
-  final TextStyle translationProblemTextStyle;
-
-  final Color englishBackgroundColor;
-  final BoxDecoration englishProblemDecoration;
-  final BoxDecoration englishAnswerDecoration;
-  final TextStyle englishPlainTextStyle;
-  final TextStyle englishProblemTextStyle;
-  final TextStyle englishAnswerTextStyle;
-  final TextStyle cusrotTextStyle;
 
   ThemeProblemCard({
     required this.translationBackgroundColor,
@@ -25,10 +14,21 @@ class ThemeProblemCard {
     required this.englishAnswerTextStyle,
     required this.cusrotTextStyle,
   });
+  final Color translationBackgroundColor;
+  final TextStyle translationPlainTextStyle;
+  final TextStyle translationProblemTextStyle;
+
+  final Color englishBackgroundColor;
+  final BoxDecoration englishProblemDecoration;
+  final BoxDecoration englishAnswerDecoration;
+  final TextStyle englishPlainTextStyle;
+  final TextStyle englishProblemTextStyle;
+  final TextStyle englishAnswerTextStyle;
+  final TextStyle cusrotTextStyle;
 }
 
 class CustomThemeData {
-  final ThemeProblemCard problemCard;
 
   CustomThemeData({required this.problemCard});
+  final ThemeProblemCard problemCard;
 }

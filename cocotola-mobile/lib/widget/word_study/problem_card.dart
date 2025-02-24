@@ -6,13 +6,13 @@ import 'package:mobile/widget/word_study/custom_problem_text_field.dart';
 import 'package:mobile/widget/word_study/plain_text.dart';
 
 class ProblemCard extends ConsumerWidget {
-  final WordProblem problem;
-  final List<String> texts;
-  final List<bool> completedList;
 
   const ProblemCard({
     required this.problem, required this.texts, required this.completedList, super.key,
   });
+  final WordProblem problem;
+  final List<String> texts;
+  final List<bool> completedList;
 
   List<Widget> _buildEnglishTexts(
     TextStyle plainTextStyle,

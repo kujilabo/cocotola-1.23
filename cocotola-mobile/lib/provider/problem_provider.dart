@@ -3,13 +3,13 @@ import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/provider/problem_set_provider.dart';
 
 class ProblemWithStatus {
-  final List<WordProblem> problemSet;
-  final WordProblem currentProblem;
-  final int index;
   const ProblemWithStatus(
       {required this.problemSet,
       required this.currentProblem,
       required this.index});
+  final List<WordProblem> problemSet;
+  final WordProblem currentProblem;
+  final int index;
   bool hasNext() {
     return index < problemSet.length - 1;
   }

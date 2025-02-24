@@ -7,10 +7,10 @@ import 'package:mobile/provider/custom_theme_data_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 
 class TimerState {
-  final bool flag;
-  final Timer timer;
 
   const TimerState({required this.flag, required this.timer});
+  final bool flag;
+  final Timer timer;
 }
 
 class TimerRepository extends Notifier<TimerState> {
@@ -30,9 +30,9 @@ final timerProvider =
     NotifierProvider<TimerRepository, TimerState>(TimerRepository.new);
 
 class BlinkText extends ConsumerWidget {
-  final Text text;
 
   const BlinkText({required this.text, super.key});
+  final Text text;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,12 +48,12 @@ class BlinkText extends ConsumerWidget {
 }
 
 class CustomProblemTextField extends ConsumerWidget {
-  final int index;
-  final String text;
 
   const CustomProblemTextField({
     required this.index, required this.text, super.key,
   });
+  final int index;
+  final String text;
 
   double _calcWidth(String text, TextStyle style) {
     final textPainter = TextPainter(

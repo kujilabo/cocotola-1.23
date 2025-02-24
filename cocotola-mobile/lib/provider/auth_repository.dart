@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserState {
+  const UserState({required this.user, required this.isSignedIn});
   final User? user;
   final bool isSignedIn;
-  const UserState({required this.user, required this.isSignedIn});
 }
 
 // 認証リポジトリクラス
