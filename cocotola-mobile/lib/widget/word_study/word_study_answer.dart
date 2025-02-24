@@ -45,7 +45,7 @@ class WordStudyAnswer extends ConsumerWidget {
             height: bottomHeight,
             child: Column(
               children: [
-                Spacer(),
+                const Spacer(),
                 Row(
                   children: [
                     Expanded(
@@ -54,7 +54,7 @@ class WordStudyAnswer extends ConsumerWidget {
                           problemNotifier.next();
                           wordStudyStatusNotifier.setQuestionStatus();
                         },
-                        child: Text('Check'),
+                        child: const Text('Check'),
                       ),
                     ),
                     Expanded(
@@ -63,7 +63,7 @@ class WordStudyAnswer extends ConsumerWidget {
                           problemNotifier.next();
                           wordStudyStatusNotifier.setQuestionStatus();
                         },
-                        child: Text('Next'),
+                        child: const Text('Next'),
                       ),
                     ),
                   ],
@@ -76,7 +76,7 @@ class WordStudyAnswer extends ConsumerWidget {
             height: bottomHeight,
             child: Column(
               children: [
-                Spacer(),
+                const Spacer(),
                 Row(
                   children: [
                     Expanded(
@@ -85,7 +85,7 @@ class WordStudyAnswer extends ConsumerWidget {
                           problemNotifier.next();
                           wordStudyStatusNotifier.setQuestionStatus();
                         },
-                        child: Text('Check'),
+                        child: const Text('Check'),
                       ),
                     ),
                     Expanded(
@@ -93,7 +93,7 @@ class WordStudyAnswer extends ConsumerWidget {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Finish'),
+                        child: const Text('Finish'),
                       ),
                     ),
                   ],

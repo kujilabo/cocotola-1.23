@@ -72,7 +72,7 @@ class ProblemCard extends ConsumerWidget {
           DecoratedBox(
             decoration: BoxDecoration(
               color: theme.englishBackgroundColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
             ),
             // color: Colors.green,
             child: Padding(
@@ -88,7 +88,7 @@ class ProblemCard extends ConsumerWidget {
             decoration: BoxDecoration(
               color: theme.translationBackgroundColor,
               borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(16.0)),
+                  const BorderRadius.vertical(bottom: Radius.circular(16.0)),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),

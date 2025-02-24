@@ -13,11 +13,11 @@ class WordStudy extends ConsumerWidget {
   Widget _buildMain(WordStudyStatus status) {
     switch (status) {
       case WordStudyStatus.question:
-        return WordStudyQuestion();
+        return const WordStudyQuestion();
       case WordStudyStatus.answer:
-        return WordStudyAnswer();
+        return const WordStudyAnswer();
       default:
-        return Text('aaaaa');
+        return const Text('aaaaa');
     }
   }
 
@@ -26,11 +26,11 @@ class WordStudy extends ConsumerWidget {
     print('WordStudy build');
     final wordStudyStatus = ref.watch(wordStudyStatusProvider);
 
-    final header = Text('aaaaaaaaaaaaaaa');
+    final header = const Text('aaaaaaaaaaaaaaa');
     final main = _buildMain(wordStudyStatus);
     return Scaffold(
       appBar: AppBar(
-        title: Text('WordStudy'),
+        title: const Text('WordStudy'),
       ),
       body: Container(
         child: Column(

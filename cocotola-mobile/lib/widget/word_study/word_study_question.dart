@@ -67,7 +67,7 @@ class WordStudyQuestion extends ConsumerWidget {
       height: bottomHeight,
       child: Column(
         children: [
-          Spacer(),
+          const Spacer(),
           Keyboard(
             onPresskey: (String text) => textFieldListNotifier.addText(text),
             onPressBackspace: () => textFieldListNotifier.backspace(),

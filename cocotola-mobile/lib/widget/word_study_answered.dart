@@ -18,7 +18,7 @@ class WordStudyButtons extends ConsumerWidget {
               onPressed: () {
                 print('onPressed');
               },
-              child: Text('Check'),
+              child: const Text('Check'),
             ),
           ),
           Expanded(
@@ -26,7 +26,7 @@ class WordStudyButtons extends ConsumerWidget {
               onPressed: () {
                 print('onPressed');
               },
-              child: Text('Next'),
+              child: const Text('Next'),
             ),
           ),
         ],

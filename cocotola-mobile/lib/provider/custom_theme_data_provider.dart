@@ -10,42 +10,42 @@ class ThemeDataRepository extends Notifier<CustomThemeData> {
     return CustomThemeData(
       problemCard: ThemeProblemCard(
         translationBackgroundColor: Colors.lightBlue,
-        translationPlainTextStyle: TextStyle(
+        translationPlainTextStyle: const TextStyle(
           fontSize: 20,
           color: Colors.black,
         ),
-        translationProblemTextStyle: TextStyle(
+        translationProblemTextStyle: const TextStyle(
           fontSize: 20,
           color: Colors.red,
         ),
         englishBackgroundColor: Colors.green,
         englishProblemDecoration: BoxDecoration(
           color: Colors.grey[200],
-          borderRadius: BorderRadius.vertical(
+          borderRadius: const BorderRadius.vertical(
             top: Radius.circular(4.0),
             bottom: Radius.circular(4.0),
           ),
         ),
-        englishAnswerDecoration: BoxDecoration(
+        englishAnswerDecoration: const BoxDecoration(
           color: Colors.blue,
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(4.0),
             bottom: Radius.circular(4.0),
           ),
         ),
-        englishPlainTextStyle: TextStyle(
+        englishPlainTextStyle: const TextStyle(
           fontSize: 20,
           color: Colors.black,
         ),
-        englishProblemTextStyle: TextStyle(
+        englishProblemTextStyle: const TextStyle(
           fontSize: 20,
           color: Colors.grey,
         ),
-        englishAnswerTextStyle: TextStyle(
+        englishAnswerTextStyle: const TextStyle(
           fontSize: 20,
           color: Colors.white,
         ),
-        cusrotTextStyle: TextStyle(color: Colors.green, fontSize: 20),
+        cusrotTextStyle: const TextStyle(color: Colors.green, fontSize: 20),
       ),
     );
   }

@@ -61,7 +61,7 @@ class Keyboard extends StatelessWidget {
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(0),
         fixedSize: size,
-        minimumSize: Size(20, 20), // 最小サイズを設定
+        minimumSize: const Size(20, 20), // 最小サイズを設定
         // maximumSize: Size(20, 20), // 最大サイズを設定
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,

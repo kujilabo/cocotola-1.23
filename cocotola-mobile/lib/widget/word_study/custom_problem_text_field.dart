@@ -73,9 +73,9 @@ class CustomProblemTextField extends ConsumerWidget {
       case AsyncError(:final error):
         return Text('Error: $error');
       case AsyncLoading():
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       default:
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
     }
   }
 
@@ -103,7 +103,7 @@ class CustomProblemTextField extends ConsumerWidget {
       },
       child: Container(
         width: width,
-        padding: EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.only(right: 10),
         child: DecoratedBox(
           decoration: decoration,
           child: Row(

@@ -40,7 +40,7 @@ class AuthRepository extends AsyncNotifier<UserState> {
   Future<void> signOut() async {
     state = await AsyncValue.guard(() async {
       await firebaseAuth.signOut();
-      return UserState(user: null, isSignedIn: false);
+      return const UserState(user: null, isSignedIn: false);
     });
   }
 }

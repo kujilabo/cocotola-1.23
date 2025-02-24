@@ -20,9 +20,9 @@ Future<void> main() async {
   print('ddd');
 // void main() {
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: MaterialApp(
-        home: const MenuWordStudy(),
+        home: MenuWordStudy(),
         // home: WordStudyMain(),
         // home: WordStudyMain(),
       ),

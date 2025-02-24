@@ -22,7 +22,7 @@ class ProblemTextField extends ConsumerWidget {
     return SizedBox(
       width: 100,
       child: Container(
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: TextField(
           autofocus: first,
           focusNode: focusNode,

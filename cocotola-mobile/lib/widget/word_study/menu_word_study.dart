@@ -41,7 +41,7 @@ class MenuWordStudy extends ConsumerWidget {
         print('user: default');
     }
 
-    final width = _calcWidth('aaaaa', TextStyle(fontSize: 24));
+    final width = _calcWidth('aaaaa', const TextStyle(fontSize: 24));
     print('width: $width');
     // final textFieldValueListProvider = ref.watch(textFieldValueListProvider);
     return Scaffold(
@@ -51,7 +51,7 @@ class MenuWordStudy extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Text('aaaaa',
+            const Text('aaaaa',
                 textAlign: TextAlign.start,
                 textDirection: TextDirection.ltr,
                 textWidthBasis: TextWidthBasis.parent,
@@ -84,7 +84,7 @@ class MenuWordStudy extends ConsumerWidget {
                 ref.invalidate(problemProvider);
 
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => WordStudy(),
+                  builder: (context) => const WordStudy(),
                 ));
               },
               child: const Text('Save Expense'),

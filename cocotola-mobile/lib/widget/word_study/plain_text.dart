@@ -11,7 +11,7 @@ class PlainText extends StatelessWidget {
     return Container(
       // color: Colors.purple,
       child: Padding(
-        padding: EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.only(right: 10),
         child: Text(text, style: style),
       ),
     );
