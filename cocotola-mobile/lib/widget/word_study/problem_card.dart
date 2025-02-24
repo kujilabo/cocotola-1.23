@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
-import 'package:mobile/widget/word_study/plain_text.dart';
 import 'package:mobile/widget/word_study/custom_problem_text_field.dart';
+import 'package:mobile/widget/word_study/plain_text.dart';
 
 class ProblemCard extends ConsumerWidget {
   final WordProblem problem;

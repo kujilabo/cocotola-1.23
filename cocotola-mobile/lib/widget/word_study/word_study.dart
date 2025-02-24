@@ -1,11 +1,8 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/widget/keyboard.dart';
-import 'package:mobile/provider/text_field_value_list_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/word_study_status.dart';
 import 'package:mobile/widget/word_study/word_study_answer.dart';
 import 'package:mobile/widget/word_study/word_study_question.dart';
-import 'package:mobile/widget/word_study/problem_card.dart';
 
 class WordStudy extends ConsumerWidget {
   const WordStudy({super.key});

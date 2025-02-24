@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/provider/problem_set_provider.dart';
 import 'package:mobile/model/word_problem.dart';
+import 'package:mobile/provider/problem_set_provider.dart';
 
 class ProblemWithStatus {
   final List<WordProblem> problemSet;

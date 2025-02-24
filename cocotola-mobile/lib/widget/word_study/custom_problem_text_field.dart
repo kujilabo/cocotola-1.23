@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
+import 'package:mobile/provider/text_field_value_list_provider.dart';
 
 class TimerState {
   final bool flag;

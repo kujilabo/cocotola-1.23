@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/provider/problem_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/word_study_status.dart';
-import 'package:mobile/provider/problem_provider.dart';
 import 'package:mobile/widget/word_study/problem_card.dart';
 
 class WordStudyAnswer extends ConsumerWidget {

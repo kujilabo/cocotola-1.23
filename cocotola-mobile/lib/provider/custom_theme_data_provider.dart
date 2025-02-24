@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/provider/problem_set_provider.dart';
-import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/model/theme_data.dart';
 
 class ThemeDataRepository extends Notifier<CustomThemeData> {

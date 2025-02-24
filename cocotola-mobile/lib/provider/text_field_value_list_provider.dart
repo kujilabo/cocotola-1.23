@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/provider/problem_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 class TextFieldValue {
   final String text;
