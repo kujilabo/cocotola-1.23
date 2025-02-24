@@ -13,7 +13,7 @@ class Keyboard extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final size = Size(screenWidth / 12, screenHeight / 15);
-    return Container(
+    return ColoredBox(
       color: Colors.lightGreenAccent,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
