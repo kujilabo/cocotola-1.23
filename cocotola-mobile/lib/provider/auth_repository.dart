@@ -1,13 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-
 class UserState {
+  const UserState({required this.user, required this.isSignedIn});
   final User? user;
   final bool isSignedIn;
-  const UserState({required this.user, required this.isSignedIn});
 }
 
 // 認証リポジトリクラス
@@ -40,7 +37,7 @@ class AuthRepository extends AsyncNotifier<UserState> {
   Future<void> signOut() async {
     state = await AsyncValue.guard(() async {
       await firebaseAuth.signOut();
-      return UserState(user: null, isSignedIn: false);
+      return const UserState(user: null, isSignedIn: false);
     });
   }
 }

@@ -1,22 +1,23 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
+import 'package:mobile/provider/text_field_value_list_provider.dart';
+import 'package:mobile/util/logger.dart';
 
 class TimerState {
+  const TimerState({required this.flag, required this.timer});
   final bool flag;
   final Timer timer;
-
-  const TimerState({required this.flag, required this.timer});
 }
 
 class TimerRepository extends Notifier<TimerState> {
   @override
   TimerState build() {
-    ref.onDispose(() => state.timer?.cancel());
-    final interval = const Duration(milliseconds: 800);
+    ref.onDispose(() => state.timer.cancel());
+    const interval = Duration(milliseconds: 800);
     return TimerState(flag: true, timer: Timer.periodic(interval, _onTick));
   }
 
@@ -29,9 +30,8 @@ final timerProvider =
     NotifierProvider<TimerRepository, TimerState>(TimerRepository.new);
 
 class BlinkText extends ConsumerWidget {
+  const BlinkText({required this.text, super.key});
   final Text text;
-
-  const BlinkText({super.key, required this.text});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,21 +47,20 @@ class BlinkText extends ConsumerWidget {
 }
 
 class CustomProblemTextField extends ConsumerWidget {
-  final int index;
-  final String text;
-
   const CustomProblemTextField({
-    super.key,
     required this.index,
     required this.text,
+    super.key,
   });
+  final int index;
+  final String text;
 
   double _calcWidth(String text, TextStyle style) {
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
       maxLines: 1,
       textDirection: TextDirection.ltr,
-    )..layout(minWidth: 0);
+    )..layout();
     return textPainter.size.width;
   }
 
@@ -75,9 +74,9 @@ class CustomProblemTextField extends ConsumerWidget {
       case AsyncError(:final error):
         return Text('Error: $error');
       case AsyncLoading():
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       default:
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
     }
   }
 
@@ -93,19 +92,19 @@ class CustomProblemTextField extends ConsumerWidget {
 
     final textWidth = _calcWidth(text, style) * 1.06;
     final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);
-    print('textWidth: $textWidth');
-    final width = max(50.0, textWidth + curosrWidth + 12);
+    logger.i('textWidth: $textWidth');
+    final width = max(50, textWidth + curosrWidth + 12).toDouble();
 
     return GestureDetector(
       onTap: () {
-        print('ontap');
+        logger.i('ontap');
         textFieldListNotifier.setIndex(index);
         // textFieldListNotifier.setPosition(
         //     index, controllerList[index].selection.baseOffset);
       },
       child: Container(
         width: width,
-        padding: EdgeInsets.only(left: 0, right: 10),
+        padding: const EdgeInsets.only(right: 10),
         child: DecoratedBox(
           decoration: decoration,
           child: Row(

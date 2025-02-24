@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 
 class Keyboard extends StatelessWidget {
+  const Keyboard({
+    required this.onPresskey,
+    required this.onPressBackspace,
+    super.key,
+  });
   final void Function(String) onPresskey;
   final void Function() onPressBackspace;
 
-  const Keyboard({
-    super.key,
-    required this.onPresskey,
-    required this.onPressBackspace,
-  });
-
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final size = Size(screenWidth / 12, screenHeight / 15);
-    return Container(
+    return ColoredBox(
       color: Colors.lightGreenAccent,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: Column(
           spacing: 5,
           children: [
@@ -61,9 +60,9 @@ class Keyboard extends StatelessWidget {
   Widget _buildButton(String text, Size size, {VoidCallback? onPressed}) {
     return TextButton(
       style: TextButton.styleFrom(
-        padding: const EdgeInsets.all(0),
+        padding: EdgeInsets.zero,
         fixedSize: size,
-        minimumSize: Size(20, 20), // 最小サイズを設定
+        minimumSize: const Size(20, 20), // 最小サイズを設定
         // maximumSize: Size(20, 20), // 最大サイズを設定
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,

@@ -38,16 +38,17 @@ class ProblemSetRepository extends AsyncNotifier<List<WordProblem>> {
           WordProblemTranslation('bbb'),
           WordProblemTranslation('ccc'),
         ],
-      )
+      ),
     ];
   }
 
-  void fetch() async {
-    'https://jsonplaceholder.typicode.com/post';
-    state = AsyncValue.data([]);
+  Future<void> fetch() async {
+    // 'https://jsonplaceholder.typicode.com/post';
+    state = const AsyncValue.data([]);
   }
 }
 
 final problemSetProvider =
     AsyncNotifierProvider<ProblemSetRepository, List<WordProblem>>(
-        ProblemSetRepository.new);
+  ProblemSetRepository.new,
+);

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/provider/word_study_status.dart';
+import 'package:mobile/provider/auth_repository.dart';
 import 'package:mobile/provider/problem_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
+import 'package:mobile/provider/word_study_status.dart';
+import 'package:mobile/util/logger.dart';
 import 'package:mobile/widget/word_study/word_study.dart';
-import 'package:mobile/provider/auth_repository.dart';
 
 class MenuWordStudy extends ConsumerWidget {
   const MenuWordStudy({super.key});
@@ -12,12 +13,10 @@ class MenuWordStudy extends ConsumerWidget {
   double _calcWidth(String text, TextStyle style) {
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
-      // maxLines: 1,
-      textAlign: TextAlign.start,
       textDirection: TextDirection.ltr,
-    )..layout(minWidth: 0);
+    )..layout();
     // textPainter.layout();
-    print('textPainter.size: ${textPainter.size}');
+    logger.i('textPainter.size: ${textPainter.size}');
     return textPainter.size.width;
   }
 
@@ -31,20 +30,17 @@ class MenuWordStudy extends ConsumerWidget {
 
     switch (user) {
       case AsyncData(:final value):
-        print('user: $value');
-        break;
+        logger.i('user: $value');
       case AsyncLoading():
-        print('user: loading');
-        break;
+        logger.i('user: loading');
       case AsyncError(:final error):
-        print('user: error $error');
-        break;
+        logger.i('user: error $error');
       default:
-        print('user: default');
+        logger.i('user: default');
     }
 
-    final width = _calcWidth('aaaaa', TextStyle(fontSize: 24));
-    print('width: $width');
+    final width = _calcWidth('aaaaa', const TextStyle(fontSize: 24));
+    logger.i('width: $width');
     // final textFieldValueListProvider = ref.watch(textFieldValueListProvider);
     return Scaffold(
       appBar: AppBar(
@@ -53,11 +49,13 @@ class MenuWordStudy extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Text('aaaaa',
-                textAlign: TextAlign.start,
-                textDirection: TextDirection.ltr,
-                textWidthBasis: TextWidthBasis.parent,
-                style: TextStyle(fontSize: 24)),
+            const Text(
+              'aaaaa',
+              textAlign: TextAlign.start,
+              textDirection: TextDirection.ltr,
+              textWidthBasis: TextWidthBasis.parent,
+              style: TextStyle(fontSize: 24),
+            ),
             TextField(
               controller: TextEditingController(),
             ),
@@ -68,26 +66,25 @@ class MenuWordStudy extends ConsumerWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                authRepositoryNotifier.signOut();
-              },
+              onPressed: authRepositoryNotifier.signOut,
               child: const Text('Sign Out'),
             ),
             ElevatedButton(
-              onPressed: () {
-                authRepositoryNotifier.signInAnonymously();
-              },
+              onPressed: authRepositoryNotifier.signInAnonymously,
               child: const Text('Sign In Anonymously'),
             ),
             ElevatedButton(
               onPressed: () {
                 wordStudyStatusNotifier.setQuestionStatus();
-                ref.invalidate(textFieldValueListProvider);
-                ref.invalidate(problemProvider);
+                ref
+                  ..invalidate(textFieldValueListProvider)
+                  ..invalidate(problemProvider);
 
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => WordStudy(),
-                ));
+                Navigator.of(context).push(
+                  MaterialPageRoute<dynamic>(
+                    builder: (context) => const WordStudy(),
+                  ),
+                );
               },
               child: const Text('Save Expense'),
             ),

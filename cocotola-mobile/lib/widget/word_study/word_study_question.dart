@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/word_study_status.dart';
-import 'package:mobile/provider/problem_provider.dart';
+import 'package:mobile/util/logger.dart';
 import 'package:mobile/widget/keyboard.dart';
 import 'package:mobile/widget/word_study/problem_card.dart';
 
@@ -34,11 +34,11 @@ class WordStudyQuestion extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('WordStudyQuestion build');
-    final double screenWidth = MediaQuery.of(context).size.width;
-    print('Screen width: $screenWidth');
-    final double screenHeight = MediaQuery.of(context).size.height;
-    print('Screen height: $screenHeight');
+    logger.i('WordStudyQuestion build');
+    final screenWidth = MediaQuery.of(context).size.width;
+    logger.i('Screen width: $screenWidth');
+    final screenHeight = MediaQuery.of(context).size.height;
+    logger.i('Screen height: $screenHeight');
 
     final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
@@ -50,9 +50,8 @@ class WordStudyQuestion extends ConsumerWidget {
           if (value.allCompleted) {
             wordStudyStatusNotifier.setAnswerStatus();
           }
-          break;
         case AsyncError(:final error):
-          break;
+          logger.e(error);
         case AsyncLoading():
           break;
         default:
@@ -60,17 +59,17 @@ class WordStudyQuestion extends ConsumerWidget {
       }
     });
 
-    var problemCard = _buidProblemCard(textFieldValueList);
+    final problemCard = _buidProblemCard(textFieldValueList);
 
     final bottomHeight = screenHeight * 0.3;
     final bottom = SizedBox(
       height: bottomHeight,
       child: Column(
         children: [
-          Spacer(),
+          const Spacer(),
           Keyboard(
-            onPresskey: (String text) => textFieldListNotifier.addText(text),
-            onPressBackspace: () => textFieldListNotifier.backspace(),
+            onPresskey: textFieldListNotifier.addText,
+            onPressBackspace: textFieldListNotifier.backspace,
           ),
         ],
       ),
@@ -83,7 +82,7 @@ class WordStudyQuestion extends ConsumerWidget {
           Expanded(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: problemCard,
               ),
             ),

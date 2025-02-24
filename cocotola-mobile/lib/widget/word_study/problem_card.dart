@@ -2,36 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
-import 'package:mobile/widget/word_study/plain_text.dart';
 import 'package:mobile/widget/word_study/custom_problem_text_field.dart';
+import 'package:mobile/widget/word_study/plain_text.dart';
 
 class ProblemCard extends ConsumerWidget {
-  final WordProblem problem;
-  final List<String> texts;
-  final List<bool> completedList;
-
   const ProblemCard({
-    super.key,
     required this.problem,
     required this.texts,
     required this.completedList,
+    super.key,
   });
+  final WordProblem problem;
+  final List<String> texts;
+  final List<bool> completedList;
 
   List<Widget> _buildEnglishTexts(
     TextStyle plainTextStyle,
     TextStyle answerTextStyle,
   ) {
-    List<Widget> widgets = [];
+    final widgets = <Widget>[];
     var index = 0;
     for (final english in problem.englishList) {
       if (english.isProblem) {
         if (completedList[index]) {
           widgets.add(PlainText(text: english.text, style: answerTextStyle));
         } else {
-          widgets.add(CustomProblemTextField(
-            index: index,
-            text: texts[index],
-          ));
+          widgets.add(
+            CustomProblemTextField(
+              index: index,
+              text: texts[index],
+            ),
+          );
         }
         index++;
       } else {
@@ -46,7 +47,7 @@ class ProblemCard extends ConsumerWidget {
     TextStyle plainTextStyle,
     TextStyle problemTextStyle,
   ) {
-    List<Widget> widgets = [];
+    final widgets = <Widget>[];
     for (final translation in problem.translationList) {
       final style = translation.isProblem ? problemTextStyle : plainTextStyle;
       widgets.add(PlainText(text: translation.text, style: style));
@@ -58,11 +59,11 @@ class ProblemCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final customThemeData = ref.watch(customThemDataProvider);
     final theme = customThemeData.problemCard;
-    List<Widget> englishTexts = _buildEnglishTexts(
+    final englishTexts = _buildEnglishTexts(
       customThemeData.problemCard.englishPlainTextStyle,
       customThemeData.problemCard.englishAnswerTextStyle,
     );
-    List<Widget> translationTexts = _buildTranslationTexts(
+    final translationTexts = _buildTranslationTexts(
       customThemeData.problemCard.translationPlainTextStyle,
       customThemeData.problemCard.translationProblemTextStyle,
     );
@@ -75,11 +76,12 @@ class ProblemCard extends ConsumerWidget {
           DecoratedBox(
             decoration: BoxDecoration(
               color: theme.englishBackgroundColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
             ),
             // color: Colors.green,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: SizedBox(
                 height: 150,
                 width: double.infinity,
@@ -91,10 +93,10 @@ class ProblemCard extends ConsumerWidget {
             decoration: BoxDecoration(
               color: theme.translationBackgroundColor,
               borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(16.0)),
+                  const BorderRadius.vertical(bottom: Radius.circular(16)),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: SizedBox(
                 width: double.infinity,
                 height: 150,

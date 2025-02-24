@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
 
 class CustomAnswerTextField extends ConsumerWidget {
-  final String text;
-
   const CustomAnswerTextField({
-    super.key,
     required this.text,
+    super.key,
   });
+  final String text;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,7 +17,7 @@ class CustomAnswerTextField extends ConsumerWidget {
     final decoration = customTheme.englishAnswerDecoration;
 
     return Container(
-      padding: EdgeInsets.only(left: 0, right: 10),
+      padding: const EdgeInsets.only(right: 10),
       child:
           DecoratedBox(decoration: decoration, child: Text(text, style: style)),
     );

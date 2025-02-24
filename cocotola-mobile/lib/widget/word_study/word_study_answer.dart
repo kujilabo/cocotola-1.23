@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/provider/problem_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/word_study_status.dart';
-import 'package:mobile/provider/problem_provider.dart';
 import 'package:mobile/widget/word_study/problem_card.dart';
 
 class WordStudyAnswer extends ConsumerWidget {
@@ -45,7 +45,7 @@ class WordStudyAnswer extends ConsumerWidget {
             height: bottomHeight,
             child: Column(
               children: [
-                Spacer(),
+                const Spacer(),
                 Row(
                   children: [
                     Expanded(
@@ -54,7 +54,7 @@ class WordStudyAnswer extends ConsumerWidget {
                           problemNotifier.next();
                           wordStudyStatusNotifier.setQuestionStatus();
                         },
-                        child: Text('Check'),
+                        child: const Text('Check'),
                       ),
                     ),
                     Expanded(
@@ -63,7 +63,7 @@ class WordStudyAnswer extends ConsumerWidget {
                           problemNotifier.next();
                           wordStudyStatusNotifier.setQuestionStatus();
                         },
-                        child: Text('Next'),
+                        child: const Text('Next'),
                       ),
                     ),
                   ],
@@ -76,7 +76,7 @@ class WordStudyAnswer extends ConsumerWidget {
             height: bottomHeight,
             child: Column(
               children: [
-                Spacer(),
+                const Spacer(),
                 Row(
                   children: [
                     Expanded(
@@ -85,7 +85,7 @@ class WordStudyAnswer extends ConsumerWidget {
                           problemNotifier.next();
                           wordStudyStatusNotifier.setQuestionStatus();
                         },
-                        child: Text('Check'),
+                        child: const Text('Check'),
                       ),
                     ),
                     Expanded(
@@ -93,7 +93,7 @@ class WordStudyAnswer extends ConsumerWidget {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Finish'),
+                        child: const Text('Finish'),
                       ),
                     ),
                   ],
@@ -115,15 +115,15 @@ class WordStudyAnswer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
     final problemNotifier = ref.read(problemProvider.notifier);
     final problemWithStatus = ref.watch(problemProvider);
     final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
     final bottomHeight = screenHeight * 0.3;
     final textFieldValueList = ref.watch(textFieldValueListProvider);
 
-    var problemCard = _buidProblemCard(textFieldValueList);
-    var bottom = _buildBottom(
+    final problemCard = _buidProblemCard(textFieldValueList);
+    final bottom = _buildBottom(
       context,
       problemNotifier,
       wordStudyStatusNotifier,
@@ -138,7 +138,7 @@ class WordStudyAnswer extends ConsumerWidget {
           Expanded(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: problemCard,
               ),
             ),
