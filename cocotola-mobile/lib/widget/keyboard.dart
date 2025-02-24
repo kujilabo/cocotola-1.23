@@ -16,7 +16,7 @@ class Keyboard extends StatelessWidget {
     return ColoredBox(
       color: Colors.lightGreenAccent,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: Column(
           spacing: 5,
           children: [

@@ -93,7 +93,7 @@ class CustomProblemTextField extends ConsumerWidget {
     final textWidth = _calcWidth(text, style) * 1.06;
     final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);
     print('textWidth: $textWidth');
-    final width = max(50.0, textWidth + curosrWidth + 12);
+    final width = max(50, textWidth + curosrWidth + 12);
 
     return GestureDetector(
       onTap: () {

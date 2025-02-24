@@ -138,7 +138,7 @@ class WordStudyAnswer extends ConsumerWidget {
           Expanded(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: problemCard,
               ),
             ),

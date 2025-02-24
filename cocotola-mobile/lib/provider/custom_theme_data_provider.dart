@@ -20,15 +20,15 @@ class ThemeDataRepository extends Notifier<CustomThemeData> {
         englishProblemDecoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(4.0),
-            bottom: Radius.circular(4.0),
+            top: Radius.circular(4),
+            bottom: Radius.circular(4),
           ),
         ),
         englishAnswerDecoration: const BoxDecoration(
           color: Colors.blue,
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(4.0),
-            bottom: Radius.circular(4.0),
+            top: Radius.circular(4),
+            bottom: Radius.circular(4),
           ),
         ),
         englishPlainTextStyle: const TextStyle(

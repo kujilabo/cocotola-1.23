@@ -6,9 +6,11 @@ import 'package:mobile/widget/word_study/custom_problem_text_field.dart';
 import 'package:mobile/widget/word_study/plain_text.dart';
 
 class ProblemCard extends ConsumerWidget {
-
   const ProblemCard({
-    required this.problem, required this.texts, required this.completedList, super.key,
+    required this.problem,
+    required this.texts,
+    required this.completedList,
+    super.key,
   });
   final WordProblem problem;
   final List<String> texts;
@@ -25,10 +27,12 @@ class ProblemCard extends ConsumerWidget {
         if (completedList[index]) {
           widgets.add(PlainText(text: english.text, style: answerTextStyle));
         } else {
-          widgets.add(CustomProblemTextField(
-            index: index,
-            text: texts[index],
-          ),);
+          widgets.add(
+            CustomProblemTextField(
+              index: index,
+              text: texts[index],
+            ),
+          );
         }
         index++;
       } else {
@@ -72,11 +76,12 @@ class ProblemCard extends ConsumerWidget {
           DecoratedBox(
             decoration: BoxDecoration(
               color: theme.englishBackgroundColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
             ),
             // color: Colors.green,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: SizedBox(
                 height: 150,
                 width: double.infinity,
@@ -88,10 +93,10 @@ class ProblemCard extends ConsumerWidget {
             decoration: BoxDecoration(
               color: theme.translationBackgroundColor,
               borderRadius:
-                  const BorderRadius.vertical(bottom: Radius.circular(16.0)),
+                  const BorderRadius.vertical(bottom: Radius.circular(16)),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: SizedBox(
                 width: double.infinity,
                 height: 150,
