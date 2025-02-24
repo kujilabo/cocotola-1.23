@@ -17,17 +17,29 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -40,49 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDRQeLr6APb1_VDvtRCxzIy2xdhF_DJOAc',
-    appId: '1:1038074356214:web:a3fc6a4452dae4cd22e7d7',
-    messagingSenderId: '1038074356214',
-    projectId: 'cocotola-1-23-develop-24-f88f5',
-    authDomain: 'cocotola-1-23-develop-24-f88f5.firebaseapp.com',
-    storageBucket: 'cocotola-1-23-develop-24-f88f5.firebasestorage.app',
-    measurementId: 'G-7B5SRP4LEJ',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC4RGwYglu5BJQkFb-umuVzsfQNwTNetNQ',
-    appId: '1:1038074356214:android:dc66252fe75aa6dc22e7d7',
-    messagingSenderId: '1038074356214',
-    projectId: 'cocotola-1-23-develop-24-f88f5',
-    storageBucket: 'cocotola-1-23-develop-24-f88f5.firebasestorage.app',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBItqU9DT16fuHTdhs6cDYgDfgUfiIlOxc',
-    appId: '1:1038074356214:ios:f2388b61bdfa310d22e7d7',
-    messagingSenderId: '1038074356214',
-    projectId: 'cocotola-1-23-develop-24-f88f5',
-    storageBucket: 'cocotola-1-23-develop-24-f88f5.firebasestorage.app',
-    iosBundleId: 'com.example.mobile',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBItqU9DT16fuHTdhs6cDYgDfgUfiIlOxc',
-    appId: '1:1038074356214:ios:f2388b61bdfa310d22e7d7',
-    messagingSenderId: '1038074356214',
-    projectId: 'cocotola-1-23-develop-24-f88f5',
-    storageBucket: 'cocotola-1-23-develop-24-f88f5.firebasestorage.app',
-    iosBundleId: 'com.example.mobile',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDRQeLr6APb1_VDvtRCxzIy2xdhF_DJOAc',
-    appId: '1:1038074356214:web:f4cf547393eeab4822e7d7',
-    messagingSenderId: '1038074356214',
-    projectId: 'cocotola-1-23-develop-24-f88f5',
-    authDomain: 'cocotola-1-23-develop-24-f88f5.firebaseapp.com',
-    storageBucket: 'cocotola-1-23-develop-24-f88f5.firebasestorage.app',
-    measurementId: 'G-GL0QPB9TS4',
+    apiKey: 'AIzaSyDwh01CsV_4qKOSFQ2_3GxDCeX166MrwfA',
+    appId: '1:229905350062:android:8eb5f159ffc8f9dded5c3f',
+    messagingSenderId: '229905350062',
+    projectId: 'cocotola-1-23-develop-24-11-02',
+    storageBucket: 'cocotola-1-23-develop-24-11-02.firebasestorage.app',
   );
 }
