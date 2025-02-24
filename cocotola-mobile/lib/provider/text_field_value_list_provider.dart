@@ -8,7 +8,7 @@ class TextFieldValue {
       {required this.text,
       required this.answer,
       required this.position,
-      required this.completed});
+      required this.completed,});
   final String text;
   final String answer;
   final int position;
@@ -41,7 +41,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
       final english = problem.englishList[i];
       if (english.isProblem) {
         texts.add(TextFieldValue(
-            text: '', answer: english.text, position: 0, completed: false));
+            text: '', answer: english.text, position: 0, completed: false,),);
         print('problem: ${english.text}');
       }
     }
@@ -101,7 +101,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
           text: newText,
           answer: currTextField.answer,
           position: newPosition,
-          completed: completed),
+          completed: completed,),
       ...currentState.texts.sublist(index + 1),
     ];
     state = AsyncValue.data(
@@ -129,7 +129,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
           text: currTextField.text,
           answer: currTextField.answer,
           position: position,
-          completed: currTextField.completed),
+          completed: currTextField.completed,),
       ...currentState.texts.sublist(index + 1),
     ];
     state = AsyncValue.data(
@@ -167,7 +167,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
           text: newText,
           answer: currTextField.answer,
           position: currPosition - 1,
-          completed: completed),
+          completed: completed,),
       ...currentState.texts.sublist(index + 1),
     ];
     state = AsyncValue.data(
@@ -197,4 +197,4 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
 
 final textFieldValueListProvider =
     AsyncNotifierProvider<TextFieldValueListNotifier, TextFieldValueList>(
-        TextFieldValueListNotifier.new);
+        TextFieldValueListNotifier.new,);

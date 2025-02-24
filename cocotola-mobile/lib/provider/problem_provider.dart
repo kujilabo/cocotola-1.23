@@ -6,7 +6,7 @@ class ProblemWithStatus {
   const ProblemWithStatus(
       {required this.problemSet,
       required this.currentProblem,
-      required this.index});
+      required this.index,});
   final List<WordProblem> problemSet;
   final WordProblem currentProblem;
   final int index;
@@ -20,7 +20,7 @@ class ProblemRepository extends AsyncNotifier<ProblemWithStatus> {
   Future<ProblemWithStatus> build() async {
     final problemSet = await ref.watch(problemSetProvider.future);
     return ProblemWithStatus(
-        problemSet: problemSet, currentProblem: problemSet[0], index: 0);
+        problemSet: problemSet, currentProblem: problemSet[0], index: 0,);
   }
 
   void next() {
@@ -37,4 +37,4 @@ class ProblemRepository extends AsyncNotifier<ProblemWithStatus> {
 
 final problemProvider =
     AsyncNotifierProvider<ProblemRepository, ProblemWithStatus>(
-        ProblemRepository.new);
+        ProblemRepository.new,);

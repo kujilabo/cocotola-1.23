@@ -13,7 +13,7 @@ class TranslationWord {
 class EnglishWordProblem {
 
   const EnglishWordProblem(
-      {required this.translationWords, required this.englishWords});
+      {required this.translationWords, required this.englishWords,});
   final List<TranslationWord> translationWords;
   final List<EnglishWord> englishWords;
 }

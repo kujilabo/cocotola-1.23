@@ -28,7 +28,7 @@ class ProblemCard extends ConsumerWidget {
           widgets.add(CustomProblemTextField(
             index: index,
             text: texts[index],
-          ));
+          ),);
         }
         index++;
       } else {

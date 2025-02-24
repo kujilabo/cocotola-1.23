@@ -52,7 +52,7 @@ class MenuWordStudy extends ConsumerWidget {
                 textAlign: TextAlign.start,
                 textDirection: TextDirection.ltr,
                 textWidthBasis: TextWidthBasis.parent,
-                style: TextStyle(fontSize: 24)),
+                style: TextStyle(fontSize: 24),),
             TextField(
               controller: TextEditingController(),
             ),
@@ -78,7 +78,7 @@ class MenuWordStudy extends ConsumerWidget {
 
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const WordStudy(),
-                ));
+                ),);
               },
               child: const Text('Save Expense'),
             ),

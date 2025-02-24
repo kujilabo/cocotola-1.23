@@ -38,7 +38,7 @@ class ProblemSetRepository extends AsyncNotifier<List<WordProblem>> {
           WordProblemTranslation('bbb'),
           WordProblemTranslation('ccc'),
         ],
-      )
+      ),
     ];
   }
 
@@ -50,4 +50,4 @@ class ProblemSetRepository extends AsyncNotifier<List<WordProblem>> {
 
 final problemSetProvider =
     AsyncNotifierProvider<ProblemSetRepository, List<WordProblem>>(
-        ProblemSetRepository.new);
+        ProblemSetRepository.new,);

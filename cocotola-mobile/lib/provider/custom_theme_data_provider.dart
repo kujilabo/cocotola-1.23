@@ -51,4 +51,4 @@ class ThemeDataRepository extends Notifier<CustomThemeData> {
 
 final customThemDataProvider =
     NotifierProvider<ThemeDataRepository, CustomThemeData>(
-        ThemeDataRepository.new);
+        ThemeDataRepository.new,);
