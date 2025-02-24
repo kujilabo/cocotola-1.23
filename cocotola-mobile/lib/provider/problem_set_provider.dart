@@ -42,7 +42,7 @@ class ProblemSetRepository extends AsyncNotifier<List<WordProblem>> {
     ];
   }
 
-  void fetch() async {
+  Future<void> fetch() async {
     'https://jsonplaceholder.typicode.com/post';
     state = AsyncValue.data([]);
   }
