@@ -19,7 +19,7 @@ Future<void> main() async {
   // logger.i('ddd');
 
   final db = DB();
-  final x = await db.db;
+  await db.db;
 
   runApp(
     const ProviderScope(
