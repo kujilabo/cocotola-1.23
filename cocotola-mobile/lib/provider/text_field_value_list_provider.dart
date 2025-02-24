@@ -35,8 +35,11 @@ class TextFieldValueList {
 class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
   @override
   Future<TextFieldValueList> build() async {
+    logger.i('a');
     final problemWithStatus = await ref.watch(problemProvider.future);
+    logger.i('b');
     final problem = problemWithStatus.currentProblem;
+    logger.i('c');
     final texts = <TextFieldValue>[];
 
     for (var i = 0; i < problem.englishList.length; i++) {
@@ -53,6 +56,8 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
         logger.i('problem: ${english.text}');
       }
     }
+
+    logger.i('d');
     return TextFieldValueList(
       problem: problem,
       texts: texts,

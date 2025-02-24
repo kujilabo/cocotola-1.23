@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/provider/problem_set_provider.dart';
+import 'package:mobile/util/logger.dart';
 
 class ProblemWithStatus {
   const ProblemWithStatus({
@@ -19,7 +20,9 @@ class ProblemWithStatus {
 class ProblemRepository extends AsyncNotifier<ProblemWithStatus> {
   @override
   Future<ProblemWithStatus> build() async {
+    logger.i('A');
     final problemSet = await ref.watch(problemSetProvider.future);
+    logger.i('B');
     return ProblemWithStatus(
       problemSet: problemSet,
       currentProblem: problemSet[0],
