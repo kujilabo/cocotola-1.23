@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
+import 'package:mobile/util/logger.dart';
 
 class TimerState {
   const TimerState({required this.flag, required this.timer});
@@ -91,12 +92,12 @@ class CustomProblemTextField extends ConsumerWidget {
 
     final textWidth = _calcWidth(text, style) * 1.06;
     final curosrWidth = _calcWidth('|', customTheme.cusrotTextStyle);
-    print('textWidth: $textWidth');
+    logger.i('textWidth: $textWidth');
     final width = max(50, textWidth + curosrWidth + 12).toDouble();
 
     return GestureDetector(
       onTap: () {
-        print('ontap');
+        logger.i('ontap');
         textFieldListNotifier.setIndex(index);
         // textFieldListNotifier.setPosition(
         //     index, controllerList[index].selection.baseOffset);

@@ -23,4 +23,5 @@ class WordStudyStatusNotifier extends Notifier<WordStudyStatus> {
 
 final wordStudyStatusProvider =
     NotifierProvider<WordStudyStatusNotifier, WordStudyStatus>(
-        WordStudyStatusNotifier.new,);
+  WordStudyStatusNotifier.new,
+);

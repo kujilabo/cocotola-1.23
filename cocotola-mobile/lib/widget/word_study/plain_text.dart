@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class PlainText extends StatelessWidget {
-
   const PlainText({required this.text, required this.style, super.key});
   final String text;
   final TextStyle style;

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/word_study_status.dart';
 import 'package:mobile/widget/word_study/word_study_answer.dart';
 import 'package:mobile/widget/word_study/word_study_question.dart';
+import 'package:mobile/util/logger.dart';
 
 class WordStudy extends ConsumerWidget {
   const WordStudy({super.key});
@@ -13,14 +14,15 @@ class WordStudy extends ConsumerWidget {
         return const WordStudyQuestion();
       case WordStudyStatus.answer:
         return const WordStudyAnswer();
-      default:
-        return const Text('aaaaa');
+      case WordStudyStatus.end:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('WordStudy build');
+    logger.i('WordStudy build');
     final wordStudyStatus = ref.watch(wordStudyStatusProvider);
 
     const header = Text('aaaaaaaaaaaaaaa');

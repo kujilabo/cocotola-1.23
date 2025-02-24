@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Keyboard extends StatelessWidget {
-
   const Keyboard({
-    required this.onPresskey, required this.onPressBackspace, super.key,
+    required this.onPresskey,
+    required this.onPressBackspace,
+    super.key,
   });
   final void Function(String) onPresskey;
   final void Function() onPressBackspace;
@@ -59,7 +60,7 @@ class Keyboard extends StatelessWidget {
   Widget _buildButton(String text, Size size, {VoidCallback? onPressed}) {
     return TextButton(
       style: TextButton.styleFrom(
-        padding: const EdgeInsets.all(0),
+        padding: EdgeInsets.zero,
         fixedSize: size,
         minimumSize: const Size(20, 20), // 最小サイズを設定
         // maximumSize: Size(20, 20), // 最大サイズを設定

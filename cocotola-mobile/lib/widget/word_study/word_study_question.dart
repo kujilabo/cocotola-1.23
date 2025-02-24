@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/text_field_value_list_provider.dart';
 import 'package:mobile/provider/word_study_status.dart';
+import 'package:mobile/util/logger.dart';
 import 'package:mobile/widget/keyboard.dart';
 import 'package:mobile/widget/word_study/problem_card.dart';
 
@@ -33,11 +34,11 @@ class WordStudyQuestion extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('WordStudyQuestion build');
+    logger.i('WordStudyQuestion build');
     final screenWidth = MediaQuery.of(context).size.width;
-    print('Screen width: $screenWidth');
+    logger.i('Screen width: $screenWidth');
     final screenHeight = MediaQuery.of(context).size.height;
-    print('Screen height: $screenHeight');
+    logger.i('Screen height: $screenHeight');
 
     final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
     final textFieldListNotifier = ref.read(textFieldValueListProvider.notifier);
@@ -50,7 +51,7 @@ class WordStudyQuestion extends ConsumerWidget {
             wordStudyStatusNotifier.setAnswerStatus();
           }
         case AsyncError(:final error):
-          break;
+          logger.e(error);
         case AsyncLoading():
           break;
         default:

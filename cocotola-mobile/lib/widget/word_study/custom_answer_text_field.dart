@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/provider/custom_theme_data_provider.dart';
 
 class CustomAnswerTextField extends ConsumerWidget {
-
   const CustomAnswerTextField({
-    required this.text, super.key,
+    required this.text,
+    super.key,
   });
   final String text;
 

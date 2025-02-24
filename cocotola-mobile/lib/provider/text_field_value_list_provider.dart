@@ -1,14 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/model/word_problem.dart';
 import 'package:mobile/provider/problem_provider.dart';
+import 'package:mobile/util/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 class TextFieldValue {
-  const TextFieldValue(
-      {required this.text,
-      required this.answer,
-      required this.position,
-      required this.completed,});
+  const TextFieldValue({
+    required this.text,
+    required this.answer,
+    required this.position,
+    required this.completed,
+  });
   final String text;
   final String answer;
   final int position;
@@ -40,9 +42,15 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
     for (var i = 0; i < problem.englishList.length; i++) {
       final english = problem.englishList[i];
       if (english.isProblem) {
-        texts.add(TextFieldValue(
-            text: '', answer: english.text, position: 0, completed: false,),);
-        print('problem: ${english.text}');
+        texts.add(
+          TextFieldValue(
+            text: '',
+            answer: english.text,
+            position: 0,
+            completed: false,
+          ),
+        );
+        logger.i('problem: ${english.text}');
       }
     }
     return TextFieldValueList(
@@ -94,14 +102,15 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
         allCompleted = true;
       }
     }
-    print('completed: $completed, ${currTextField.answer}, $newIndex');
+    logger.i('completed: $completed, ${currTextField.answer}, $newIndex');
     final texts = [
       ...currentState.texts.sublist(0, index),
       TextFieldValue(
-          text: newText,
-          answer: currTextField.answer,
-          position: newPosition,
-          completed: completed,),
+        text: newText,
+        answer: currTextField.answer,
+        position: newPosition,
+        completed: completed,
+      ),
       ...currentState.texts.sublist(index + 1),
     ];
     state = AsyncValue.data(
@@ -117,7 +126,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
 
   void setPosition(int index, int position) {
     final currentState = state.value!;
-    print('position: $position');
+    logger.i('position: $position');
     final currTextField = currentState.texts[index];
     if (currTextField.completed) {
       return;
@@ -126,10 +135,11 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
     final texts = [
       ...currentState.texts.sublist(0, index),
       TextFieldValue(
-          text: currTextField.text,
-          answer: currTextField.answer,
-          position: position,
-          completed: currTextField.completed,),
+        text: currTextField.text,
+        answer: currTextField.answer,
+        position: position,
+        completed: currTextField.completed,
+      ),
       ...currentState.texts.sublist(index + 1),
     ];
     state = AsyncValue.data(
@@ -164,10 +174,11 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
     final texts = [
       ...currentState.texts.sublist(0, index),
       TextFieldValue(
-          text: newText,
-          answer: currTextField.answer,
-          position: currPosition - 1,
-          completed: completed,),
+        text: newText,
+        answer: currTextField.answer,
+        position: currPosition - 1,
+        completed: completed,
+      ),
       ...currentState.texts.sublist(index + 1),
     ];
     state = AsyncValue.data(
@@ -197,4 +208,5 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
 
 final textFieldValueListProvider =
     AsyncNotifierProvider<TextFieldValueListNotifier, TextFieldValueList>(
-        TextFieldValueListNotifier.new,);
+  TextFieldValueListNotifier.new,
+);

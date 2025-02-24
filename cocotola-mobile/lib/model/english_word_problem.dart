@@ -11,15 +11,15 @@ class TranslationWord {
 }
 
 class EnglishWordProblem {
-
-  const EnglishWordProblem(
-      {required this.translationWords, required this.englishWords,});
+  const EnglishWordProblem({
+    required this.translationWords,
+    required this.englishWords,
+  });
   final List<TranslationWord> translationWords;
   final List<EnglishWord> englishWords;
 }
 
 class EnglishWordProblemSet {
-
   const EnglishWordProblemSet({required this.englishWordProblems});
   final List<EnglishWordProblem> englishWordProblems;
 }
