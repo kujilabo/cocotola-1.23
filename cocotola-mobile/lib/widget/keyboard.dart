@@ -10,8 +10,8 @@ class Keyboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final size = Size(screenWidth / 12, screenHeight / 15);
     return Container(
       color: Colors.lightGreenAccent,

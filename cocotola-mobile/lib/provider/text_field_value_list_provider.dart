@@ -37,7 +37,7 @@ class TextFieldValueListNotifier extends AsyncNotifier<TextFieldValueList> {
   Future<TextFieldValueList> build() async {
     final problemWithStatus = await ref.watch(problemProvider.future);
     final problem = problemWithStatus.currentProblem;
-    List<TextFieldValue> texts = [];
+    var texts = <TextFieldValue>[];
 
     for (var i = 0; i < problem.englishList.length; i++) {
       final english = problem.englishList[i];

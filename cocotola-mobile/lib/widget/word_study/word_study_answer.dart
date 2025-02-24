@@ -115,7 +115,7 @@ class WordStudyAnswer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
     final problemNotifier = ref.read(problemProvider.notifier);
     final problemWithStatus = ref.watch(problemProvider);
     final wordStudyStatusNotifier = ref.read(wordStudyStatusProvider.notifier);
