@@ -6,8 +6,7 @@ class CustomAnswerTextField extends ConsumerWidget {
   final String text;
 
   const CustomAnswerTextField({
-    super.key,
-    required this.text,
+    required this.text, super.key,
   });
 
   @override

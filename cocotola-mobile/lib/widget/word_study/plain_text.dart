@@ -4,7 +4,7 @@ class PlainText extends StatelessWidget {
   final String text;
   final TextStyle style;
 
-  const PlainText({super.key, required this.text, required this.style});
+  const PlainText({required this.text, required this.style, super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -11,10 +11,7 @@ class ProblemCard extends ConsumerWidget {
   final List<bool> completedList;
 
   const ProblemCard({
-    super.key,
-    required this.problem,
-    required this.texts,
-    required this.completedList,
+    required this.problem, required this.texts, required this.completedList, super.key,
   });
 
   List<Widget> _buildEnglishTexts(

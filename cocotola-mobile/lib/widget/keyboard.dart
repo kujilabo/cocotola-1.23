@@ -5,9 +5,7 @@ class Keyboard extends StatelessWidget {
   final void Function() onPressBackspace;
 
   const Keyboard({
-    super.key,
-    required this.onPresskey,
-    required this.onPressBackspace,
+    required this.onPresskey, required this.onPressBackspace, super.key,
   });
 
   @override

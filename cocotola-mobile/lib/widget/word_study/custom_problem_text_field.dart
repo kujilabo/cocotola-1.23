@@ -31,7 +31,7 @@ final timerProvider =
 class BlinkText extends ConsumerWidget {
   final Text text;
 
-  const BlinkText({super.key, required this.text});
+  const BlinkText({required this.text, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,9 +51,7 @@ class CustomProblemTextField extends ConsumerWidget {
   final String text;
 
   const CustomProblemTextField({
-    super.key,
-    required this.index,
-    required this.text,
+    required this.index, required this.text, super.key,
   });
 
   double _calcWidth(String text, TextStyle style) {

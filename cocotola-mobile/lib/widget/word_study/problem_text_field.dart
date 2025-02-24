@@ -10,11 +10,7 @@ class ProblemTextField extends ConsumerWidget {
   final bool completed;
 
   const ProblemTextField({
-    super.key,
-    required this.index,
-    required this.englishText,
-    required this.controller,
-    required this.focusNode,
+    required this.index, required this.englishText, required this.controller, required this.focusNode, super.key,
     this.first = false,
     this.completed = false,
   });
