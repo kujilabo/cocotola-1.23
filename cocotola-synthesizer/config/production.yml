@@ -1,15 +1,15 @@
 ---
 app:
-  server:
-    httpPort: $HTTP_PORT
-    metricsPort: 8081
-    readHeaderTimeoutSec: 30
   internalAuth:
     username: $SYNTHESIZER_API_USERNAME
     password: $SYNTHESIZER_API_PASSWORD
   googleTextToSpeech:
     apiKey: $GOOGLE_TEXT_TO_SPEECH_API_KEY
     apiTimeoutSec: 5
+server:
+  httpPort: $HTTP_PORT
+  metricsPort: 8081
+  readHeaderTimeoutSec: 30
 db:
   driverName: $DB_DRIVER_NAME
   migration: $DB_MIGRATION
