@@ -65,7 +65,8 @@ func main() {
 			TimeSec2: 1,
 		},
 		Log: &rslibconfig.LogConfig{
-			Level: "info",
+			Level:    "info",
+			Platform: "gcp",
 		},
 		Debug: &libconfig.DebugConfig{
 			Gin:  false,

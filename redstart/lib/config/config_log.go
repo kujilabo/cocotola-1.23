@@ -8,14 +8,33 @@ import (
 )
 
 type LogConfig struct {
-	Level string `yaml:"level"`
+	Level    string `yaml:"level"`
+	Platform string `yaml:"platform"`
+}
+
+func newReplaceAttr(platform string) func([]string, slog.Attr) slog.Attr {
+	switch platform {
+	case "gcp":
+		return func(groups []string, a slog.Attr) slog.Attr {
+			switch a.Key {
+			case slog.LevelKey:
+				return slog.Attr{Key: "severity", Value: a.Value}
+			case slog.MessageKey:
+				return slog.Attr{Key: "message", Value: a.Value}
+			}
+
+			return a
+		}
+	}
+	return nil
 }
 
 func InitLog(cfg *LogConfig) {
 	defaultLogLevel := stringToLogLevel(cfg.Level)
 
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: defaultLogLevel,
+		Level:       defaultLogLevel,
+		ReplaceAttr: newReplaceAttr(cfg.Platform),
 	})))
 }
 
