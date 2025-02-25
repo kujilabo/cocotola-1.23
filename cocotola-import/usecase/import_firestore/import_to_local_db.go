@@ -53,15 +53,13 @@ func toSrcDstSentenceNumber(key string) (int, int, error) {
 }
 
 func ImportNewWordSentencePairs(ctx context.Context, client *firestore.Client, db *gorm.DB, jsonFile io.Reader) error {
-	decoder := json.NewDecoder(jsonFile)
+	logger := slog.Default()
 
 	sentencePairs := NewWordSentencePairs{}
+	decoder := json.NewDecoder(jsonFile)
 	if err := decoder.Decode(&sentencePairs.List); err != nil {
 		return rsliberrors.Errorf("json.Decode err: %w", err)
 	}
-
-	logger := slog.Default()
-	logger.InfoContext(ctx, fmt.Sprintf("sentencePairs: %+v", sentencePairs))
 
 	wordSentencePairRepository := gateway.NewWordSentencePairRepository(db)
 
@@ -124,7 +122,7 @@ func ImportNewWordSentencePairs(ctx context.Context, client *firestore.Client, d
 			"updatedAt": wordSentencePairAddParameter.UpdatedAt,
 		})
 		if err != nil {
-			return rsliberrors.Errorf("client.Collection.Add err: %w", err)
+			return rsliberrors.Errorf("client.Collection.Adderr: %w", err)
 		}
 		logger.InfoContext(ctx, fmt.Sprintf("doc: %v", doc))
 		logger.InfoContext(ctx, fmt.Sprintf("result: %v", result))

@@ -153,6 +153,10 @@ tasks:
     cmds:
       - bazelisk run //cocotola-core:cocotola-core
 
+  run-empty:
+    cmds:
+      - bazelisk run //cocotola-empty:cocotola-empty
+
   run-synthesizer:
     cmds:
       - bazelisk run //cocotola-synthesizer:cocotola-synthesizer
