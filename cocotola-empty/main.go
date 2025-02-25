@@ -5,12 +5,14 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 
+	"github.com/gin-gonic/gin"
 	rslibconfig "github.com/kujilabo/cocotola-1.23/redstart/lib/config"
 	rsliblog "github.com/kujilabo/cocotola-1.23/redstart/lib/log"
 
@@ -85,6 +87,23 @@ func main() {
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	router := libcontroller.InitRootRouterGroup(ctx, cfg.CORS, cfg.Debug)
+
+	// api
+	api := libcontroller.InitAPIRouterGroup(ctx, router, AppName)
+	// v1
+	v1 := api.Group("v1")
+	// public router
+	libcontroller.InitPublicAPIRouterGroup(ctx, v1, []libcontroller.InitRouterGroupFunc{
+		func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
+			test := parentRouterGroup.Group("test")
+			for _, m := range middleware {
+				test.Use(m)
+			}
+			test.GET("/ping", func(c *gin.Context) {
+				c.JSON(http.StatusOK, gin.H{"message": "pong"})
+			})
+		},
+	})
 
 	readHeaderTimeout := time.Duration(cfg.Server.ReadHeaderTimeoutSec) * time.Second
 	shutdownTime := time.Duration(cfg.Shutdown.TimeSec1) * time.Second
