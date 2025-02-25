@@ -61,8 +61,8 @@ func main() {
 			AllowOrigins: []string{"*"},
 		},
 		Shutdown: &libconfig.ShutdownConfig{
-			TimeSec1: 1,
-			TimeSec2: 1,
+			TimeSec1: 10,
+			TimeSec2: 10,
 		},
 		Log: &rslibconfig.LogConfig{
 			Level:    "info",
