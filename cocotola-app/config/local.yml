@@ -20,7 +20,7 @@ auth:
   ownerPassword: password
 core:
   authApi:
-    endpoint: http://localhost:8010
+    endpoint: http://localhost:8080/api/auth
     username: username
     password: password
   synthesizerApi:

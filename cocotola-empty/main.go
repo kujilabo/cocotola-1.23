@@ -51,11 +51,10 @@ func main() {
 			ReadHeaderTimeoutSec: 10,
 		},
 		Trace: &rslibconfig.TraceConfig{
-			Exporter: "none",
-			// Exporter: "gcp",
-			// Google: &rslibconfig.GoogleTraceConfig{
-			// 	ProjectID: "cocotola-1-23-develop-24-11-02",
-			// },
+			Exporter: "gcp",
+			Google: &rslibconfig.GoogleTraceConfig{
+				ProjectID: "cocotola-1-23-develop-24-11-02",
+			},
 		},
 		CORS: &rslibconfig.CORSConfig{
 			AllowOrigins: []string{"*"},
