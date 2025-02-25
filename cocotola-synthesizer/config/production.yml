@@ -30,7 +30,7 @@ shutdown:
   timeSec1: 10
   timeSec2: 10
 log:
-  level: warn
+  level: info
   platform: gcp
 swagger:
   enabled: false
