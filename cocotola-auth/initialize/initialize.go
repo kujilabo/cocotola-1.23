@@ -48,7 +48,10 @@ func Initialize(ctx context.Context, parent gin.IRouter, dialect rslibgateway.Di
 	}
 
 	// init public and private router group functions
-	publicRouterGroupFuncs := controller.GetPublicRouterGroupFuncs(cfg.Auth, txManager, nonTxManager)
+	publicRouterGroupFuncs, err := controller.GetPublicRouterGroupFuncs(ctx, cfg.Auth, txManager, nonTxManager)
+	if err != nil {
+		return err
+	}
 
 	initApiServer(ctx, parent, AppName, publicRouterGroupFuncs)
 
@@ -77,7 +80,7 @@ func initApp1(ctx context.Context, txManager, nonTxManager service.TransactionMa
 			logger.InfoContext(ctx, fmt.Sprintf("organization: %d", organization.OrganizationID().Int()))
 			return nil
 		} else if !errors.Is(err, rsuserservice.ErrOrganizationNotFound) {
-			return rsliberrors.Errorf("failed to AddOrganization. err: %w", err)
+			return rsliberrors.Errorf("failed to FindOrganizationByName. err: %w", err)
 		}
 
 		firstOwnerAddParam, err := rsuserservice.NewAppUserAddParameter(loginID, "Owner(cocotola)", password, "", "", "", "")

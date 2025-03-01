@@ -53,7 +53,7 @@ type TokenSet struct {
 }
 type GoogleAuthClient interface {
 	RetrieveAccessToken(ctx context.Context, code string) (*domain.AuthTokenSet, error)
-	RetrieveUserInfo(ctx context.Context, googleAuthResponse *domain.AuthTokenSet) (*domain.UserInfo, error)
+	RetrieveUserInfo(ctx context.Context, accessToken string) (*domain.UserInfo, error)
 }
 
 type GoogleAuthResponse struct {
@@ -137,7 +137,7 @@ func (u *GoogleUserUsecase) getTokensAndUserInfo(ctx context.Context, code strin
 		return "", "", nil, rsliberrors.Errorf(". err: %w", err)
 	}
 
-	info, err := u.googleAuthClient.RetrieveUserInfo(ctx, resp)
+	info, err := u.googleAuthClient.RetrieveUserInfo(ctx, resp.AccessToken)
 	if err != nil {
 		return "", "", nil, rsliberrors.Errorf(". err: %w", err)
 	}

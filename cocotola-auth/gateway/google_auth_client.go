@@ -103,7 +103,7 @@ func (c *GoogleAuthClient) RetrieveAccessToken(ctx context.Context, code string)
 	}, nil
 }
 
-func (c *GoogleAuthClient) RetrieveUserInfo(ctx context.Context, googleAuthResponse *domain.AuthTokenSet) (*domain.UserInfo, error) {
+func (c *GoogleAuthClient) RetrieveUserInfo(ctx context.Context, accessToken string) (*domain.UserInfo, error) {
 	ctx, span := tracer.Start(ctx, "googleAuthClient.RetrieveUserInfo")
 	defer span.End()
 
@@ -114,7 +114,7 @@ func (c *GoogleAuthClient) RetrieveUserInfo(ctx context.Context, googleAuthRespo
 
 	q := req.URL.Query()
 	q.Add("alt", "json")
-	q.Add("access_token", googleAuthResponse.AccessToken)
+	q.Add("access_token", accessToken)
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.HTTPClient.Do(req)

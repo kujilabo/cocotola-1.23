@@ -25,6 +25,7 @@ type AuthConfig struct {
 	SigningKey          string `yaml:"signingKey" validate:"required"`
 	AccessTokenTTLMin   int    `yaml:"accessTokenTtlMin" validate:"gte=1"`
 	RefreshTokenTTLHour int    `yaml:"refreshTokenTtlHour" validate:"gte=1"`
+	GoogleProjectID     string `yaml:"googleProjectId" validate:"required"`
 	GoogleCallbackURL   string `yaml:"googleCallbackUrl" validate:"required"`
 	GoogleClientID      string `yaml:"googleClientId" validate:"required"`
 	GoogleClientSecret  string `yaml:"googleClientSecret" validate:"required"`
