@@ -41,15 +41,15 @@ func (m *organization) Name() string {
 }
 
 type appUser struct {
-	appUserID      *rsuserdomain.AppUserID
+	// appUserID      *rsuserdomain.AppUserID
 	organizationID *rsuserdomain.OrganizationID
 	loginID        string
 	username       string
 }
 
-func (m *appUser) AppUserID() *rsuserdomain.AppUserID {
-	return m.appUserID
-}
+//	func (m *appUser) AppUserID() *rsuserdomain.AppUserID {
+//		return m.appUserID
+//	}
 func (m *appUser) OrganizationID() *rsuserdomain.OrganizationID {
 	return m.organizationID
 }
@@ -61,21 +61,63 @@ func (m *appUser) LoginID() string {
 }
 
 type AuthTokenManager struct {
-	SigningKey     []byte
-	SigningMethod  jwt.SigningMethod
-	TokenTimeout   time.Duration
-	RefreshTimeout time.Duration
-	logger         *slog.Logger
+	firebaseAuthClient service.FirebaseClient
+	SigningKey         []byte
+	SigningMethod      jwt.SigningMethod
+	TokenTimeout       time.Duration
+	RefreshTimeout     time.Duration
+	logger             *slog.Logger
 }
 
-func NewAuthTokenManager(signingKey []byte, signingMethod jwt.SigningMethod, tokenTimeout, refreshTimeout time.Duration) *AuthTokenManager {
+func NewAuthTokenManager(ctx context.Context, firebaseAuthClient service.FirebaseClient, signingKey []byte, signingMethod jwt.SigningMethod, tokenTimeout, refreshTimeout time.Duration) service.AuthTokenManager {
 	return &AuthTokenManager{
-		SigningKey:     signingKey,
-		SigningMethod:  signingMethod,
-		TokenTimeout:   tokenTimeout,
-		RefreshTimeout: refreshTimeout,
-		logger:         slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AuthTokenManager")),
+		firebaseAuthClient: firebaseAuthClient,
+		SigningKey:         signingKey,
+		SigningMethod:      signingMethod,
+		TokenTimeout:       tokenTimeout,
+		RefreshTimeout:     refreshTimeout,
+		logger:             slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AuthTokenManager")),
 	}
+}
+
+func (m *AuthTokenManager) SignInWithIDToken(ctx context.Context, idToken string) (*domain.AuthTokenSet, error) {
+	token, err := m.firebaseAuthClient.VerifyIDToken(ctx, idToken)
+	if err != nil {
+		return nil, err
+	}
+	userRecord, err := m.firebaseAuthClient.GetUser(ctx, token.UID)
+	if err != nil {
+		return nil, err
+	}
+	loginID := userRecord.UID
+	username := "Anonymous"
+	if token.SignInProvider != "anonymous" {
+		loginID = userRecord.Email
+		username = userRecord.DisplayName
+	}
+
+	organizationID, err := rsuserdomain.NewOrganizationID(1)
+	if err != nil {
+		return nil, err
+	}
+
+	appUser := appUser{
+		// AppUserID:        userRecord.AppUserID,
+		loginID:        loginID,
+		username:       username,
+		organizationID: organizationID,
+	}
+
+	organization := organization{
+		organizationID: organizationID,
+		name:           "cocotola",
+	}
+
+	tokenSet, err := m.CreateTokenSet(ctx, &appUser, &organization)
+	if err != nil {
+		return nil, err
+	}
+	return tokenSet, nil
 }
 
 func (m *AuthTokenManager) CreateTokenSet(ctx context.Context, appUser service.AppUserInterface, organization service.OrganizationInterface) (*domain.AuthTokenSet, error) {
@@ -105,8 +147,8 @@ func (m *AuthTokenManager) createJWT(ctx context.Context, appUser service.AppUse
 
 	now := time.Now()
 	claims := AppUserClaims{
+		// AppUserID:        appUser.AppUserID().Int(),
 		LoginID:          appUser.LoginID(),
-		AppUserID:        appUser.AppUserID().Int(),
 		Username:         appUser.Username(),
 		OrganizationID:   organization.OrganizationID().Int(),
 		OrganizationName: organization.Name(),
@@ -135,8 +177,8 @@ func (m *AuthTokenManager) GetUserInfo(ctx context.Context, tokenString string) 
 	}
 
 	return &service.AppUserInfo{
+		// AppUserID:        currentClaims.AppUserID,
 		LoginID:          currentClaims.LoginID,
-		AppUserID:        currentClaims.AppUserID,
 		Username:         currentClaims.Username,
 		OrganizationID:   currentClaims.OrganizationID,
 		OrganizationName: currentClaims.OrganizationName,
@@ -181,15 +223,15 @@ func (m *AuthTokenManager) RefreshToken(ctx context.Context, tokenString string)
 		return "", fmt.Errorf("invalid token type. err: %w", domain.ErrUnauthenticated)
 	}
 
-	appUserID, err := rsuserdomain.NewAppUserID(currentClaims.AppUserID)
-	if err != nil {
-		return "", err
-	}
+	// appUserID, err := rsuserdomain.NewAppUserID(currentClaims.AppUserID)
+	// if err != nil {
+	// 	return "", err
+	// }
 
 	appUser := &appUser{
-		appUserID: appUserID,
-		loginID:   currentClaims.LoginID,
-		username:  currentClaims.Username,
+		// appUserID: appUserID,
+		loginID:  currentClaims.LoginID,
+		username: currentClaims.Username,
 	}
 
 	organizationID, err := rsuserdomain.NewOrganizationID(currentClaims.OrganizationID)

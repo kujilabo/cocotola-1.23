@@ -4,6 +4,7 @@ app:
     signingKey: ah5T9Y9V2JPU74fhCtHQfDqLp3Zg8ZNc
     accessTokenTtlMin: 5
     refreshTokenTtlHour: 720
+    googleClientId: cocotola-1-23-develop-24-11-02
     googleCallbackUrl: http://localhost:5173/app/auth/callback
     googleClientId: 751610212628-f49u7fr0nivli19pr95eu3ckvn1rcdnn.apps.googleusercontent.com
     googleClientSecret: $GOOGLE_CLIENT_SECRET

@@ -15,9 +15,12 @@ import (
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
+
+	servicemock "github.com/kujilabo/cocotola-1.23/cocotola-auth/service/mocks"
 )
 
 func Test_authTokenManager_CreateTokenSet(t *testing.T) {
+	firebaseAuthClient := new(servicemock.FirebaseClient)
 	organizationID := organizationID(t, 123)
 	appUserID := appUserID(t, 456)
 	type fields struct {
@@ -79,7 +82,7 @@ func Test_authTokenManager_CreateTokenSet(t *testing.T) {
 	}
 	for _, tt := range tests {
 		ctx := context.Background()
-		m := gateway.NewAuthTokenManager(tt.fields.SigningKey, tt.fields.SigningMethod, tt.fields.TokenTimeout, tt.fields.RefreshTimeout)
+		m := gateway.NewAuthTokenManager(ctx, firebaseAuthClient, tt.fields.SigningKey, tt.fields.SigningMethod, tt.fields.TokenTimeout, tt.fields.RefreshTimeout)
 
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := m.CreateTokenSet(ctx, tt.args.appUser, tt.args.organization)
@@ -98,6 +101,7 @@ func Test_authTokenManager_CreateTokenSet(t *testing.T) {
 
 func TestAuthTokenManager_GetUserInfo(t *testing.T) {
 	t.Parallel()
+	firebaseAuthClient := new(servicemock.FirebaseClient)
 	ctx := context.Background()
 	organizationID := organizationID(t, 123)
 	appUserID := appUserID(t, 456)
@@ -132,9 +136,9 @@ func TestAuthTokenManager_GetUserInfo(t *testing.T) {
 				TokenTimeout:  time.Second,
 			},
 			want: &service.AppUserInfo{
+				// AppUserID:        456,
 				LoginID:          "LOGIN_ID",
 				Username:         "USERNAME",
-				AppUserID:        456,
 				OrganizationID:   123,
 				OrganizationName: "ORG_NAME",
 			},
@@ -154,7 +158,8 @@ func TestAuthTokenManager_GetUserInfo(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			m := gateway.NewAuthTokenManager(tt.fields.SigningKey, tt.fields.SigningMethod, tt.fields.TokenTimeout, tt.fields.RefreshTimeout)
+			m := gateway.NewAuthTokenManager(ctx, firebaseAuthClient, tt.fields.SigningKey, tt.fields.SigningMethod, tt.fields.TokenTimeout, tt.fields.RefreshTimeout)
+
 			tokenSet, err := m.CreateTokenSet(ctx, appUser, organization)
 			require.NoError(t, err)
 			got, err := m.GetUserInfo(ctx, tokenSet.AccessToken)

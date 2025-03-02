@@ -13,9 +13,12 @@ import (
 
 	libapi "github.com/kujilabo/cocotola-1.23/lib/api"
 	libcontroller "github.com/kujilabo/cocotola-1.23/lib/controller/gin"
+
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 )
 
 type AuthenticationUsecase interface {
+	SignInWithIDToken(ctx context.Context, idToken string) (*domain.AuthTokenSet, error)
 	GetUserInfo(ctx context.Context, bearerToken string) (*rsuserdomain.AppUserModel, error)
 	RefreshToken(ctx context.Context, refreshToken string) (string, error)
 }
@@ -30,6 +33,29 @@ func NewAuthHandler(authenticationUsecase AuthenticationUsecase) *AuthHandler {
 		authenticationUsecase: authenticationUsecase,
 		logger:                slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AuthHandler")),
 	}
+}
+
+func (h *AuthHandler) SignInWithIDToken(c *gin.Context) {
+	ctx := c.Request.Context()
+	authorization := c.GetHeader("Authorization")
+	if !strings.HasPrefix(authorization, "Bearer ") {
+		h.logger.InfoContext(ctx, "invalid header. Bearer not found")
+		c.JSON(http.StatusUnauthorized, gin.H{"message": http.StatusText(http.StatusUnauthorized)})
+		return
+	}
+
+	idToken := authorization[len("Bearer "):]
+	tokenSet, err := h.authenticationUsecase.SignInWithIDToken(ctx, idToken)
+	if err != nil {
+		h.logger.InfoContext(ctx, "SignInWithIDToken", slog.Any("err", (err)))
+		c.JSON(http.StatusUnauthorized, gin.H{"message": http.StatusText(http.StatusUnauthorized)})
+		return
+	}
+
+	c.JSON(http.StatusOK, libapi.AuthResponse{
+		AccessToken:  &tokenSet.AccessToken,
+		RefreshToken: &tokenSet.RefreshToken,
+	})
 }
 
 func (h *AuthHandler) GetUserInfo(c *gin.Context) {

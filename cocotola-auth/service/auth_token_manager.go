@@ -8,15 +8,15 @@ import (
 )
 
 type AppUserInfo struct {
+	// AppUserID        int
 	LoginID          string
-	AppUserID        int
 	Username         string
 	OrganizationID   int
 	OrganizationName string
 }
 
 type AppUserInterface interface {
-	AppUserID() *rsuserdomain.AppUserID
+	// AppUserID() *rsuserdomain.AppUserID
 	OrganizationID() *rsuserdomain.OrganizationID
 	LoginID() string
 	Username() string
@@ -29,6 +29,7 @@ type OrganizationInterface interface {
 }
 
 type AuthTokenManager interface {
+	SignInWithIDToken(ctx context.Context, idToken string) (*domain.AuthTokenSet, error)
 	GetUserInfo(ctx context.Context, tokenString string) (*AppUserInfo, error)
 
 	CreateTokenSet(ctx context.Context, appUser AppUserInterface, organizationUsecase OrganizationInterface) (*domain.AuthTokenSet, error)

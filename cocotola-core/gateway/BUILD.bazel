@@ -1,9 +1,10 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "gateway",
     srcs = [
         "cocotola_auth_client.go",
+        "firebase_client.go",
         "init.go",
         "repository_factory.go",
         "transaction_manager.go",
@@ -20,5 +21,15 @@ go_library(
         "//redstart/lib/gateway",
         "@io_gorm_gorm//:gorm",
         "@io_opentelemetry_go_otel//:otel",
+    ],
+)
+
+go_test(
+    name = "gateway_test",
+    srcs = ["firebase_client_test.go"],
+    deps = [
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@com_google_firebase_go_v4//:go",
     ],
 )

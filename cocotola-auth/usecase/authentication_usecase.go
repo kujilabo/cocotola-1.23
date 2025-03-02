@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/service"
 	rsliberrors "github.com/kujilabo/cocotola-1.23/redstart/lib/errors"
 	rsuserdomain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
@@ -35,6 +36,14 @@ func NewAuthentication(transactionManager service.TransactionManager, authTokenM
 		authTokenManager:              authTokenManager,
 		systemOwnerByOrganizationName: systemOwnerByOrganizationName,
 	}
+}
+
+func (u *Authentication) SignInWithIDToken(ctx context.Context, idToken string) (*domain.AuthTokenSet, error) {
+	tokenSet, err := u.authTokenManager.SignInWithIDToken(ctx, idToken)
+	if err != nil {
+		return nil, err
+	}
+	return tokenSet, nil
 }
 
 func (u *Authentication) GetUserInfo(ctx context.Context, bearerToken string) (*rsuserdomain.AppUserModel, error) {

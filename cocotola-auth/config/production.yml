@@ -8,6 +8,7 @@ app:
     signingKey: $SIGNING_KEY
     accessTokenTtlMin: 30
     refreshTokenTtlHour: 720
+    googleClientId: cocotola-1-23-develop-24-11-02
     googleCallbackUrl: https://www.cocotola.com/app/auth/callback
     googleClientId: 830416463276-lf7d9r39v1ct78u6p1dke6cv5kd8g6o1.apps.googleusercontent.com
     googleClientSecret: $GOOGLE_CLIENT_SECRET

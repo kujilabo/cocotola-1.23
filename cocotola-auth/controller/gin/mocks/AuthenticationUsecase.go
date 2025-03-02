@@ -5,6 +5,8 @@ package mocks
 import (
 	context "context"
 
+	cocotola_authdomain "github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
+
 	domain "github.com/kujilabo/cocotola-1.23/redstart/user/domain"
 
 	mock "github.com/stretchr/testify/mock"
@@ -135,6 +137,65 @@ func (_c *AuthenticationUsecase_RefreshToken_Call) Return(_a0 string, _a1 error)
 }
 
 func (_c *AuthenticationUsecase_RefreshToken_Call) RunAndReturn(run func(context.Context, string) (string, error)) *AuthenticationUsecase_RefreshToken_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SignInWithIDToken provides a mock function with given fields: ctx, idToken
+func (_m *AuthenticationUsecase) SignInWithIDToken(ctx context.Context, idToken string) (*cocotola_authdomain.AuthTokenSet, error) {
+	ret := _m.Called(ctx, idToken)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SignInWithIDToken")
+	}
+
+	var r0 *cocotola_authdomain.AuthTokenSet
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*cocotola_authdomain.AuthTokenSet, error)); ok {
+		return rf(ctx, idToken)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *cocotola_authdomain.AuthTokenSet); ok {
+		r0 = rf(ctx, idToken)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cocotola_authdomain.AuthTokenSet)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, idToken)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// AuthenticationUsecase_SignInWithIDToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SignInWithIDToken'
+type AuthenticationUsecase_SignInWithIDToken_Call struct {
+	*mock.Call
+}
+
+// SignInWithIDToken is a helper method to define mock.On call
+//   - ctx context.Context
+//   - idToken string
+func (_e *AuthenticationUsecase_Expecter) SignInWithIDToken(ctx interface{}, idToken interface{}) *AuthenticationUsecase_SignInWithIDToken_Call {
+	return &AuthenticationUsecase_SignInWithIDToken_Call{Call: _e.mock.On("SignInWithIDToken", ctx, idToken)}
+}
+
+func (_c *AuthenticationUsecase_SignInWithIDToken_Call) Run(run func(ctx context.Context, idToken string)) *AuthenticationUsecase_SignInWithIDToken_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *AuthenticationUsecase_SignInWithIDToken_Call) Return(_a0 *cocotola_authdomain.AuthTokenSet, _a1 error) *AuthenticationUsecase_SignInWithIDToken_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *AuthenticationUsecase_SignInWithIDToken_Call) RunAndReturn(run func(context.Context, string) (*cocotola_authdomain.AuthTokenSet, error)) *AuthenticationUsecase_SignInWithIDToken_Call {
 	_c.Call.Return(run)
 	return _c
 }

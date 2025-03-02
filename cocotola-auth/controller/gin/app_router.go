@@ -51,7 +51,7 @@ func NewInitTestRouterFunc() libcontroller.InitRouterGroupFunc {
 		})
 	}
 }
-func GetPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {
+func GetPublicRouterGroupFuncs(ctx context.Context, authConfig *config.AuthConfig, txManager, nonTxManager service.TransactionManager) ([]libcontroller.InitRouterGroupFunc, error) {
 	// - google
 	httpClient := http.Client{
 		Timeout:   time.Duration(authConfig.APITimeoutSec) * time.Second,
@@ -59,7 +59,12 @@ func GetPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxMa
 	}
 	signingKey := []byte(authConfig.SigningKey)
 	signingMethod := jwt.SigningMethodHS256
-	authTokenManager := gateway.NewAuthTokenManager(signingKey, signingMethod, time.Duration(authConfig.AccessTokenTTLMin)*time.Minute, time.Duration(authConfig.RefreshTokenTTLHour)*time.Hour)
+	fireabseAuthClient, err := gateway.NewFirebaseClient(ctx, authConfig.GoogleProjectID)
+	if err != nil {
+		return nil, err
+	}
+	authTokenManager := gateway.NewAuthTokenManager(ctx, fireabseAuthClient, signingKey, signingMethod, time.Duration(authConfig.AccessTokenTTLMin)*time.Minute, time.Duration(authConfig.RefreshTokenTTLHour)*time.Hour)
+
 	googleAuthClient := gateway.NewGoogleAuthClient(&httpClient, authConfig.GoogleClientID, authConfig.GoogleClientSecret, authConfig.GoogleCallbackURL)
 	googleUserUsecase := usecase.NewGoogleUser(txManager, nonTxManager, authTokenManager, googleAuthClient)
 	// - authentication
@@ -73,7 +78,7 @@ func GetPublicRouterGroupFuncs(authConfig *config.AuthConfig, txManager, nonTxMa
 		NewInitAuthRouterFunc(authenticationUsecase),
 		NewInitGoogleRouterFunc(googleUserUsecase),
 		NewInitPasswordRouterFunc(passwordUsecase),
-	}
+	}, nil
 }
 
 func GetPrivateRouterGroupFuncs(txManager, nonTxManager service.TransactionManager) []libcontroller.InitRouterGroupFunc {

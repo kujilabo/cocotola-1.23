@@ -12,6 +12,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/domain"
 	"github.com/kujilabo/cocotola-1.23/cocotola-auth/gateway"
@@ -119,4 +120,14 @@ func Test_GoogleAuthClient_RetrieveAccessToken_shouldReturnOtherError_whenErrorO
 	// then
 	assert.ErrorIs(t, err, otherError)
 	assert.Nil(t, tokenSet)
+}
+
+func Test_GoogleAuthClient_RetrieveUserInfo(t *testing.T) {
+	t.Skip()
+	ctx := context.Background()
+	accessToken := ""
+	c := newGoogleAuthClient(t, http.DefaultClient)
+	userInfo, err := c.RetrieveUserInfo(ctx, accessToken)
+	require.NoError(t, err)
+	assert.Equal(t, userInfo.Email, "")
 }
