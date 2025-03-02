@@ -4,6 +4,7 @@ go_library(
     name = "service",
     srcs = [
         "auth_token_manager.go",
+        "firebase_client.go",
         "repository_factory.go",
         "state_repository.go",
     ],

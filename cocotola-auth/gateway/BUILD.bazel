@@ -4,6 +4,7 @@ go_library(
     name = "gateway",
     srcs = [
         "auth_token_manager.go",
+        "firebase_client.go",
         "google_auth_client.go",
         "init.go",
         "repository_factory.go",
@@ -42,6 +43,7 @@ go_test(
         "//cocotola-auth/domain",
         "//cocotola-auth/gateway/mocks",
         "//cocotola-auth/service",
+        "//cocotola-auth/service/mocks",
         "//redstart/user/domain",
         "@com_github_golang_jwt_jwt_v5//:jwt",
         "@com_github_stretchr_testify//assert",
@@ -62,7 +64,9 @@ go_test(
     deps = [
         ":gateway",
         "//cocotola-auth/domain",
+        "//cocotola-auth/gateway/mocks",
         "//cocotola-auth/service",
+        "//cocotola-auth/service/mocks",
         "//redstart/user/domain",
         "@com_github_golang_jwt_jwt_v5//:jwt",
         "@com_github_stretchr_testify//assert",

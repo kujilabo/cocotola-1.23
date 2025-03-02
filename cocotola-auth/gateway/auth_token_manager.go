@@ -6,8 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	firebase "firebase.google.com/go/v4"
-	firebaseauth "firebase.google.com/go/v4/auth"
 	"github.com/golang-jwt/jwt/v5"
 
 	rslibdomain "github.com/kujilabo/cocotola-1.23/redstart/lib/domain"
@@ -63,7 +61,7 @@ func (m *appUser) LoginID() string {
 }
 
 type AuthTokenManager struct {
-	firebaseAuthClient *firebaseauth.Client
+	firebaseAuthClient service.FirebaseClient
 	SigningKey         []byte
 	SigningMethod      jwt.SigningMethod
 	TokenTimeout       time.Duration
@@ -71,19 +69,7 @@ type AuthTokenManager struct {
 	logger             *slog.Logger
 }
 
-func NewAuthTokenManager(ctx context.Context, googleProjectID string, signingKey []byte, signingMethod jwt.SigningMethod, tokenTimeout, refreshTimeout time.Duration) (service.AuthTokenManager, error) {
-	fireBaseApp, err := firebase.NewApp(ctx, &firebase.Config{
-		ProjectID: googleProjectID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	firebaseAuthClient, err := fireBaseApp.Auth(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+func NewAuthTokenManager(ctx context.Context, firebaseAuthClient service.FirebaseClient, signingKey []byte, signingMethod jwt.SigningMethod, tokenTimeout, refreshTimeout time.Duration) service.AuthTokenManager {
 	return &AuthTokenManager{
 		firebaseAuthClient: firebaseAuthClient,
 		SigningKey:         signingKey,
@@ -91,7 +77,7 @@ func NewAuthTokenManager(ctx context.Context, googleProjectID string, signingKey
 		TokenTimeout:       tokenTimeout,
 		RefreshTimeout:     refreshTimeout,
 		logger:             slog.Default().With(slog.String(rsliblog.LoggerNameKey, "AuthTokenManager")),
-	}, nil
+	}
 }
 
 func (m *AuthTokenManager) SignInWithIDToken(ctx context.Context, idToken string) (*domain.AuthTokenSet, error) {
@@ -105,7 +91,7 @@ func (m *AuthTokenManager) SignInWithIDToken(ctx context.Context, idToken string
 	}
 	loginID := userRecord.UID
 	username := "Anonymous"
-	if token.Firebase.SignInProvider != "anonymous" {
+	if token.SignInProvider != "anonymous" {
 		loginID = userRecord.Email
 		username = userRecord.DisplayName
 	}
