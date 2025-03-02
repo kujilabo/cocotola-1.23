@@ -92,6 +92,13 @@ jobs:
 
       - run: echo ${{ steps.digest_synthesizer.outputs.digest }}
 
+      - run: cat ./github/workflows/update-image.json
+      - run: |
+          jq '.inputs += {"synthesizer": "${{ steps.digest_synthesizer.outputs.digest }}"}' ./github/workflows/update-image.json  > ./github/workflows/update-image.json.tmp
+          mv ./github/workflows/update-image.json.tmp ./github/workflows/update-image.json
+
+      - run: cat ./github/workflows/update-image.json
+
       - id: digest_empty
         run: |
           DIGEST=$(gcloud artifacts docker tags list us-east1-docker.pkg.dev/cocotola-1-23-develop-24-11-02/cocotola-empty/cocotola-empty --format json | jq -r '.[] |  select(.tag=="projects/cocotola-1-23-develop-24-11-02/locations/us-east1/repositories/cocotola-empty/packages/cocotola-empty/tags/latest") | .version' | cut -d':' -f 2)
