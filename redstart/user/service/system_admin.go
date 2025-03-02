@@ -79,7 +79,7 @@ func (m *SystemAdmin) FindOrganizationByName(ctx context.Context, name string) (
 	return org, nil
 }
 
-func (m *SystemAdmin) addSystemOwnertoOrganization(ctx context.Context, authorizationManager AuthorizationManager, organizationID *domain.OrganizationID, organizationName string) (*SystemOwner, error) {
+func (m *SystemAdmin) addSystemOwnerToOrganization(ctx context.Context, authorizationManager AuthorizationManager, organizationID *domain.OrganizationID, organizationName string) (*SystemOwner, error) {
 	systemOwnerID, err := m.appUserRepo.AddSystemOwner(ctx, m, organizationID)
 	if err != nil {
 		return nil, liberrors.Errorf("failed to AddSystemOwner. error: %w", err)
@@ -128,7 +128,7 @@ func (m *SystemAdmin) AddOrganization(ctx context.Context, param OrganizationAdd
 
 	// 2. add "system-owner" user
 	// 3. add policy to "system-owner" user
-	systemOwner, err := m.addSystemOwnertoOrganization(ctx, authorizationManager, organizationID, param.Name())
+	systemOwner, err := m.addSystemOwnerToOrganization(ctx, authorizationManager, organizationID, param.Name())
 	if err != nil {
 		return nil, liberrors.Errorf("failed to addSystemOwnertoOrganization. error: %w", err)
 	}

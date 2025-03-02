@@ -1,5 +1,5 @@
 create table `app_user` (
- `id` int auto_increment
+ `id` integer primary key
 ,`version` int not null default 1
 ,`created_at` datetime not null default current_timestamp
 ,`updated_at` datetime not null default current_timestamp
@@ -14,7 +14,6 @@ create table `app_user` (
 ,`provider_access_token` text
 ,`provider_refresh_token` text
 ,`removed` tinyint(1) not null
-,primary key(`id`)
 ,unique(`organization_id`, `login_id`)
 ,foreign key(`organization_id`) references `organization`(`id`) on delete cascade
 );

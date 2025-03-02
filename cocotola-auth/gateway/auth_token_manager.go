@@ -83,11 +83,11 @@ func NewAuthTokenManager(ctx context.Context, firebaseAuthClient service.Firebas
 func (m *AuthTokenManager) SignInWithIDToken(ctx context.Context, idToken string) (*domain.AuthTokenSet, error) {
 	token, err := m.firebaseAuthClient.VerifyIDToken(ctx, idToken)
 	if err != nil {
-		return nil, err
+		return nil, rsliberrors.Errorf("m.firebaseAuthClient.VerifyIDToken. err: %w", err)
 	}
 	userRecord, err := m.firebaseAuthClient.GetUser(ctx, token.UID)
 	if err != nil {
-		return nil, err
+		return nil, rsliberrors.Errorf("m.firebaseAuthClient.GetUser. err: %w", err)
 	}
 	loginID := userRecord.UID
 	username := "Anonymous"
@@ -98,7 +98,7 @@ func (m *AuthTokenManager) SignInWithIDToken(ctx context.Context, idToken string
 
 	organizationID, err := rsuserdomain.NewOrganizationID(1)
 	if err != nil {
-		return nil, err
+		return nil, rsliberrors.Errorf("rsuserdomain.NewOrganizationID. err: %w", err)
 	}
 
 	appUser := appUser{
@@ -115,7 +115,7 @@ func (m *AuthTokenManager) SignInWithIDToken(ctx context.Context, idToken string
 
 	tokenSet, err := m.CreateTokenSet(ctx, &appUser, &organization)
 	if err != nil {
-		return nil, err
+		return nil, rsliberrors.Errorf("m.CreateTokenSet. err: %w", err)
 	}
 	return tokenSet, nil
 }
