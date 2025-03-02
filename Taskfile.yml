@@ -141,8 +141,8 @@ tasks:
   run-app:
     cmds:
       - |
-        export GOOGLE_CLIENT_SECRET=a
-        export GOOGLE_TEXT_TO_SPEECH_API_KEY=a
+        export GOOGLE_CLIENT_SECRET=aaa
+        export GOOGLE_TEXT_TO_SPEECH_API_KEY=bbb
         bazelisk run //cocotola-app:cocotola-app
 
   run-auth:
@@ -214,6 +214,8 @@ tasks:
   build:
     cmds:
       - for:
+          - cocotola-app
+          - cocotola-empty
           - cocotola-auth
           - cocotola-core
           - cocotola-import

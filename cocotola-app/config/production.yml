@@ -12,9 +12,10 @@ auth:
     signingKey: $SIGNING_KEY
     accessTokenTtlMin: 30
     refreshTokenTtlHour: 720
-  googleCallbackUrl: https://www.cocotola.com/app/auth/callback
-  googleClientId: 751610212628-2puqbj6bomdj9d6htri9rp4jsi383msn.apps.googleusercontent.com
-  googleClientSecret: $GOOGLE_CLIENT_SECRET
+    googleProjectId: cocotola-1-23-develop-24-11-02
+    googleCallbackUrl: https://www.cocotola.com/app/auth/callback
+    googleClientId: 751610212628-2puqbj6bomdj9d6htri9rp4jsi383msn.apps.googleusercontent.com
+    googleClientSecret: $GOOGLE_CLIENT_SECRET
   apiTimeoutSec: 5
   ownerLoginId: $OWNER_LOGIN_ID
   ownerPassword: $OWNER_PASSWORD

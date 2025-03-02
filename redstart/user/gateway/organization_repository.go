@@ -128,6 +128,10 @@ func (r *organizationRepository) AddOrganization(ctx context.Context, operator s
 		return nil, liberrors.Errorf("db.Create. err: %w", libgateway.ConvertDuplicatedError(result.Error, service.ErrOrganizationAlreadyExists))
 	}
 
+	if organization.ID == 0 {
+		return nil, liberrors.Errorf("organization.ID is 0")
+	}
+
 	organizationID, err := domain.NewOrganizationID(organization.ID)
 	if err != nil {
 		return nil, err

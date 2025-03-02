@@ -41,7 +41,7 @@ func NewAuthentication(transactionManager service.TransactionManager, authTokenM
 func (u *Authentication) SignInWithIDToken(ctx context.Context, idToken string) (*domain.AuthTokenSet, error) {
 	tokenSet, err := u.authTokenManager.SignInWithIDToken(ctx, idToken)
 	if err != nil {
-		return nil, err
+		return nil, rsliberrors.Errorf("SignInWithIDToken. err: %w", err)
 	}
 	return tokenSet, nil
 }

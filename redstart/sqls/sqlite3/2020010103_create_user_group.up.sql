@@ -1,5 +1,5 @@
 create table `user_group` (
- `id` int auto_increment
+ `id` integer primary key
 ,`version` int not null default 1
 ,`created_at` datetime not null default current_timestamp
 ,`updated_at` datetime not null default current_timestamp
@@ -10,7 +10,6 @@ create table `user_group` (
 ,`name` varchar(40) not null
 ,`description` text
 ,`removed` tinyint(1) not null
-,primary key(`id`)
 ,unique(`organization_id`, `key_name`)
 ,foreign key(`created_by`) references `app_user`(`id`) on delete cascade
 ,foreign key(`updated_by`) references `app_user`(`id`) on delete cascade

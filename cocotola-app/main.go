@@ -77,22 +77,30 @@ func main() {
 	// auth
 	{
 		auth := router.Group("auth")
-		authinit.Initialize(ctx, auth, dialect, cfg.DB.DriverName, db, cfg.Auth)
+		if err := authinit.Initialize(ctx, auth, dialect, cfg.DB.DriverName, db, cfg.Auth); err != nil {
+			libdomain.CheckError(err)
+		}
 	}
 	// core
 	{
 		core := router.Group("core")
-		coreinit.Initialize(ctx, core, dialect, cfg.DB.DriverName, db, cfg.Core)
+		if err := coreinit.Initialize(ctx, core, dialect, cfg.DB.DriverName, db, cfg.Core); err != nil {
+			libdomain.CheckError(err)
+		}
 	}
 	// synthesizer
 	{
 		synthesizer := router.Group("synthesizer")
-		synthesizerinit.Initialize(ctx, synthesizer, dialect, cfg.DB.DriverName, db, cfg.Synthesizer)
+		if err := synthesizerinit.Initialize(ctx, synthesizer, dialect, cfg.DB.DriverName, db, cfg.Synthesizer); err != nil {
+			libdomain.CheckError(err)
+		}
 	}
 	// tatoeba
 	{
 		tatoeba := router.Group("tatoeba")
-		tatoebainit.Initialize(ctx, tatoeba, dialect, cfg.DB.DriverName, db, cfg.Tatoeba)
+		if err := tatoebainit.Initialize(ctx, tatoeba, dialect, cfg.DB.DriverName, db, cfg.Tatoeba); err != nil {
+			libdomain.CheckError(err)
+		}
 	}
 
 	// run
@@ -112,6 +120,8 @@ func main() {
 
 func initGinWeb(ctx context.Context, router *gin.Engine, viteStaticFS fs.FS, webType string) {
 	router.NoRoute(func(c *gin.Context) {
+		logger := slog.Default()
+		logger.InfoContext(c.Request.Context(), c.Request.URL.Path)
 		if webType == "flutter" {
 			for _, prefix := range web.GetFlutterResources() {
 				if strings.HasPrefix(c.Request.RequestURI, prefix) {
@@ -128,19 +138,10 @@ func initGinWeb(ctx context.Context, router *gin.Engine, viteStaticFS fs.FS, web
 			}
 		}
 
-		if !strings.HasPrefix(c.Request.URL.Path, "/auth") {
-			c.FileFromFS("", http.FS(viteStaticFS))
-			return
-		}
-		if !strings.HasPrefix(c.Request.URL.Path, "/core") {
-			c.FileFromFS("", http.FS(viteStaticFS))
-			return
-		}
-		if !strings.HasPrefix(c.Request.URL.Path, "/synthesizer") {
-			c.FileFromFS("", http.FS(viteStaticFS))
-			return
-		}
-		if !strings.HasPrefix(c.Request.URL.Path, "/tatoeba") {
+		if !strings.HasPrefix(c.Request.URL.Path, "/auth") &&
+			!strings.HasPrefix(c.Request.URL.Path, "/core") &&
+			!strings.HasPrefix(c.Request.URL.Path, "/synthesizer") &&
+			!strings.HasPrefix(c.Request.URL.Path, "/tatoeba") {
 			c.FileFromFS("", http.FS(viteStaticFS))
 			return
 		}

@@ -110,13 +110,13 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 
 func NewInitAuthRouterFunc(authenticationUsecase AuthenticationUsecase) libcontroller.InitRouterGroupFunc {
 	return func(parentRouterGroup gin.IRouter, middleware ...gin.HandlerFunc) {
-		auth := parentRouterGroup.Group("auth")
 		for _, m := range middleware {
-			auth.Use(m)
+			parentRouterGroup.Use(m)
 		}
 
 		authHandler := NewAuthHandler(authenticationUsecase)
-		auth.POST("refresh_token", authHandler.RefreshToken)
-		auth.GET("userinfo", authHandler.GetUserInfo)
+		parentRouterGroup.POST("refresh_token", authHandler.RefreshToken)
+		parentRouterGroup.GET("userinfo", authHandler.GetUserInfo)
+		parentRouterGroup.POST("sign_in_with_id_token", authHandler.SignInWithIDToken)
 	}
 }
