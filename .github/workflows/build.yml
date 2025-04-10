@@ -94,12 +94,12 @@ jobs:
 
       - run: echo ${{ steps.digest_synthesizer.outputs.digest }}
 
-      - run: cat ./github/workflows/update-image.json
+      - run: cat ./.github/workflows/update-image.json
       - run: |
-          jq '.inputs += {"synthesizer": "${{ steps.digest_synthesizer.outputs.digest }}"}' ./github/workflows/update-image.json  > ./github/workflows/update-image.json.tmp
-          mv ./github/workflows/update-image.json.tmp ./github/workflows/update-image.json
+          jq '.inputs += {"synthesizer": "${{ steps.digest_synthesizer.outputs.digest }}"}' ./.github/workflows/update-image.json  > ./.github/workflows/update-image.json.tmp
+          mv ./.github/workflows/update-image.json.tmp ./.github/workflows/update-image.json
 
-      - run: cat ./github/workflows/update-image.json
+      - run: cat ./.github/workflows/update-image.json
 
       - id: digest_empty
         run: |
