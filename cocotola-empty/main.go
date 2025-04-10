@@ -102,6 +102,18 @@ func main() {
 			test.GET("/ping", func(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{"message": "pong"})
 			})
+			test.POST("/200", func(c*gin.Context){
+				logger.InfoContext(ctx, "POST /200")
+				params:=gin.H{}
+				if err:=c.BindJSON(&params);err!=nil{
+					logger.InfoContext(ctx, fmt.Sprintf("err: %+v", err))
+					c.Status(http.StatusBadRequest)
+					return
+				}
+			
+				logger.InfoContext(ctx, fmt.Sprintf("params: %+v", params))
+				c.Status(http.StatusOK)
+			})
 		},
 	})
 
